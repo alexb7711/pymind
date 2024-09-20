@@ -4,6 +4,8 @@ from logging import CRITICAL, DEBUG, WARNING
 
 from yaml import load as yaml_load
 
+logger = logging.getLogger("PYMIND")
+
 ########################################################################################################################
 
 
@@ -117,8 +119,24 @@ def main():
 
     # Parse options and adjust logging level if necessary
     options, logging_level = parse_options()
+
+    # If options is empty
     if not options:
         sys.exit(2)
+
+    # Set the logging level
+    logger.setLevel(logging_level)
+    console_handler = logging.StreamHandler()
+    logger.addHandler(console_handler)
+
+    if logging_level <= WARNING:
+        # Ensure deprecation warnings get displayed
+        warnings.filterwarnings("default")
+        logging.captureWarnings(True)
+        warn_logger = logging.getLogger("py.warnings")
+        warn_logger.addHandler(console_handler)
+
+    # Run `PyMind`
 
     return
 
