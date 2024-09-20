@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "PyMind"
+version = "0.0.0"
+authors = [
+  { name="Alexander Brown", email="alex.brown7711@gmail.com" },
+]
+description = "A Python implementation of a text-based second brain that just works."
+readme = "README.md"
+requires-python = ">=3.11"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: Linux",
+]
+
+dependencies = [
+  "pytest == 8.3.3",
+  "pyyaml == 6.0.1"
+]
+
+[project.urls]
+Homepage = "https://github.com/alexb7711/socket-interface-generation"
+Issues = "https://github.com/alexb7711/socket-interface-generation/issues"
