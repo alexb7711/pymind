@@ -1,6 +1,14 @@
 import logging
+from typing import Any
 
-logger = logging.getLogger('PYMIND')
+__all__ = ["PyMind", "pymind"]
+
+logger = logging.getLogger("PYMIND")
+
+########################################################################################################################
+# PYMIND CLASS
+########################################################################################################################
+
 
 class PyMind:
     """!
@@ -25,26 +33,12 @@ class PyMind:
         """
 
         # Read in the configuration if provided
-        self.config_file = kwargs.get("config"):
+        self.config_file = kwargs.get("config")
 
         if self.config_file:
             self.__setConfig()
 
         # Read the arguments provided
-        return
-
-    ##=================================================================================================================
-    #
-    def pymind(**kwargs: Any):
-        """!
-        @brief Read Markdown files from a directory and write output to `self.out_dir`
-
-        This is a shortcut function which initializes an instace of `PyMind` and calls the `generate_output` function.
-
-        @param kwargs['input'] Path to directory to read from
-        @param kwargs['output'] Path to directory to output to
-        @param kwargs['config'] Configuration file to read from
-        """
         return
 
     ###################################################################################################################
@@ -59,8 +53,30 @@ class PyMind:
         """
 
         try:
-            with open(self.config_file, 'r') as conf:
+            with open(self.config_file, "r") as conf:
+                pass
         except:
             print(f"WARNING: Could not find the configuration file: {self.config_file}")
 
         return
+
+
+########################################################################################################################
+# EXPORTED FUNCTIONS
+########################################################################################################################
+
+
+##======================================================================================================================
+#
+def pymind(**kwargs: Any):
+    """!
+    @brief Read Markdown files from a directory and write output to `self.out_dir`
+
+    This is a shortcut function which initializes an instace of `PyMind` and calls the `generate_output` function.
+
+    @param kwargs['input'] Path to directory to read from
+    @param kwargs['output'] Path to directory to output to
+    @param kwargs['config'] Configuration file to read from
+    """
+    pm = PyMind(**kwargs)
+    return
