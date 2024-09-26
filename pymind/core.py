@@ -1,4 +1,6 @@
 import logging
+import pickle
+from pathlib import Path
 from typing import Any
 
 __all__ = ["PyMind", "pymind"]
@@ -32,32 +34,86 @@ class PyMind:
         @param **kwargs
         """
 
+        # Read in the input and output options
+        self.input = kwargs.get("input", None)
+        self.output = kwargs.get("output", None)
+
         # Read in the configuration if provided
         self.config_file = kwargs.get("config")
 
         if self.config_file:
             self.__setConfig()
 
-        # Read the arguments provided
         return
 
-    ###################################################################################################################
+    ####################################################################################################################
     # PRIVATE
-    ###################################################################################################################
+    ####################################################################################################################
 
-    ##=================================================================================================================
+    ##==================================================================================================================
     #
     def __setConfig(self):
         """!
         @brief Read in the configuration file
         """
 
+        # TODO: Read in the configuration file
         try:
             with open(self.config_file, "r") as conf:
                 pass
         except:
             print(f"WARNING: Could not find the configuration file: {self.config_file}")
 
+        return
+
+    ##==================================================================================================================
+    #
+    def __createBrain(self):
+        """!
+        @brief Entry function to start creating the PyMind second brain.
+        """
+        # Get the list of files to convert
+        self.__getFilesList()
+
+        # Convert the files
+        self.__convertFiles()
+
+    ##==================================================================================================================
+    #
+    def __getFilesList(self) -> list[str]:
+        """!
+        @brief Returns a list of files to convert
+        """
+        # TODO: If `force_build` is not active
+        ## Create database of files
+        self.files_found = self.__find_files()
+
+        ## Compare database of files with cached database if one exists
+
+        # Update the cached database
+
+        return []
+
+    ##==================================================================================================================
+    #
+    def __findFiles(self) -> list[Path]:
+        """!
+        @brief Create a database of all the files in the `input` directory
+        """
+        # Input directory
+        i = self.input
+
+        # Create a list `Path`s for each `*.md` file in the `input` directory
+        files = [f.resolve() for f in Path(self.input).rglob("*.md")]
+
+        return files
+
+    ##==================================================================================================================
+    #
+    def __convertFiles(self):
+        """!
+        @brief Convert the list of files to HTML
+        """
         return
 
 
