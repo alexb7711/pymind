@@ -103,6 +103,7 @@ class PyMind:
         ## Compare database of files with cached database if one exists
 
         # Update the cached database
+        self.__cacheFiles()
 
         return []
 
@@ -121,6 +122,14 @@ class PyMind:
         print(f"HERE {files}")
 
         return files
+
+    ##==================================================================================================================
+    #
+    def __cacheFiles(self):
+        """!
+        @brief Cache files in the default cache location.
+        """
+        return
 
     ##==================================================================================================================
     #
