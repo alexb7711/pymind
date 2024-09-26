@@ -34,6 +34,9 @@ class PyMind:
         @param **kwargs
         """
 
+        # Member variables
+        self.files_found = []
+
         # Read in the input and output options
         self.input = kwargs.get("input", None)
         self.output = kwargs.get("output", None)
@@ -44,6 +47,15 @@ class PyMind:
         if self.config_file:
             self.__setConfig()
 
+        return
+
+    ##=================================================================================================================
+    #
+    def run(self):
+        """!
+        @brief Execute PyMind.
+        """
+        self.__createBrain()
         return
 
     ####################################################################################################################
@@ -86,7 +98,7 @@ class PyMind:
         """
         # TODO: If `force_build` is not active
         ## Create database of files
-        self.files_found = self.__find_files()
+        self.files_found = self.__findFiles()
 
         ## Compare database of files with cached database if one exists
 
@@ -105,6 +117,8 @@ class PyMind:
 
         # Create a list `Path`s for each `*.md` file in the `input` directory
         files = [f.resolve() for f in Path(self.input).rglob("*.md")]
+
+        print(f"HERE {files}")
 
         return files
 
