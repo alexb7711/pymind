@@ -1,5 +1,5 @@
 import logging
-import pickle
+import json
 from pathlib import Path
 from typing import Any
 
@@ -22,6 +22,14 @@ class PyMind:
     """
 
     ###################################################################################################################
+    # CONSTANTS
+    ###################################################################################################################
+
+    CONFIG_FILE = "pymind.yaml"
+    CONFIG_PATH = f"{Path.home()}/.cache/pymind/{CONFIG_FILE}"
+    CACHE_PATH = f"{Path.home()}/.cache/pymind"
+
+    ###################################################################################################################
     # PUBLIC
     ###################################################################################################################
 
@@ -36,6 +44,7 @@ class PyMind:
 
         # Member variables
         self.files_found = []
+        self.project_name = ""
 
         # Read in the input and output options
         self.input = kwargs.get("input", None)
@@ -55,6 +64,10 @@ class PyMind:
         """!
         @brief Execute PyMind.
         """
+        if self.input == None:
+            print("WARNING: AN INPUT DIRECTORY WAS NEVER PROVIDED!!!\nABORTING!!!")
+            return
+
         self.__createBrain()
         return
 
@@ -96,10 +109,13 @@ class PyMind:
         """!
         @brief Returns a list of files to convert
         """
-        # TODO: If `force_build` is not active
-        ## Create database of files
+        # Create database of files
         self.files_found = self.__findFiles()
 
+        # Extract the project name based on the base directory name
+        self.project_name = self.__getProjectName()
+
+        # TODO: If `force_build` is not active
         ## Compare database of files with cached database if one exists
 
         # Update the cached database
@@ -119,9 +135,21 @@ class PyMind:
         # Create a list `Path`s for each `*.md` file in the `input` directory
         files = [f.resolve() for f in Path(self.input).rglob("*.md")]
 
-        print(f"HERE {files}")
-
         return files
+
+    ##==================================================================================================================
+    #
+    def __getProjectName(self):
+        """!
+        @brief Return the project name.
+        """
+
+        # Get the project name
+        project_name = Path(self.input)
+        project_name = project_name.absolute()
+        project_name = project_name.parts[-1]
+
+        return project_name
 
     ##==================================================================================================================
     #
@@ -129,6 +157,20 @@ class PyMind:
         """!
         @brief Cache files in the default cache location.
         """
+        # Create the path objects
+        cache_dir = Path(f"{PyMind.CACHE_PATH}/")
+        cache_file = Path(f"{PyMind.CACHE_PATH}/{self.project_name}_cache.json")
+
+        # Create the directory if it does not exist
+        cache_dir.mkdir(parents=True, exist_ok=True)
+
+        # Create JSON object
+        file_data = json.dumps([str(f) for f in self.files_found])
+
+        # Write the found file data to the cache file
+        with open(cache_file, "w") as cf:
+            cf.write(file_data)
+
         return
 
     ##==================================================================================================================
