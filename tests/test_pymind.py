@@ -56,6 +56,7 @@ class TestPyMindCore(unittest.TestCase):
     #
     def test_modified_files(self):
         pm = self.getPM()
+        pm.run()  # Run one extra time to make sure the cache file exists
         pm.run()
 
         # Unmodified project
