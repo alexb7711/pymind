@@ -135,7 +135,13 @@ class PyMind:
         # Create a list `Path`s for each `*.md` file in the `input` directory
         files = [f.resolve() for f in Path(self.input).rglob("*.md")]
 
-        return files
+        # Create file database
+        file_database = {}
+        for f in files:
+            mod_time = f.lstat().st_mtime
+            file_database[str(f)] = mod_time
+
+        return file_database
 
     ##==================================================================================================================
     #
@@ -165,7 +171,7 @@ class PyMind:
         cache_dir.mkdir(parents=True, exist_ok=True)
 
         # Create JSON object
-        file_data = json.dumps([str(f) for f in self.files_found])
+        file_data = json.dumps(self.files_found, indent=4)
 
         # Write the found file data to the cache file
         with open(cache_file, "w") as cf:
