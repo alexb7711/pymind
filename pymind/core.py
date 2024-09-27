@@ -1,5 +1,6 @@
-import logging
 import json
+import logging
+import platform
 from pathlib import Path
 from typing import Any
 
@@ -25,9 +26,14 @@ class PyMind:
     # CONSTANTS
     ###################################################################################################################
 
+    # Select cache directory location based on the operating system
+    CACHE_DIR = ".cache/pymind"
+    if platform.system() == "Windows":
+        CACHE_DIR = "AppData/Local/Programs/pymind"
+
     CONFIG_FILE = "pymind.yaml"
-    CONFIG_PATH = f"{Path.home()}/.cache/pymind/{CONFIG_FILE}"
-    CACHE_PATH = f"{Path.home()}/.cache/pymind"
+    CONFIG_PATH = f"{Path.home()}/{CACHE_DIR}/{CONFIG_FILE}"
+    CACHE_PATH = f"{Path.home()}/{CACHE_DIR}"
 
     ###################################################################################################################
     # PUBLIC
@@ -39,7 +45,7 @@ class PyMind:
         """!
         @brief Creates a new PyMind Instance
 
-        @param **kwargs
+        @param **kwargs Dictionary of arguments
         """
 
         # Member variables
@@ -125,9 +131,11 @@ class PyMind:
 
     ##==================================================================================================================
     #
-    def __findFiles(self) -> list[Path]:
+    def __findFiles(self) -> dict[Path]:
         """!
         @brief Create a database of all the files in the `input` directory
+
+        @return Dictionary of files and their modified times from within the `input` directory
         """
         # Input directory
         i = self.input
