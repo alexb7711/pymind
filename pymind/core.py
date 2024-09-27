@@ -105,7 +105,7 @@ class PyMind:
         @brief Entry function to start creating the PyMind second brain.
         """
         # Get the list of files to convert
-        self.__getFilesList()
+        self.build_files = self.__getFilesList()
 
         # Convert the files
         self.__convertFiles()
@@ -193,7 +193,7 @@ class PyMind:
                 continue
 
             ## Check if the file has been updated
-            if mod < prev_data.get(f):
+            if mod > prev_data.get(f):
                 p_files.append(Path(f))
                 continue
 

@@ -51,3 +51,20 @@ class TestPyMindCore(unittest.TestCase):
         self.assertEqual(len(pm.files_found), 4)
 
         return
+
+    ##==================================================================================================================
+    #
+    def test_modified_files(self):
+        pm = self.getPM()
+        pm.run()
+
+        # Unmodified project
+        self.assertEqual(len(pm.build_files), 0)
+
+        # Modify a file
+        Path("./tests/example/file1.md").touch()
+        pm.run()
+        self.assertEqual(len(pm.build_files), 1)
+        self.assertEqual(pm.build_files[0].name, "file1.md")
+
+        return
