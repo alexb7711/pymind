@@ -62,6 +62,7 @@ update: ## Update the virtual environment packages
 #
 .ONESHELL:
 run: ## Execute the program
+	make setup
 	source $(BIN)/activate
 	$(PYTHON) pymind
 

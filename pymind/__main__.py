@@ -1,5 +1,6 @@
 import logging
 import optparse
+import pymind
 from logging import CRITICAL, DEBUG, WARNING
 
 from yaml import load as yaml_load
@@ -137,7 +138,7 @@ def main():
         warn_logger.addHandler(console_handler)
 
     # Run `PyMind`
-
+    pymind.pymind(**options)
     return
 
 

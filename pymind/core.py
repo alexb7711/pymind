@@ -1,0 +1,209 @@
+import logging
+import json
+from pathlib import Path
+from typing import Any
+
+__all__ = ["PyMind", "pymind"]
+
+logger = logging.getLogger("PYMIND")
+
+########################################################################################################################
+# PYMIND CLASS
+########################################################################################################################
+
+
+class PyMind:
+    """!
+    @brief A tool to convert a directory of markdown files into a structured website!
+
+    The PyMind class is the heart of the application. It contains the front end function calls that the user will
+    interact with. The primary interface will be done via a configuration file so the user simply has to invoke the
+    `pymind` command to generate their personal website.
+    """
+
+    ###################################################################################################################
+    # CONSTANTS
+    ###################################################################################################################
+
+    CONFIG_FILE = "pymind.yaml"
+    CONFIG_PATH = f"{Path.home()}/.cache/pymind/{CONFIG_FILE}"
+    CACHE_PATH = f"{Path.home()}/.cache/pymind"
+
+    ###################################################################################################################
+    # PUBLIC
+    ###################################################################################################################
+
+    ##=================================================================================================================
+    #
+    def __init__(self, **kwargs):
+        """!
+        @brief Creates a new PyMind Instance
+
+        @param **kwargs
+        """
+
+        # Member variables
+        self.files_found = []
+        self.project_name = ""
+
+        # Read in the input and output options
+        self.input = kwargs.get("input", None)
+        self.output = kwargs.get("output", None)
+
+        # Read in the configuration if provided
+        self.config_file = kwargs.get("config")
+
+        if self.config_file:
+            self.__setConfig()
+
+        return
+
+    ##=================================================================================================================
+    #
+    def run(self):
+        """!
+        @brief Execute PyMind.
+        """
+        if self.input == None:
+            print("WARNING: AN INPUT DIRECTORY WAS NEVER PROVIDED!!!\nABORTING!!!")
+            return
+
+        self.__createBrain()
+        return
+
+    ####################################################################################################################
+    # PRIVATE
+    ####################################################################################################################
+
+    ##==================================================================================================================
+    #
+    def __setConfig(self):
+        """!
+        @brief Read in the configuration file
+        """
+
+        # TODO: Read in the configuration file
+        try:
+            with open(self.config_file, "r") as conf:
+                pass
+        except:
+            print(f"WARNING: Could not find the configuration file: {self.config_file}")
+
+        return
+
+    ##==================================================================================================================
+    #
+    def __createBrain(self):
+        """!
+        @brief Entry function to start creating the PyMind second brain.
+        """
+        # Get the list of files to convert
+        self.__getFilesList()
+
+        # Convert the files
+        self.__convertFiles()
+
+    ##==================================================================================================================
+    #
+    def __getFilesList(self) -> list[str]:
+        """!
+        @brief Returns a list of files to convert
+        """
+        # Create database of files
+        self.files_found = self.__findFiles()
+
+        # Extract the project name based on the base directory name
+        self.project_name = self.__getProjectName()
+
+        # TODO: If `force_build` is not active
+        ## Compare database of files with cached database if one exists
+
+        # Update the cached database
+        self.__cacheFiles()
+
+        return []
+
+    ##==================================================================================================================
+    #
+    def __findFiles(self) -> list[Path]:
+        """!
+        @brief Create a database of all the files in the `input` directory
+        """
+        # Input directory
+        i = self.input
+
+        # Create a list `Path`s for each `*.md` file in the `input` directory
+        files = [f.resolve() for f in Path(self.input).rglob("*.md")]
+
+        # Create file database
+        file_database = {}
+        for f in files:
+            mod_time = f.lstat().st_mtime
+            file_database[str(f)] = mod_time
+
+        return file_database
+
+    ##==================================================================================================================
+    #
+    def __getProjectName(self):
+        """!
+        @brief Return the project name.
+        """
+
+        # Get the project name
+        project_name = Path(self.input)
+        project_name = project_name.absolute()
+        project_name = project_name.parts[-1]
+
+        return project_name
+
+    ##==================================================================================================================
+    #
+    def __cacheFiles(self):
+        """!
+        @brief Cache files in the default cache location.
+        """
+        # Create the path objects
+        cache_dir = Path(f"{PyMind.CACHE_PATH}/")
+        cache_file = Path(f"{PyMind.CACHE_PATH}/{self.project_name}_cache.json")
+
+        # Create the directory if it does not exist
+        cache_dir.mkdir(parents=True, exist_ok=True)
+
+        # Create JSON object
+        file_data = json.dumps(self.files_found, indent=4)
+
+        # Write the found file data to the cache file
+        with open(cache_file, "w") as cf:
+            cf.write(file_data)
+
+        return
+
+    ##==================================================================================================================
+    #
+    def __convertFiles(self):
+        """!
+        @brief Convert the list of files to HTML
+        """
+        return
+
+
+########################################################################################################################
+# EXPORTED FUNCTIONS
+########################################################################################################################
+
+
+##======================================================================================================================
+#
+def pymind(**kwargs: Any):
+    """!
+    @brief Read Markdown files from a directory and write output to `self.out_dir`
+
+    This is a shortcut function which initializes an instace of `PyMind` and calls the `generate_output` function.
+
+    @param kwargs['input'] Path to directory to read from
+    @param kwargs['output'] Path to directory to output to
+    @param kwargs['config'] Configuration file to read from
+    """
+    pm = PyMind(**kwargs)
+    return
