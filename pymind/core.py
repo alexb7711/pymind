@@ -105,7 +105,7 @@ class PyMind:
         @brief Entry function to start creating the PyMind second brain.
         """
         # Get the list of files to convert
-        self.__getFilesList()
+        self.build_files = self.__getFilesList()
 
         # Convert the files
         self.__convertFiles()
@@ -129,7 +129,7 @@ class PyMind:
             build_files = [str(f) for f in self.files_found.keys()]
         else:
             ## Otherwise compare the database of files with cached database (if one exists)
-            build_files = self.__getModifiedFiles()
+            build_files = self.__getBuildFiles()
 
         # Update the cached database
         self.__cacheFiles()
@@ -174,7 +174,7 @@ class PyMind:
 
     ##==================================================================================================================
     #
-    def __getModifiedFiles(self) -> list[Path]:
+    def __getBuildFiles(self) -> list[Path]:
         """!
         @brief Create a list of files that have been modified or added
         @return List of files that need to be re-generated.
@@ -193,7 +193,7 @@ class PyMind:
                 continue
 
             ## Check if the file has been updated
-            if mod < prev_data.get(f):
+            if mod > prev_data.get(f):
                 p_files.append(Path(f))
                 continue
 
