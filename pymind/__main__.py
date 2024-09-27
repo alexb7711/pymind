@@ -18,7 +18,7 @@ def parse_options(args=None, values=None):
     """
 
     # Program description and use
-    usage = """%prog [options] [INPUTFILE]"""
+    usage = """%prog [options] [INPUTDIR]"""
     desc = (
         "A Python implementation of a text-based second brain that just works. "
         "https://Python-Markdown.github.io/"
@@ -44,6 +44,14 @@ def parse_options(args=None, values=None):
         default="doc",
         metavar="OUTPUT_DIR",
         help="Use to specify output directory, default is `doc`.",
+    )
+    parser.add_option(
+        "-f",
+        "--force",
+        dest="force",
+        default=False,
+        help="Regenerate the entire project.",
+        metavar="FORCE",
     )
     parser.add_option(
         "-c",

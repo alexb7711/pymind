@@ -55,6 +55,7 @@ class PyMind:
         # Read in the input and output options
         self.input = kwargs.get("input", None)
         self.output = kwargs.get("output", None)
+        self.force_build = kwargs.get("force", False)
 
         # Read in the configuration if provided
         self.config_file = kwargs.get("config")
@@ -121,13 +122,19 @@ class PyMind:
         # Extract the project name based on the base directory name
         self.project_name = self.__getProjectName()
 
-        # TODO: If `force_build` is not active
-        ## Compare database of files with cached database if one exists
+        # If `force_build` not active
+        build_files = {}
+        if self.force_build:
+            ## Use the found files as the build list
+            build_files = [str(f) for f in self.files_found.keys()]
+        else:
+            ## Otherwise compare the database of files with cached database (if one exists)
+            build_files = self.__getModifiedFiles()
 
         # Update the cached database
         self.__cacheFiles()
 
-        return []
+        return build_files
 
     ##==================================================================================================================
     #
@@ -167,16 +174,44 @@ class PyMind:
 
     ##==================================================================================================================
     #
+    def __getModifiedFiles(self):
+        """!
+        @brief Create a list of files that have been modified or added
+        @return List of files that need to be re-generated.
+        """
+
+        # Get data from the previous run
+        prev_data = self.__loadCache()
+
+        return
+
+    ##==================================================================================================================
+    #
+    def __loadCache(self):
+        """!
+        @brief Load the cached dictionary of modified files.
+        @return Return dictionary of files and modified times
+        """
+        # Create the path objects
+        _, cache_file = self.__createCachePaths()
+
+        # Ensure the cached file exists
+        if cache_file.exists():
+            ## Read in the cached files from the previous run
+            with open(cache_file, "r") as cf:
+                run_data = json.load(cf)
+                return run_data
+
+        return {}
+
+    ##==================================================================================================================
+    #
     def __cacheFiles(self):
         """!
         @brief Cache files in the default cache location.
         """
         # Create the path objects
-        cache_dir = Path(f"{PyMind.CACHE_PATH}/")
-        cache_file = Path(f"{PyMind.CACHE_PATH}/{self.project_name}_cache.json")
-
-        # Create the directory if it does not exist
-        cache_dir.mkdir(parents=True, exist_ok=True)
+        cache_dir, cache_file = self.__createCachePaths()
 
         # Create JSON object
         file_data = json.dumps(self.files_found, indent=4)
@@ -186,6 +221,24 @@ class PyMind:
             cf.write(file_data)
 
         return
+
+    ##==================================================================================================================
+    #
+    def __createCachePaths(self):
+        """!
+        @brief Create `Path` objects for cache
+
+        This method creates the cache file paths, and ensures that the path to the cache directory exists.
+
+        @return Returns tuple of strings (cache_dir, cache_file)
+        """
+        cache_dir = Path(f"{PyMind.CACHE_PATH}/")
+        cache_file = Path(f"{PyMind.CACHE_PATH}/{self.project_name}_cache.json")
+
+        # Create the directory if it does not exist
+        cache_dir.mkdir(parents=True, exist_ok=True)
+
+        return (cache_dir, cache_file)
 
     ##==================================================================================================================
     #
@@ -207,10 +260,11 @@ def pymind(**kwargs: Any):
     """!
     @brief Read Markdown files from a directory and write output to `self.out_dir`
 
-    This is a shortcut function which initializes an instace of `PyMind` and calls the `generate_output` function.
+    This is a shortcut function which initializes an instance of `PyMind` and calls the `generate_output` function.
 
     @param kwargs['input'] Path to directory to read from
     @param kwargs['output'] Path to directory to output to
+    @param kwargs['force'] Regenerate all files
     @param kwargs['config'] Configuration file to read from
     """
     pm = PyMind(**kwargs)
