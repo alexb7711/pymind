@@ -174,16 +174,30 @@ class PyMind:
 
     ##==================================================================================================================
     #
-    def __getModifiedFiles(self):
+    def __getModifiedFiles(self) -> list[Path]:
         """!
         @brief Create a list of files that have been modified or added
         @return List of files that need to be re-generated.
         """
+        # List of files to process
+        p_files = []
 
         # Get data from the previous run
         prev_data = self.__loadCache()
 
-        return
+        # For each file that has been found in the input directory
+        for f, mod in self.files_found.items():
+            ## Check if the file is new
+            if not prev_data.get(f, False):
+                p_files.append(Path(f))
+                continue
+
+            ## Check if the file has been updated
+            if mod < prev_data.get(f):
+                p_files.append(Path(f))
+                continue
+
+        return p_files
 
     ##==================================================================================================================
     #
