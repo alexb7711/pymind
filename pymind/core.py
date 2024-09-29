@@ -4,6 +4,8 @@ import platform
 from pathlib import Path
 from typing import Any
 
+import yaml
+
 __all__ = ["PyMind", "pymind"]
 
 logger = logging.getLogger("PYMIND")
@@ -22,24 +24,27 @@ class PyMind:
     `pymind` command to generate their personal website.
     """
 
-    ###################################################################################################################
+    ####################################################################################################################
     # CONSTANTS
-    ###################################################################################################################
+    ####################################################################################################################
 
     # Select cache directory location based on the operating system
     CACHE_DIR = ".cache/pymind"
+    CONF_DIR = ".config/pymind"
+
     if platform.system() == "Windows":
+        CACHE_DIR = "AppData/Local/Programs/pymind/cache"
         CACHE_DIR = "AppData/Local/Programs/pymind"
 
     CONFIG_FILE = "pymind.yaml"
-    CONFIG_PATH = f"{Path.home()}/{CACHE_DIR}/{CONFIG_FILE}"
+    CONFIG_PATH = f"{Path.home()}/{CONF_DIR}/{CONFIG_FILE}"
     CACHE_PATH = f"{Path.home()}/{CACHE_DIR}"
 
-    ###################################################################################################################
+    ####################################################################################################################
     # PUBLIC
-    ###################################################################################################################
+    ####################################################################################################################
 
-    ##=================================================================================================================
+    ##==================================================================================================================
     #
     def __init__(self, **kwargs):
         """!
@@ -65,16 +70,18 @@ class PyMind:
 
         return
 
-    ##=================================================================================================================
+    ##==================================================================================================================
     #
     def run(self):
         """!
         @brief Execute PyMind.
         """
+        # If an input directory was not provided
         if self.input == None:
             print("WARNING: AN INPUT DIRECTORY WAS NEVER PROVIDED!!!\nABORTING!!!")
             return
 
+        # Create the website
         self.__createBrain()
         return
 
@@ -89,12 +96,20 @@ class PyMind:
         @brief Read in the configuration file
         """
 
-        # TODO: Read in the configuration file
+        # Read in the configuration file
         try:
-            with open(self.config_file, "r") as conf:
-                pass
-        except:
-            print(f"WARNING: Could not find the configuration file: {self.config_file}")
+            print(f"===> {self.config_file}")
+
+            with open(self.config_file, "r") as f:
+                conf = yaml.load(f, Loader=yaml.SafeLoader)
+
+                ## Read in the configuration file
+                self.input = conf.get("input", None)
+                self.output = conf.get("output", None)
+
+        except Exception as e:
+            print(f"WARNING: COULD NOT FIND THE CONFIGURATION FILE: {self.config_file}")
+            print(f"Error: {e}")
 
         return
 

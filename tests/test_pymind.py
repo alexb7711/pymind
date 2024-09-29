@@ -69,3 +69,20 @@ class TestPyMindCore(unittest.TestCase):
         self.assertEqual(pm.build_files[0].name, "file1.md")
 
         return
+
+    ##==================================================================================================================
+    #
+    def test_load_config_file(self):
+        import os
+
+        dir_path = os.path.dirname(os.path.realpath("."))
+        print(f"====> {dir_path}")
+
+        pm = pymind.PyMind(**{"config": "./tests/config/pymind/pymind.yml"})
+        pm.run()
+
+        self.assertEqual(pm.config_file, "./tests/config/pymind/pymind.yml")
+        self.assertEqual(pm.project_name, "example")
+        self.assertEqual(pm.input, "./tests/example")
+
+        return
