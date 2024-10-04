@@ -4,6 +4,7 @@ import platform
 from pathlib import Path
 from typing import Any
 
+import markdown
 import yaml
 
 __all__ = ["PyMind", "pymind"]
@@ -98,8 +99,6 @@ class PyMind:
 
         # Read in the configuration file
         try:
-            print(f"===> {self.config_file}")
-
             with open(self.config_file, "r") as f:
                 conf = yaml.load(f, Loader=yaml.SafeLoader)
 
@@ -275,6 +274,18 @@ class PyMind:
         """!
         @brief Convert the list of files to HTML
         """
+
+        # Ensure the output directory exists
+        Path(self.output).mkdir(parents=True, exist_ok=True)
+
+        # Convert each markdown file
+        for bf in self.build_files:
+            ## Create the output file path
+            output_file = self.output + "/" + Path(bf).stem + ".html"
+
+            ## Convert the markdown file to HTML
+            html = markdown.markdownFromFile(input=str(bf), output=output_file)
+
         return
 
 

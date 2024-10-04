@@ -7,11 +7,18 @@ from pathlib import Path
 
 class TestPyMindCore(unittest.TestCase):
     INPUT = "./tests/example"
+    OUTPUT = "./tests/example-output"
 
     ##==================================================================================================================
     #
-    def getPM(self):
-        pm = pymind.PyMind(**{"input": TestPyMindCore.INPUT, "output": ""})
+    def getPM(self, force: bool = False):
+        pm = pymind.PyMind(
+            **{
+                "input": TestPyMindCore.INPUT,
+                "output": TestPyMindCore.OUTPUT,
+                "force": force,
+            }
+        )
         return pm
 
     ##==================================================================================================================
@@ -19,6 +26,20 @@ class TestPyMindCore(unittest.TestCase):
     def assertIsFile(self, path):
         if not Path(path).resolve().is_file():
             raise AssertionError("File does not exist: %s" % str(path))
+
+    ##==================================================================================================================
+    #
+    def recursive_delete(self, directory):
+        import pathlib
+
+        for path in directory.rglob("*"):
+            if path.is_file():
+                path.unlink()
+            elif path.is_dir(missing_ok=True):
+                recursive_delete(path)
+                path.rmdir()
+
+        return
 
     ##==================================================================================================================
     #
@@ -76,7 +97,6 @@ class TestPyMindCore(unittest.TestCase):
         import os
 
         dir_path = os.path.dirname(os.path.realpath("."))
-        print(f"====> {dir_path}")
 
         pm = pymind.PyMind(**{"config": "./tests/config/pymind/pymind.yml"})
         pm.run()
@@ -84,5 +104,42 @@ class TestPyMindCore(unittest.TestCase):
         self.assertEqual(pm.config_file, "./tests/config/pymind/pymind.yml")
         self.assertEqual(pm.project_name, "example")
         self.assertEqual(pm.input, "./tests/example")
+
+        return
+
+    ##==================================================================================================================
+    #
+    def test_html_output_cnt(self):
+        import os, glob
+
+        # Delete the OUTPUT directory if it exists
+        self.recursive_delete(Path(TestPyMindCore.OUTPUT))
+
+        # Run PyMind with `force = false` to generate all the files
+        pm = self.getPM()
+        Path("./tests/example/file2.md").touch()
+        pm.run()
+
+        # Count the number of files output
+        fc = len(glob.glob(os.path.join(TestPyMindCore.OUTPUT, "*")))
+        self.assertEqual(fc, 1)
+
+        return
+
+    ##==================================================================================================================
+    #
+    def test_force_html_output_cnt(self):
+        import os, glob
+
+        # Delete the OUTPUT directory if it exists
+        self.recursive_delete(Path(TestPyMindCore.OUTPUT))
+
+        # Run PyMind with `force = true` to generate all the files
+        pm = self.getPM(force=True)
+        pm.run()
+
+        # Count the number of files output
+        fc = len(glob.glob(os.path.join(TestPyMindCore.OUTPUT, "*")))
+        self.assertEqual(fc, 4)
 
         return
