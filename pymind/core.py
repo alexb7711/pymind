@@ -1,11 +1,12 @@
 import json
 import logging
 import platform
+import re
+import markdown
+import yaml
 from pathlib import Path
 from typing import Any, TypedDict
 
-import markdown
-import yaml
 
 __all__ = ["PyMind", "pymind"]
 
@@ -299,8 +300,20 @@ class PyMind:
 
         # For each file in the 'build files' list
         for f in bf:
-            ## Search for tags in the file
-            ## Add the tag to the table of tags
+            ## Open the build file
+            with open(f, 'r') an txt:
+                ### For each row in the build file
+                for l in txt:
+                    #### Search for tags in the file
+                    matches = re.findall(":*?:", l)
+
+                    #### If tags were found
+                    if matches:
+                        ##### Add the tag to the table of tags
+                        print (f"====>{matches}")
+                        ##### Continue looking for tags in other files
+                        continue
+
             pass
 
         return tags

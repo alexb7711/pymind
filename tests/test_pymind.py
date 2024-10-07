@@ -143,3 +143,16 @@ class TestPyMindCore(unittest.TestCase):
         self.assertEqual(fc, 4)
 
         return
+
+    ##==================================================================================================================
+    #
+    def test_tag_search(self):
+        # Run PyMind with `force = true` to generate all the files
+        pm = self.getPM(force=True)
+        pm.run()
+
+        # Check the tag output
+        self.assertTrue(False)
+        # self.assertEqual(self.tags, ["tag1": ["tags.md"], "tag2": ["tags.md"], "tag3": ["tags.md"]])
+
+        return
