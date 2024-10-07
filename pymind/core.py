@@ -2,7 +2,7 @@ import json
 import logging
 import platform
 from pathlib import Path
-from typing import Any
+from typing import Any, TypedDict
 
 import markdown
 import yaml
@@ -287,6 +287,23 @@ class PyMind:
             html = markdown.markdownFromFile(input=str(bf), output=output_file)
 
         return
+
+    ##==================================================================================================================
+    #
+    def __getTag(self) -> TypedDict:
+        """!
+        @brief Retrieve tags from the files
+        """
+        bf = self.build_files
+        tags = {}
+
+        # For each file in the 'build files' list
+        for f in bf:
+            ## Search for tags in the file
+            ## Add the tag to the table of tags
+            pass
+
+        return tags
 
 
 ########################################################################################################################
