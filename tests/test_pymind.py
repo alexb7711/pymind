@@ -152,6 +152,7 @@ class TestPyMindCore(unittest.TestCase):
         pm.run()
 
         # Check the tag output
+        print(f"=====>{pm.tags}")
         self.assertTrue(False)
         # self.assertEqual(self.tags, ["tag1": ["tags.md"], "tag2": ["tags.md"], "tag3": ["tags.md"]])
 

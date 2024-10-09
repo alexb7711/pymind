@@ -122,6 +122,9 @@ class PyMind:
         # Get the list of files to convert
         self.build_files = self.__getFilesList()
 
+        # Get the list of tags from the files
+        self.tags = self.__getTags()
+
         # Convert the files
         self.__convertFiles()
 
@@ -291,7 +294,7 @@ class PyMind:
 
     ##==================================================================================================================
     #
-    def __getTag(self) -> TypedDict:
+    def __getTags(self) -> TypedDict:
         """!
         @brief Retrieve tags from the files
         """
