@@ -152,7 +152,8 @@ class TestPyMindCore(unittest.TestCase):
         pm.run()
 
         # Verify the tag output
-        k,v = pm.tags.items()
+        k = pm.tags.keys()
+        v = pm.tags.values()
         v = [Path(x).name for x in v]
 
         self.assertEqual(k, ["tag1", "tag2", "tag3", "tag4", "tag5"])
