@@ -313,13 +313,38 @@ class PyMind:
                     #### If tags were found
                     if matches:
                         ##### Add the tag to the table of tags
-                        print (f"====>{matches}")
+                        tags = self.__updateTags(f, tags, matches)
+
                         ##### Continue looking for tags in other files
                         continue
 
-            pass
+        return tags
+
+    ##==================================================================================================================
+    #
+    def __updateTags(self, fn: str, tags: TypedDict, matches: List):
+        """!
+        @brief Updates `tags` with the data found in `matches` for the frovided `file`
+
+        @param fn Name of the parse file
+        @param tags Dictinary of found tags associated with a list of the files in which that tag was found
+        @param
+
+        @return Update dictionary of tag => [list of files with tag]
+        """
+        # Loop through each matched tag found in `fn`
+        for m in matches:
+            ## If the tag alread exists
+            if tags.get(m):
+                ### Append the tag
+                tags[m].append(fn)
+            else:
+                ### Create a new tag
+                tags[m] = [fn]
 
         return tags
+
+
 
 
 ########################################################################################################################
