@@ -158,6 +158,6 @@ class TestPyMindCore(unittest.TestCase):
         v = [Path(x[0]).name for x in v]
 
         self.assertEqual(k, ["tag1", "tag2", "tag3", "tag4", "tag5"])
-        self.assertEqual(v, [ ["tags.md"], ["tags.md"], ["tags.md"], ["tags.md"], ["tags.md"] ])
+        self.assertEqual(v, ["tags.md", "tags.md", "tags.md", "tags.md", "tags.md"])
 
         return
