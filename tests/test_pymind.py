@@ -151,9 +151,11 @@ class TestPyMindCore(unittest.TestCase):
         pm = self.getPM(force=True)
         pm.run()
 
-        # Check the tag output
-        print(f"=====>{pm.tags}")
-        self.assertTrue(False)
-        # self.assertEqual(self.tags, ["tag1": ["tags.md"], "tag2": ["tags.md"], "tag3": ["tags.md"]])
+        # Verify the tag output
+        k,v = self.tags.items()
+        v = [Path(x).name for x in v]
+
+        self.assertEqual(k, ["tag1", "tag2", "tag3", "tag4", "tag5"])
+        self.assertEqual(v, [ ["tags.md"], ["tags.md"], ["tags.md"], ["tags.md"], ["tags.md"] ])
 
         return
