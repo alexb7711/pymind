@@ -308,7 +308,7 @@ class PyMind:
                 ### For each row in the build file
                 for l in txt:
                     #### Search for tags in the file
-                    matches = re.findall(":*?:", l)
+                    matches = re.findall(r"(.*?):", l)
 
                     #### If tags were found
                     if matches:
