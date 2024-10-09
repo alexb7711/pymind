@@ -301,7 +301,7 @@ class PyMind:
         # For each file in the 'build files' list
         for f in bf:
             ## Open the build file
-            with open(f, 'r') an txt:
+            with open(f, 'r') as txt:
                 ### For each row in the build file
                 for l in txt:
                     #### Search for tags in the file
