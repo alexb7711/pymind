@@ -153,6 +153,7 @@ class TestPyMindCore(unittest.TestCase):
 
         # Verify the tag output
         k = pm.tags.keys()
+        k = [x for x in k]
         v = pm.tags.values()
         v = [Path(x[0]).name for x in v]
 
