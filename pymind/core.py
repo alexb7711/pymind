@@ -5,7 +5,7 @@ import re
 import markdown
 import yaml
 from pathlib import Path
-from typing import Any, TypedDict
+from typing import Any, TypedDict, List
 
 
 __all__ = ["PyMind", "pymind"]
