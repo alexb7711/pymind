@@ -125,6 +125,12 @@ class PyMind:
         # Get the list of tags from the files
         self.tags = self.__getTags()
 
+        # Generate custom pages
+        self.__pageEngine()
+
+        # TODO: Generate home page
+        # self.__createHome()
+
         # Convert the files
         self.__convertFiles()
 
@@ -345,6 +351,26 @@ class PyMind:
                 tags[m] = [fn]
 
         return tags
+
+    ##==================================================================================================================
+    #
+    def __pageEngine(self):
+        """!
+        @brief Executes the custom page engine.
+        """
+
+        import subprocess
+
+        # TODO: Add the option to include a custom scripts directory
+        # Get the absolute path to the engine directory
+        engine_dir = Path("./engine/").absolute()
+
+        # For each file in the engine directories
+        for file in engine_dir.iterdir():
+            subprocess.run(["python", file])
+
+        return
+
 
 ########################################################################################################################
 # EXPORTED FUNCTIONS
