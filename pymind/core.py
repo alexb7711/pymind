@@ -297,6 +297,8 @@ class PyMind:
     def __getTags(self) -> TypedDict:
         """!
         @brief Retrieve tags from the files
+
+        @return A dictionary where the key is the tag found and the item is a list of files where the tag was found.
         """
         bf = self.build_files
         tags = {}
@@ -343,9 +345,6 @@ class PyMind:
                 tags[m] = [fn]
 
         return tags
-
-
-
 
 ########################################################################################################################
 # EXPORTED FUNCTIONS
