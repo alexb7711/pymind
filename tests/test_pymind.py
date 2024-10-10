@@ -69,7 +69,7 @@ class TestPyMindCore(unittest.TestCase):
         self.assertEqual(pm.input, TestPyMindCore.INPUT)
 
         # Check the number of elements
-        self.assertEqual(len(pm.files_found), 4)
+        self.assertEqual(len(pm.files_found), 5)
 
         return
 
@@ -140,6 +140,24 @@ class TestPyMindCore(unittest.TestCase):
 
         # Count the number of files output
         fc = len(glob.glob(os.path.join(TestPyMindCore.OUTPUT, "*")))
-        self.assertEqual(fc, 4)
+        self.assertEqual(fc, 5)
+
+        return
+
+    ##==================================================================================================================
+    #
+    def test_tag_search(self):
+        # Run PyMind with `force = true` to generate all the files
+        pm = self.getPM(force=True)
+        pm.run()
+
+        # Verify the tag output
+        k = pm.tags.keys()
+        k = [x for x in k]
+        v = pm.tags.values()
+        v = [Path(x[0]).name for x in v]
+
+        self.assertEqual(k, ["tag1", "tag2", "tag3", "tag4", "tag5"])
+        self.assertEqual(v, ["tags.md", "tags.md", "tags.md", "tags.md", "tags.md"])
 
         return

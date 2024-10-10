@@ -1,11 +1,12 @@
 import json
 import logging
 import platform
-from pathlib import Path
-from typing import Any
-
+import re
 import markdown
 import yaml
+from pathlib import Path
+from typing import Any, TypedDict, List
+
 
 __all__ = ["PyMind", "pymind"]
 
@@ -120,6 +121,9 @@ class PyMind:
         """
         # Get the list of files to convert
         self.build_files = self.__getFilesList()
+
+        # Get the list of tags from the files
+        self.tags = self.__getTags()
 
         # Convert the files
         self.__convertFiles()
@@ -288,6 +292,59 @@ class PyMind:
 
         return
 
+    ##==================================================================================================================
+    #
+    def __getTags(self) -> TypedDict:
+        """!
+        @brief Retrieve tags from the files
+
+        @return A dictionary where the key is the tag found and the item is a list of files where the tag was found.
+        """
+        bf = self.build_files
+        tags = {}
+
+        # For each file in the 'build files' list
+        for f in bf:
+            ## Open the build file
+            with open(f, 'r') as txt:
+                ### For each row in the build file
+                for l in txt:
+                    #### Search for tags in the file
+                    matches = re.findall(r":?(.*?):", l)
+
+                    #### If tags were found
+                    if matches:
+                        ##### Add the tag to the table of tags
+                        tags = self.__updateTags(f, tags, matches)
+
+                        ##### Continue looking for tags in other files
+                        continue
+
+        return tags
+
+    ##==================================================================================================================
+    #
+    def __updateTags(self, fn: str, tags: TypedDict, matches: List):
+        """!
+        @brief Updates `tags` with the data found in `matches` for the frovided `file`
+
+        @param fn Name of the parse file
+        @param tags Dictinary of found tags associated with a list of the files in which that tag was found
+        @param
+
+        @return Update dictionary of tag => [list of files with tag]
+        """
+        # Loop through each matched tag found in `fn`
+        for m in matches:
+            ## If the tag alread exists
+            if tags.get(m):
+                ### Append the tag
+                tags[m].append(fn)
+            else:
+                ### Create a new tag
+                tags[m] = [fn]
+
+        return tags
 
 ########################################################################################################################
 # EXPORTED FUNCTIONS
