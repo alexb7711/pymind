@@ -62,9 +62,12 @@ class PyMind:
         # Read in the parameters
         self.input = kwargs.get("input", None)
         self.output = kwargs.get("output", None)
+        self.config_file = kwargs.get("config", None)
+
         self.force_build = kwargs.get("force", False)
         self.dry_run = kwargs.get("dry_run", False)
-        self.config_file = kwargs.get("config")
+
+        self.post_engine = kwargs.get("post_engine", True)
 
         # Read in the configuration if provided
         if self.config_file:
@@ -86,28 +89,6 @@ class PyMind:
         # Create the website
         self.__createBrain()
         return
-
-    ##==================================================================================================================
-    #
-    def findFiles(self) -> dict[Path]:
-        """!
-        @brief Create a database of all the files in the `input` directory
-
-        @return Dictionary of files and their modified times from within the `input` directory
-        """
-        # Input directory
-        i = self.input
-
-        # Create a list `Path`s for each `*.md` file in the `input` directory
-        files = [f.resolve() for f in Path(self.input).rglob("*.md")]
-
-        # Create file database
-        file_database = {}
-        for f in files:
-            mod_time = f.lstat().st_mtime
-            file_database[str(f)] = mod_time
-
-        return file_database
 
     ####################################################################################################################
     # PRIVATE
@@ -148,7 +129,8 @@ class PyMind:
         self.tags = self.__getTags()
 
         # Generate custom pages
-        self.__pageEngine()
+        if self.post_engine:
+            self.__pageEngine()
 
         # TODO: Generate home page
         # self.__createHome()
@@ -163,7 +145,7 @@ class PyMind:
         @brief Returns a list of files to convert
         """
         # Create database of files
-        self.files_found = self.findFiles()
+        self.files_found = self.__findFiles()
 
         # Extract the project name based on the base directory name
         self.project_name = self.__getProjectName()
@@ -181,6 +163,28 @@ class PyMind:
         self.__cacheFiles()
 
         return build_files
+
+    ##==================================================================================================================
+    #
+    def __findFiles(self) -> dict[Path]:
+        """!
+        @brief Create a database of all the files in the `input` directory
+
+        @return Dictionary of files and their modified times from within the `input` directory
+        """
+        # Input directory
+        i = self.input
+
+        # Create a list `Path`s for each `*.md` file in the `input` directory
+        files = [f.resolve() for f in Path(self.input).rglob("*.md")]
+
+        # Create file database
+        file_database = {}
+        for f in files:
+            mod_time = f.lstat().st_mtime
+            file_database[str(f)] = mod_time
+
+        return file_database
 
     ##==================================================================================================================
     #
@@ -371,7 +375,7 @@ class PyMind:
 
         # For each file in the engine directories
         for file in engine_dir.iterdir():
-            subprocess.run(["python", file])
+            subprocess.run(["python", file, "-i", self.input, "-o", self.output])
 
         return
 
