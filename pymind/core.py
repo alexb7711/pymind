@@ -59,14 +59,14 @@ class PyMind:
         self.files_found = []
         self.project_name = ""
 
-        # Read in the input and output options
+        # Read in the parameters
         self.input = kwargs.get("input", None)
         self.output = kwargs.get("output", None)
         self.force_build = kwargs.get("force", False)
-
-        # Read in the configuration if provided
+        self.dry_run = kwargs.get("dry_run", False)
         self.config_file = kwargs.get("config")
 
+        # Read in the configuration if provided
         if self.config_file:
             self.__setConfig()
 
@@ -86,6 +86,28 @@ class PyMind:
         # Create the website
         self.__createBrain()
         return
+
+    ##==================================================================================================================
+    #
+    def findFiles(self) -> dict[Path]:
+        """!
+        @brief Create a database of all the files in the `input` directory
+
+        @return Dictionary of files and their modified times from within the `input` directory
+        """
+        # Input directory
+        i = self.input
+
+        # Create a list `Path`s for each `*.md` file in the `input` directory
+        files = [f.resolve() for f in Path(self.input).rglob("*.md")]
+
+        # Create file database
+        file_database = {}
+        for f in files:
+            mod_time = f.lstat().st_mtime
+            file_database[str(f)] = mod_time
+
+        return file_database
 
     ####################################################################################################################
     # PRIVATE
@@ -141,7 +163,7 @@ class PyMind:
         @brief Returns a list of files to convert
         """
         # Create database of files
-        self.files_found = self.__findFiles()
+        self.files_found = self.findFiles()
 
         # Extract the project name based on the base directory name
         self.project_name = self.__getProjectName()
@@ -159,28 +181,6 @@ class PyMind:
         self.__cacheFiles()
 
         return build_files
-
-    ##==================================================================================================================
-    #
-    def __findFiles(self) -> dict[Path]:
-        """!
-        @brief Create a database of all the files in the `input` directory
-
-        @return Dictionary of files and their modified times from within the `input` directory
-        """
-        # Input directory
-        i = self.input
-
-        # Create a list `Path`s for each `*.md` file in the `input` directory
-        files = [f.resolve() for f in Path(self.input).rglob("*.md")]
-
-        # Create file database
-        file_database = {}
-        for f in files:
-            mod_time = f.lstat().st_mtime
-            file_database[str(f)] = mod_time
-
-        return file_database
 
     ##==================================================================================================================
     #
@@ -285,6 +285,10 @@ class PyMind:
         @brief Convert the list of files to HTML
         """
 
+        # Do not convert the files if `dry_run` is True
+        if self.dry_run:
+            return
+
         # Ensure the output directory exists
         Path(self.output).mkdir(parents=True, exist_ok=True)
 
@@ -312,7 +316,7 @@ class PyMind:
         # For each file in the 'build files' list
         for f in bf:
             ## Open the build file
-            with open(f, 'r') as txt:
+            with open(f, "r") as txt:
                 ### For each row in the build file
                 for l in txt:
                     #### Search for tags in the file
@@ -332,17 +336,17 @@ class PyMind:
     #
     def __updateTags(self, fn: str, tags: TypedDict, matches: List):
         """!
-        @brief Updates `tags` with the data found in `matches` for the frovided `file`
+        @brief Updates `tags` with the data found in `matches` for the provided `file`
 
         @param fn Name of the parse file
-        @param tags Dictinary of found tags associated with a list of the files in which that tag was found
+        @param tags Dictionary of found tags associated with a list of the files in which that tag was found
         @param
 
         @return Update dictionary of tag => [list of files with tag]
         """
         # Loop through each matched tag found in `fn`
         for m in matches:
-            ## If the tag alread exists
+            ## If the tag already exists
             if tags.get(m):
                 ### Append the tag
                 tags[m].append(fn)
@@ -363,7 +367,7 @@ class PyMind:
 
         # TODO: Add the option to include a custom scripts directory
         # Get the absolute path to the engine directory
-        engine_dir = Path("./engine/").absolute()
+        engine_dir = Path("pymind/engine/").absolute()
 
         # For each file in the engine directories
         for file in engine_dir.iterdir():

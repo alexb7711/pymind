@@ -30,9 +30,9 @@ def parse_options(args=None, values=None):
     # Optional flags
     parser = optparse.OptionParser(usage=usage, description=desc, version=ver)
     parser.add_option(
-        "-d",
-        "--directory",
-        dest="dir",
+        "-i",
+        "--input",
+        dest="input",
         default="notes",
         metavar="INPUT_DIR",
         help="Relative path to a directory to recursively scan.",
@@ -51,6 +51,14 @@ def parse_options(args=None, values=None):
         dest="force",
         default=False,
         help="Regenerate the entire project.",
+        metavar="FORCE",
+    )
+    parser.add_option(
+        "-d",
+        "--dry_run",
+        dest="dry_run",
+        default=False,
+        help="Do everything except generate the files.",
         metavar="FORCE",
     )
     parser.add_option(
@@ -92,12 +100,6 @@ def parse_options(args=None, values=None):
     # Parse the input arguments
     (options, args) = parser.parse_args(args, values)
 
-    # Set the input directory
-    if len(args) == 0:
-        input_dir = None
-    else:
-        input_dir = args[0]
-
     # Read configuration file
     config = {}
     if options.configfile:
@@ -113,8 +115,9 @@ def parse_options(args=None, values=None):
 
     # Save the options
     opts = {
-        "input": input_dir,
-        "output": options.dir,
+        "input": options.input,
+        "output": options.output,
+        "dry_run": options.dry_run,
         "config": config,
     }
 
