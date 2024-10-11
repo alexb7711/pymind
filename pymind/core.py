@@ -130,7 +130,7 @@ class PyMind:
 
         # Generate custom pages
         if self.post_engine:
-            self.__pageEngine()
+            self.postEngine()
 
         # TODO: Generate home page
         # self.__createHome()
@@ -362,7 +362,7 @@ class PyMind:
 
     ##==================================================================================================================
     #
-    def __pageEngine(self):
+    def postEngine(self):
         """!
         @brief Executes the custom page engine.
         """
@@ -371,7 +371,7 @@ class PyMind:
 
         # TODO: Add the option to include a custom scripts directory
         # Get the absolute path to the engine directory
-        engine_dir = Path("pymind/engine/").absolute()
+        engine_dir = Path("pymind/engine/post/").absolute()
 
         # For each file in the engine directories
         for file in engine_dir.iterdir():
