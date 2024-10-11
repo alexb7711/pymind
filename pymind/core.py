@@ -59,14 +59,17 @@ class PyMind:
         self.files_found = []
         self.project_name = ""
 
-        # Read in the input and output options
+        # Read in the parameters
         self.input = kwargs.get("input", None)
         self.output = kwargs.get("output", None)
+        self.config_file = kwargs.get("config", None)
+
         self.force_build = kwargs.get("force", False)
+        self.dry_run = kwargs.get("dry_run", False)
+
+        self.post_engine = kwargs.get("post_engine", True)
 
         # Read in the configuration if provided
-        self.config_file = kwargs.get("config")
-
         if self.config_file:
             self.__setConfig()
 
@@ -124,6 +127,13 @@ class PyMind:
 
         # Get the list of tags from the files
         self.tags = self.__getTags()
+
+        # Generate custom pages
+        if self.post_engine:
+            self.postEngine()
+
+        # TODO: Generate home page
+        # self.__createHome()
 
         # Convert the files
         self.__convertFiles()
@@ -279,6 +289,10 @@ class PyMind:
         @brief Convert the list of files to HTML
         """
 
+        # Do not convert the files if `dry_run` is True
+        if self.dry_run:
+            return
+
         # Ensure the output directory exists
         Path(self.output).mkdir(parents=True, exist_ok=True)
 
@@ -306,7 +320,7 @@ class PyMind:
         # For each file in the 'build files' list
         for f in bf:
             ## Open the build file
-            with open(f, 'r') as txt:
+            with open(f, "r") as txt:
                 ### For each row in the build file
                 for l in txt:
                     #### Search for tags in the file
@@ -326,17 +340,17 @@ class PyMind:
     #
     def __updateTags(self, fn: str, tags: TypedDict, matches: List):
         """!
-        @brief Updates `tags` with the data found in `matches` for the frovided `file`
+        @brief Updates `tags` with the data found in `matches` for the provided `file`
 
         @param fn Name of the parse file
-        @param tags Dictinary of found tags associated with a list of the files in which that tag was found
+        @param tags Dictionary of found tags associated with a list of the files in which that tag was found
         @param
 
         @return Update dictionary of tag => [list of files with tag]
         """
         # Loop through each matched tag found in `fn`
         for m in matches:
-            ## If the tag alread exists
+            ## If the tag already exists
             if tags.get(m):
                 ### Append the tag
                 tags[m].append(fn)
@@ -345,6 +359,26 @@ class PyMind:
                 tags[m] = [fn]
 
         return tags
+
+    ##==================================================================================================================
+    #
+    def postEngine(self):
+        """!
+        @brief Executes the custom page engine.
+        """
+
+        import subprocess
+
+        # TODO: Add the option to include a custom scripts directory
+        # Get the absolute path to the engine directory
+        engine_dir = Path("pymind/engine/post/").absolute()
+
+        # For each file in the engine directories
+        for file in engine_dir.iterdir():
+            subprocess.run(["python", file, "-i", self.input, "-o", self.output])
+
+        return
+
 
 ########################################################################################################################
 # EXPORTED FUNCTIONS

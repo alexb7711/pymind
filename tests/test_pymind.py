@@ -1,6 +1,7 @@
 import unittest
 import pymind
 from pathlib import Path
+import os, glob
 
 ########################################################################################################################
 
@@ -11,12 +12,14 @@ class TestPyMindCore(unittest.TestCase):
 
     ##==================================================================================================================
     #
-    def getPM(self, force: bool = False):
+    def getPM(self, force: bool = False, dry_run: bool = False):
         pm = pymind.PyMind(
             **{
                 "input": TestPyMindCore.INPUT,
                 "output": TestPyMindCore.OUTPUT,
                 "force": force,
+                "post_engine": False,
+                "dry_run ": dry_run,
             }
         )
         return pm
@@ -110,8 +113,6 @@ class TestPyMindCore(unittest.TestCase):
     ##==================================================================================================================
     #
     def test_html_output_cnt(self):
-        import os, glob
-
         # Delete the OUTPUT directory if it exists
         self.recursive_delete(Path(TestPyMindCore.OUTPUT))
 
@@ -129,8 +130,6 @@ class TestPyMindCore(unittest.TestCase):
     ##==================================================================================================================
     #
     def test_force_html_output_cnt(self):
-        import os, glob
-
         # Delete the OUTPUT directory if it exists
         self.recursive_delete(Path(TestPyMindCore.OUTPUT))
 
@@ -159,5 +158,22 @@ class TestPyMindCore(unittest.TestCase):
 
         self.assertEqual(k, ["tag1", "tag2", "tag3", "tag4", "tag5"])
         self.assertEqual(v, ["tags.md", "tags.md", "tags.md", "tags.md", "tags.md"])
+
+        return
+
+    ##==================================================================================================================
+    #
+    def test_dry_run(self):
+
+        # Run PyMind with `dry_run = true` to only process the files, but convert anything
+        pm = self.getPM(dry_run=True)
+        pm.run()
+
+        # Delete the OUTPUT directory if it exists
+        self.recursive_delete(Path(TestPyMindCore.OUTPUT))
+
+        # Count the number of files output
+        fc = len(glob.glob(os.path.join(TestPyMindCore.OUTPUT, "*")))
+        self.assertEqual(fc, 0)
 
         return
