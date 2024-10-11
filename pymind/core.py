@@ -324,10 +324,13 @@ class PyMind:
                 ### For each row in the build file
                 for l in txt:
                     #### Search for tags in the file
-                    matches = re.findall(r":?(.*?):", l)
+                    matches = re.findall(r"^<!--\s*:?(.*?):\s*-->", l)
 
                     #### If tags were found
                     if matches:
+                        ## Create a list of the tags
+                        matches = matches[0].split(":")
+
                         ##### Add the tag to the table of tags
                         tags = self.__updateTags(f, tags, matches)
 
