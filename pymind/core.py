@@ -387,6 +387,8 @@ class PyMind:
         # List the directories in the engine directory
         engine_path = [str(x) for x in engine_dir.iterdir() if x.is_dir()]
 
+        print(f"==========>{engine_path}")
+
         path = Path("")
         # If pre-processing, look for a `pre` directory
         if process_type == "PRE" and "pre" in engine_path:
@@ -411,8 +413,6 @@ class PyMind:
         @return True if successful exectution, False otherwise
         """
         import subprocess
-
-        print(f"==========>{script_d}")
 
         # Execute subprocesses
         for file in script_d.iterdir():
