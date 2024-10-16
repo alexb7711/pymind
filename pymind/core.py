@@ -412,7 +412,7 @@ class PyMind:
         import subprocess
 
         # Execute subprocesses
-        for file in engine_dir.iterdir():
+        for file in script_d.iterdir():
             subprocess.run(["python", file, "-i", self.input,  "-o", self.output])
 
         return True
