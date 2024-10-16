@@ -18,7 +18,7 @@ class TestPyMindCore(unittest.TestCase):
                 "input": TestPyMindCore.INPUT,
                 "output": TestPyMindCore.OUTPUT,
                 "force": force,
-                "post_engine": False,
+                "engine": False,
                 "dry_run ": dry_run,
             }
         )

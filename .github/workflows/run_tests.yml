@@ -19,5 +19,6 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - run: sudo add-apt-repository ppa:deadsnakes/ppa -y
     - run: sudo apt update
+    - run: make clean
     - run: make setup
     - run: make test

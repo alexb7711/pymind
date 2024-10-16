@@ -62,12 +62,12 @@ def parse_options(args=None, values=None):
         metavar="DRY_RUN",
     )
     parser.add_option(
-        "-pe",
-        "--post_engine",
-        dest="post_engine",
+        "-e",
+        "--engine",
+        dest="engine",
         default=True,
-        help="Run the post process script engine",
-        metavar="POST_ENGINE",
+        help="Run the script engine",
+        metavar="ENGINE",
     )
     parser.add_option(
         "-c",
@@ -126,7 +126,7 @@ def parse_options(args=None, values=None):
         "input": options.input,
         "output": options.output,
         "dry_run": options.dry_run,
-        "post_engine": options.post_engine,
+        "engine": options.engine,
         "config": config,
     }
 

@@ -64,7 +64,7 @@ def parseInput(args=None) -> TypedDict:
         "input": options.input,
         "output": options.output,
         "force": True,
-        "post_engine": False,
+        "engine": False,
         "dry_run": True,
     }
     return opts
