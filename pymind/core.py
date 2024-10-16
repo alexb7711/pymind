@@ -395,7 +395,7 @@ class PyMind:
             engine_path = engine_dir + "post/"
 
         # For each file in the engine directories
-        self.executeSubprocess(engine_path)
+        self.__executeSubprocess(engine_path)
 
         return
 
