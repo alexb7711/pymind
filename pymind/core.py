@@ -34,10 +34,12 @@ class PyMind:
     # Select cache directory location based on the operating system
     CACHE_DIR = ".cache/pymind"
     CONF_DIR = ".config/pymind"
+    TMP_DIR = "/tmp"
 
     if platform.system() == "Windows":
-        CACHE_DIR = "AppData/Local/Programs/pymind/cache"
-        CACHE_DIR = "AppData/Local/Programs/pymind"
+        CACHE_DIR = "AppData\Local\Programs\pymind\cache"
+        CONF_DIR = "AppData\Local\Programs\pymind"
+        TMP_DIR = f"{Path.home()}\AppData\Local\Temp"
 
     CONFIG_FILE = "pymind.yaml"
     CONFIG_PATH = f"{Path.home()}/{CONF_DIR}/{CONFIG_FILE}"
@@ -126,6 +128,9 @@ class PyMind:
         # Get the list of files to convert
         self.build_files = self.__getFilesList()
 
+        # Create a copy of the input directory into a temporary directory
+        self.__copyInputDirectory()
+
         # Get the list of tags from the files
         self.tags = self.__getTags()
 
@@ -141,6 +146,14 @@ class PyMind:
         # Run post-processing engine
         self.__runEngine("POST")
 
+        return
+
+    ##==================================================================================================================
+    #
+    def __copyInputDirectory(self):
+        """!
+        @brief Copy `input` directory into `tmp` directory
+        """
         return
 
     ##==================================================================================================================
