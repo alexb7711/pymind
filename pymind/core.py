@@ -390,11 +390,10 @@ class PyMind:
         path = Path("")
         # If pre-processing, look for a `pre` directory
         if process_type == "PRE" and "pre" in engine_path:
-            print("================> HERE")
-            path = Path(engine_dir + "pre/")
+            path = Path(engine_dir + "pre/").absolute()
         # Else if post-processing, look for a `post` directory
         elif process_type == "POST" and "post" in engine_path:
-            path = Path(engine_dir + "post/")
+            path = Path(engine_dir + "post/").absolute()
 
         # For each file in the engine directories
         self.__executeSubprocess(path)
@@ -415,7 +414,9 @@ class PyMind:
 
         # Execute subprocesses
         for file in script_d.iterdir():
-            subprocess.run(["python", file, "-i", self.input,  "-o", self.output])
+            ## Ensure the items is a python script
+            if file.is_file() and file.suffix == ".py":
+                subprocess.run(["python", file, "-i", self.input, "-o", self.output])
 
         return True
 
