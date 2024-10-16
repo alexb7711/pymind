@@ -391,8 +391,6 @@ class PyMind:
         POST_PATH = str(engine_dir) + "/post"
         path = Path("")
 
-        print(f"==========>{PRE_PATH}")
-
         # If pre-processing, look for a `pre` directory
         if process_type == "PRE" and PRE_PATH in engine_path:
             path = Path(str(engine_dir) + "/pre/").absolute()
