@@ -29,6 +29,7 @@ class PyMind:
     ####################################################################################################################
     # CONSTANTS
     ####################################################################################################################
+    CORE_ENGINE_PATH = "pymind/engine/"
 
     # Select cache directory location based on the operating system
     CACHE_DIR = ".cache/pymind"
@@ -67,7 +68,7 @@ class PyMind:
         self.force_build = kwargs.get("force", False)
         self.dry_run = kwargs.get("dry_run", False)
 
-        self.post_engine = kwargs.get("post_engine", True)
+        self.engine = kwargs.get("engine", True)
 
         # Read in the configuration if provided
         if self.config_file:
@@ -128,15 +129,19 @@ class PyMind:
         # Get the list of tags from the files
         self.tags = self.__getTags()
 
-        # Generate custom pages
-        if self.post_engine:
-            self.postEngine()
+        # Run pre-processing engine
+        self.__runEngine("PRE")
 
         # TODO: Generate home page
         # self.__createHome()
 
         # Convert the files
         self.__convertFiles()
+
+        # Run post-processing engine
+        self.__runEngine("POST")
+
+        return
 
     ##==================================================================================================================
     #
@@ -365,22 +370,52 @@ class PyMind:
 
     ##==================================================================================================================
     #
-    def postEngine(self):
+    def __runEngine(self, process_type: str):
         """!
-        @brief Executes the custom page engine.
+        @brief Executes the pre- and post-processing engine.
+
+        @param process_type Options are PRE and POST for pre- and post-processing, respectively
         """
 
-        import subprocess
+        # Do not execute if the engine is not specified to run
+        if not self.engine:
+            return
 
-        # TODO: Add the option to include a custom scripts directory
         # Get the absolute path to the engine directory
-        engine_dir = Path("pymind/engine/post/").absolute()
+        engine_dir = Path(PyMind.CORE_ENGINE_PATH).absolute()
+
+        # List the directories in the engine directory
+        engine_path = [x for x in engine_dir.iterdir() if x.is_dir()]
+
+        # If pre-processing, look for a `pre` directory
+        if process_type == "PRE" and "pre" in engine_dir:
+            engine_path = engine_dir + "pre/"
+        # Else if post-processing, look for a `post` directory
+        elif process_type == "POST" and "post" in engine_dir:
+            engine_path = engine_dir + "post/"
 
         # For each file in the engine directories
-        for file in engine_dir.iterdir():
-            subprocess.run(["python", file, "-i", self.input, "-o", self.output])
+        self.executeSubprocess(engine_path)
 
         return
+
+    ##==================================================================================================================
+    #
+    def __executeSubprocess(self, script_d: str) -> bool:
+        """!
+        @brief Executes a subprocess from PyMind.
+
+        @param Path to scripts directory
+
+        @return True if successful exectution, False otherwise
+        """
+        import subprocess
+
+        # Execute subprocesses
+        for file in engine_dir.iterdir():
+            subprocess.run(["python", file, "-i", self.input,  "-o", self.output])
+
+        return True
 
 
 ########################################################################################################################
