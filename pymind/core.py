@@ -385,7 +385,7 @@ class PyMind:
         engine_dir = Path(PyMind.CORE_ENGINE_PATH).absolute()
 
         # List the directories in the engine directory
-        engine_path = [x for x in engine_dir.iterdir() if x.is_dir()]
+        engine_path = [str(x) for x in engine_dir.iterdir() if x.is_dir()]
 
         # If pre-processing, look for a `pre` directory
         if process_type == "PRE" and "pre" in engine_dir:
