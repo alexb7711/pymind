@@ -5,7 +5,7 @@
 ##==============================================================================
 # Directories
 SRC_D     = src
-TST_D     = ./tests
+TST_D     = tests
 ENV_DIR   = .venv
 ifneq ($(wildcard $(ENV_DIR)/bin/.),)
 NOSE_DIR  = $(ENV_DIR)/bin
