@@ -1,14 +1,35 @@
+import glob
+import os
+import platform
 import unittest
-import pymind
 from pathlib import Path
-import os, glob
+
+import pymind
 
 ########################################################################################################################
 
 
 class TestTagsPage(unittest.TestCase):
+    ####################################################################################################################
+    # CONSTANTS
+    ####################################################################################################################
     INPUT = "./tests/example"
     OUTPUT = "./tests/example-output"
+
+    CORE_ENGINE_PATH = "pymind/engine/"
+
+    # Select cache directory location based on the operating system
+    CACHE_DIR = ".cache/pymind"
+    CONF_DIR = ".config/pymind"
+
+    if platform.system() == "Windows":
+        CACHE_DIR = "AppData\Local\Programs\pymind\cache"
+        CONF_DIR = "AppData\Local\Programs\pymind"
+        TMP_DIR = f"{Path.home()}\AppData\Local\Temp"
+
+    CONFIG_FILE = "pymind.yaml"
+    CONFIG_PATH = f"{Path.home()}/{CONF_DIR}/{CONFIG_FILE}"
+    CACHE_PATH = f"{Path.home()}/{CACHE_DIR}"
 
     ##==================================================================================================================
     #
@@ -25,8 +46,24 @@ class TestTagsPage(unittest.TestCase):
 
     ##==================================================================================================================
     #
+    def createCachePaths(self):
+        """!
+        @brief Create `Path` objects for cache
+
+        This method creates the cache file paths, and ensures that the path to the cache directory exists.
+
+        @return Returns tuple of strings (cache_dir, cache_file)
+        """
+
+        cache_dir = Path(f"{TestTagsPage.CACHE_PATH}/")
+
+        return cache_dir
+
+    ##==================================================================================================================
+    #
     def deleteTagsFile(self):
-        Path(f"{TestTagsPage.INPUT}/tags_page.md").unlink()
+        Path(f"{TestTagsPage.INPUT}/tags_page.md").unlink(missing_ok=True)
+        Path(f"{self.createCachePaths()}/example/tags_page.md").unlink(missing_ok=True)
 
     ##==================================================================================================================
     #
@@ -34,9 +71,14 @@ class TestTagsPage(unittest.TestCase):
         pm = self.getPM(force=True)
         pm.run()
 
+        # Get the cache path
+        cache_d = self.createCachePaths()
+        tags_page_md = cache_d / Path("example/tags_page.md")
+
         # Ensure the tags file is created
         self.assertTrue(
-            Path(f"{TestTagsPage.INPUT}/tags_page.md").exists(),
+            # Path(f"{TestTagsPage.INPUT}/tags_page.md").exists(),
+            tags_page_md.exists(),
             "The tags page was not created!",
         )
 

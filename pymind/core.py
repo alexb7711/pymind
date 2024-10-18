@@ -36,8 +36,8 @@ class PyMind:
     CONF_DIR = ".config/pymind"
 
     if platform.system() == "Windows":
-        CACHE_DIR = "AppData/Local/Programs/pymind/cache"
-        CACHE_DIR = "AppData/Local/Programs/pymind"
+        CACHE_DIR = "AppData\Local\Programs\pymind\cache"
+        CONF_DIR = "AppData\Local\Programs\pymind"
 
     CONFIG_FILE = "pymind.yaml"
     CONFIG_PATH = f"{Path.home()}/{CONF_DIR}/{CONFIG_FILE}"
@@ -73,6 +73,9 @@ class PyMind:
         # Read in the configuration if provided
         if self.config_file:
             self.__setConfig()
+
+        # Set the working directory
+        self.__setWorkingDirectory()
 
         return
 
@@ -126,6 +129,9 @@ class PyMind:
         # Get the list of files to convert
         self.build_files = self.__getFilesList()
 
+        # Create a copy of the input directory into a temporary directory
+        self.__copyInputDirectory()
+
         # Get the list of tags from the files
         self.tags = self.__getTags()
 
@@ -141,6 +147,24 @@ class PyMind:
         # Run post-processing engine
         self.__runEngine("POST")
 
+        return
+
+    ##==================================================================================================================
+    #
+    def __copyInputDirectory(self):
+        """!
+        @brief Copy `input` directory into `tmp` directory
+        """
+
+        # If the engine is not enabled, there is no need to create the working directory
+        if not self.engine:
+            return
+
+        import shutil
+
+        cache_dir, _ = self.__createCachePaths()
+        out_d = str(cache_dir) + "/" + self.project_name + "/"
+        shutil.copytree(self.input, out_d, dirs_exist_ok=True)
         return
 
     ##==================================================================================================================
@@ -178,10 +202,10 @@ class PyMind:
         @return Dictionary of files and their modified times from within the `input` directory
         """
         # Input directory
-        i = self.input
+        i = self.work_d
 
         # Create a list `Path`s for each `*.md` file in the `input` directory
-        files = [f.resolve() for f in Path(self.input).rglob("*.md")]
+        files = [f.resolve() for f in Path(self.work_d).rglob("*.md")]
 
         # Create file database
         file_database = {}
@@ -411,17 +435,31 @@ class PyMind:
 
         @param Path to scripts directory
 
-        @return True if successful exectution, False otherwise
+        @return True if successful execution, False otherwise
         """
         import subprocess
 
         # Execute subprocesses
         for file in script_d.iterdir():
-            ## Ensure the items is a python script
+            ## Ensure the item is a python script
             if file.is_file() and file.suffix == ".py":
-                subprocess.run(["python", file, "-i", self.input, "-o", self.output])
+                subprocess.run(["python", file, "-i", self.work_d, "-o", self.output])
 
         return True
+
+    ##==================================================================================================================
+    #
+    def __setWorkingDirectory(self):
+        """!
+        @brief Set the working directory
+
+        The working directory is where the actions performed by PyMind or the engine scripts will take place.
+        """
+        if self.engine and self.input:
+            self.work_d = Path(PyMind.CACHE_PATH) / Path(self.input).parts[-1]
+        else:
+            self.work_d = self.input
+        return
 
 
 ########################################################################################################################
