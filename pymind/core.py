@@ -452,6 +452,8 @@ class PyMind:
     def __setWorkingDirectory(self):
         """!
         @brief Set the working directory
+
+        The working directory is where the actions performed by PyMind or the engine scripts will take place.
         """
         if self.engine and self.input:
             self.work_d = Path(PyMind.CACHE_PATH) / Path(self.input).parts[-1]
