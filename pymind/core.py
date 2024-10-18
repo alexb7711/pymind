@@ -442,7 +442,7 @@ class PyMind:
 
         # Execute subprocesses
         for file in script_d.iterdir():
-            ## Ensure the items is a python script
+            ## Ensure the item is a python script
             if file.is_file() and file.suffix == ".py":
                 subprocess.run(["python", file, "-i", self.work_d, "-o", self.output])
 
