@@ -198,7 +198,6 @@ class TestPyMindCore(unittest.TestCase):
     ##==================================================================================================================
     #
     def test_dry_run(self):
-
         # Run PyMind with `dry_run = true` to only process the files, but convert anything
         pm = self.getPM(dry_run=True)
         pm.run()
@@ -209,5 +208,20 @@ class TestPyMindCore(unittest.TestCase):
         # Count the number of files output
         fc = len(glob.glob(os.path.join(TestPyMindCore.OUTPUT, "*")))
         self.assertEqual(fc, 0)
+
+        return
+
+    ##==================================================================================================================
+    #
+    def test_work_directory_creation(self):
+        # Run PyMind with `dry_run = true` to only process the files, but convert anything
+        pm = self.getPM()
+        pm.run()
+
+        # Get path to the cache directory
+        cache_d = self.createCachePaths()
+        work_d = cache_d / Path("example")
+
+        self.assertTrue(work_d.is_dir(), "The working directory was not created!")
 
         return
