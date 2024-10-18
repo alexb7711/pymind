@@ -1,2 +1,2 @@
 input: "./tests/example"
-output: ""
+output: "./tests/example-output"

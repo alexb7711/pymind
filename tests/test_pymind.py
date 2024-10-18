@@ -2,13 +2,32 @@ import unittest
 import pymind
 from pathlib import Path
 import os, glob
+import platform
 
 ########################################################################################################################
 
 
 class TestPyMindCore(unittest.TestCase):
+    ####################################################################################################################
+    # CONSTANTS
+    ####################################################################################################################
     INPUT = "./tests/example"
     OUTPUT = "./tests/example-output"
+
+    CORE_ENGINE_PATH = "pymind/engine/"
+
+    # Select cache directory location based on the operating system
+    CACHE_DIR = ".cache/pymind"
+    CONF_DIR = ".config/pymind"
+
+    if platform.system() == "Windows":
+        CACHE_DIR = "AppData\Local\Programs\pymind\cache"
+        CONF_DIR = "AppData\Local\Programs\pymind"
+        TMP_DIR = f"{Path.home()}\AppData\Local\Temp"
+
+    CONFIG_FILE = "pymind.yaml"
+    CONFIG_PATH = f"{Path.home()}/{CONF_DIR}/{CONFIG_FILE}"
+    CACHE_PATH = f"{Path.home()}/{CACHE_DIR}"
 
     ##==================================================================================================================
     #
@@ -23,6 +42,21 @@ class TestPyMindCore(unittest.TestCase):
             }
         )
         return pm
+
+    ##==================================================================================================================
+    #
+    def createCachePaths(self):
+        """!
+        @brief Create `Path` objects for cache
+
+        This method creates the cache file paths, and ensures that the path to the cache directory exists.
+
+        @return Returns tuple of strings (cache_dir, cache_file)
+        """
+
+        cache_dir = Path(f"{TestPyMindCore.CACHE_PATH}/")
+
+        return cache_dir
 
     ##==================================================================================================================
     #
