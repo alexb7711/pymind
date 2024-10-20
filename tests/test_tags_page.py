@@ -13,31 +13,31 @@ class TestTagsPage(unittest.TestCase):
     ####################################################################################################################
     # CONSTANTS
     ####################################################################################################################
-    INPUT = "./tests/example"
-    OUTPUT = "./tests/example-output"
+    INPUT = Path("./tests/example")
+    OUTPUT = Path("./tests/example-output")
 
-    CORE_ENGINE_PATH = "pymind/engine/"
+    CORE_ENGINE_PATH = Path("pymind/engine/")
 
     # Select cache directory location based on the operating system
-    CACHE_DIR = ".cache/pymind"
-    CONF_DIR = ".config/pymind"
+    CACHE_DIR = Path(".cache/pymind")
+    CONF_DIR = Path(".config/pymind")
 
     if platform.system() == "Windows":
-        CACHE_DIR = "AppData\Local\Programs\pymind\cache"
-        CONF_DIR = "AppData\Local\Programs\pymind"
-        TMP_DIR = f"{Path.home()}\AppData\Local\Temp"
+        CACHE_DIR = Path("AppData\Local\Programs\pymind\cache")
+        CONF_DIR = Path("AppData\Local\Programs\pymind")
+        TMP_DIR = Path(f"{Path.home()}\AppData\Local\Temp")
 
     CONFIG_FILE = "pymind.yaml"
-    CONFIG_PATH = f"{Path.home()}/{CONF_DIR}/{CONFIG_FILE}"
-    CACHE_PATH = f"{Path.home()}/{CACHE_DIR}"
+    CONFIG_PATH = Path(f"{Path.home()}/{CONF_DIR}/{CONFIG_FILE}")
+    CACHE_PATH = Path(f"{Path.home()}/{CACHE_DIR}")
 
     ##==================================================================================================================
     #
     def getPM(self, force: bool = False, dry_run: bool = False):
         pm = pymind.PyMind(
             **{
-                "input": TestTagsPage.INPUT,
-                "output": TestTagsPage.OUTPUT,
+                "input": str(TestTagsPage.INPUT),
+                "output": str(TestTagsPage.OUTPUT),
                 "force": force,
                 "dry_run ": dry_run,
             }
