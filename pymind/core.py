@@ -32,8 +32,8 @@ class PyMind:
     CORE_ENGINE_PATH = Path("pymind/engine/")
 
     # Select cache directory location based on the operating system
-    CACHE_DIR = Path(".cache/pymind")
-    CONF_DIR = Path(".config/pymind")
+    CACHE_DIR = ".cache/pymind"
+    CONF_DIR = "config/pymind"
 
     if platform.system() == "Windows":
         CACHE_DIR = Path("AppData\Local\Programs\pymind\cache")
@@ -72,6 +72,7 @@ class PyMind:
 
         # Read in the configuration if provided
         if self.config_file:
+            self.config_file = Path(self.config_file)
             self.__setConfig()
 
         # Set the working directory
@@ -89,6 +90,9 @@ class PyMind:
         if self.input == None:
             print("WARNING: AN INPUT DIRECTORY WAS NEVER PROVIDED!!!\nABORTING!!!")
             return
+
+        self.input = Path(self.input)
+        self.output = Path(self.output)
 
         # Create the website
         self.__createBrain()
@@ -111,8 +115,8 @@ class PyMind:
                 conf = yaml.load(f, Loader=yaml.SafeLoader)
 
                 ## Read in the configuration file
-                self.input = conf.get("input", None)
-                self.output = conf.get("output", None)
+                self.input = Path(conf.get("input", None))
+                self.output = Path(conf.get("output", None))
 
         except Exception as e:
             print(f"WARNING: COULD NOT FIND THE CONFIGURATION FILE: {self.config_file}")
@@ -136,7 +140,7 @@ class PyMind:
         self.tags = self.__getTags()
 
         # Run pre-processing engine
-        self.__runEngine("PRE")
+        # self.__runEngine("PRE")
 
         # TODO: Generate home page
         # self.__createHome()
@@ -145,7 +149,7 @@ class PyMind:
         self.__convertFiles()
 
         # Run post-processing engine
-        self.__runEngine("POST")
+        # self.__runEngine("POST")
 
         return
 
@@ -323,15 +327,16 @@ class PyMind:
             return
 
         # Ensure the output directory exists
-        Path(self.output).mkdir(parents=True, exist_ok=True)
+        self.output.mkdir(parents=True, exist_ok=True)
 
         # Convert each markdown file
         for bf in self.build_files:
             ## Create the output file path
-            output_file = self.output + "/" + Path(bf).stem + ".html"
+            output_file = self.output / Path(bf).stem
+            output_file = output_file.with_suffix(".html")
 
             ## Convert the markdown file to HTML
-            html = markdown.markdownFromFile(input=str(bf), output=output_file)
+            html = markdown.markdownFromFile(input=str(bf), output=str(output_file))
 
         return
 

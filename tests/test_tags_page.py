@@ -83,9 +83,10 @@ class TestTagsPage(unittest.TestCase):
         )
 
         # Verify the tags file was converted
-        tags_page_html = Path(f"{TestTagsPage.OUTPUT}/tags_page.html").exists()
+        tags_page_html = Path(f"{TestTagsPage.OUTPUT}/tags_page.html")
         self.assertTrue(
-            tags_page_html, f"The tags HTML file was not created: {tags_page_html}"
+            tags_page_html.exists(),
+            f"The tags HTML file was not created: {tags_page_html}",
         )
 
         # Delete the tags file page

@@ -103,7 +103,7 @@ class TestPyMindCore(unittest.TestCase):
         pm.run()
 
         # Check the input file
-        self.assertEqual(pm.input, TestPyMindCore.INPUT)
+        self.assertEqual(pm.input, Path(TestPyMindCore.INPUT))
 
         # Check the number of elements
         self.assertEqual(len(pm.files_found), 5)
@@ -138,9 +138,9 @@ class TestPyMindCore(unittest.TestCase):
         pm = pymind.PyMind(**{"config": "./tests/config/pymind/pymind.yml"})
         pm.run()
 
-        self.assertEqual(pm.config_file, "./tests/config/pymind/pymind.yml")
+        self.assertEqual(pm.config_file, Path("./tests/config/pymind/pymind.yml"))
         self.assertEqual(pm.project_name, "example")
-        self.assertEqual(pm.input, "./tests/example")
+        self.assertEqual(pm.input, Path("./tests/example"))
 
         return
 
