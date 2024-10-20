@@ -29,19 +29,19 @@ class PyMind:
     ####################################################################################################################
     # CONSTANTS
     ####################################################################################################################
-    CORE_ENGINE_PATH = "pymind/engine/"
+    CORE_ENGINE_PATH = Path("pymind/engine/")
 
     # Select cache directory location based on the operating system
-    CACHE_DIR = ".cache/pymind"
-    CONF_DIR = ".config/pymind"
+    CACHE_DIR = Path(".cache/pymind")
+    CONF_DIR = Path(".config/pymind")
 
     if platform.system() == "Windows":
-        CACHE_DIR = "AppData\Local\Programs\pymind\cache"
-        CONF_DIR = "AppData\Local\Programs\pymind"
+        CACHE_DIR = Path("AppData\Local\Programs\pymind\cache")
+        CONF_DIR = Path("AppData\Local\Programs\pymind")
 
     CONFIG_FILE = "pymind.yaml"
-    CONFIG_PATH = f"{Path.home()}/{CONF_DIR}/{CONFIG_FILE}"
-    CACHE_PATH = f"{Path.home()}/{CACHE_DIR}"
+    CONFIG_PATH = Path(f"{Path.home()}/{CONF_DIR}/{CONFIG_FILE}")
+    CACHE_PATH = Path(f"{Path.home()}/{CACHE_DIR}")
 
     ####################################################################################################################
     # PUBLIC
