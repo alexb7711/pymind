@@ -79,12 +79,14 @@ class TestTagsPage(unittest.TestCase):
         self.assertTrue(
             # Path(f"{TestTagsPage.INPUT}/tags_page.md").exists(),
             tags_page_md.exists(),
-            "The tags page was not created!",
+            f"The tags page was not created: {tags_page_md}",
         )
 
         # Verify the tags file was converted
-        out_path = Path(f"{TestTagsPage.OUTPUT}/tags_page.html").exists()
-        self.assertTrue(out_path, f"Could not find: {out_path}")
+        tags_page_html = Path(f"{TestTagsPage.OUTPUT}/tags_page.html").exists()
+        self.assertTrue(
+            tags_page_html, f"The tags HTML file was not created: {tags_page_html}"
+        )
 
         # Delete the tags file page
         self.deleteTagsFile()
