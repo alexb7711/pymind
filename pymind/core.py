@@ -140,7 +140,7 @@ class PyMind:
         self.tags = self.__getTags()
 
         # Run pre-processing engine
-        # self.__runEngine("PRE")
+        self.__runEngine("PRE")
 
         # TODO: Generate home page
         # self.__createHome()
@@ -149,7 +149,7 @@ class PyMind:
         self.__convertFiles()
 
         # Run post-processing engine
-        # self.__runEngine("POST")
+        self.__runEngine("POST")
 
         return
 
