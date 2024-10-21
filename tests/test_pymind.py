@@ -21,9 +21,8 @@ class TestPyMindCore(unittest.TestCase):
     CONF_DIR = ".config/pymind"
 
     if platform.system() == "Windows":
-        CACHE_DIR = "AppData\Local\Programs\pymind\cache"
-        CONF_DIR = "AppData\Local\Programs\pymind"
-        TMP_DIR = f"{Path.home()}\AppData\Local\Temp"
+        CACHE_DIR = Path("AppData\Local\Programs\pymind\cache")
+        CONF_DIR = Path("AppData\Local\Programs\pymind")
 
     CONFIG_FILE = "pymind.yaml"
     CONFIG_PATH = f"{Path.home()}/{CONF_DIR}/{CONFIG_FILE}"
@@ -84,7 +83,11 @@ class TestPyMindCore(unittest.TestCase):
         pm = self.getPM()
         pm.run()
 
-        self.assertIsFile(f"{Path.home()}/.cache/pymind/example_cache.json")
+        cache_d = self.createCachePaths()
+
+        path = cache_d / Path("example_cache.json")
+
+        self.assertIsFile(path)
 
     ##==================================================================================================================
     #
@@ -103,7 +106,7 @@ class TestPyMindCore(unittest.TestCase):
         pm.run()
 
         # Check the input file
-        self.assertEqual(pm.input, TestPyMindCore.INPUT)
+        self.assertEqual(pm.input, Path(TestPyMindCore.INPUT))
 
         # Check the number of elements
         self.assertEqual(len(pm.files_found), 5)
@@ -138,9 +141,9 @@ class TestPyMindCore(unittest.TestCase):
         pm = pymind.PyMind(**{"config": "./tests/config/pymind/pymind.yml"})
         pm.run()
 
-        self.assertEqual(pm.config_file, "./tests/config/pymind/pymind.yml")
+        self.assertEqual(pm.config_file, Path("./tests/config/pymind/pymind.yml"))
         self.assertEqual(pm.project_name, "example")
-        self.assertEqual(pm.input, "./tests/example")
+        self.assertEqual(pm.input, Path("./tests/example"))
 
         return
 
