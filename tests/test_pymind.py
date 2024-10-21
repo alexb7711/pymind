@@ -84,7 +84,9 @@ class TestPyMindCore(unittest.TestCase):
         pm = self.getPM()
         pm.run()
 
-        self.assertIsFile(f"{Path.home()}/.cache/pymind/example_cache.json")
+        path = Path.home() / Path(".cache/pymind/example_cache.json")
+
+        self.assertIsFile(path)
 
     ##==================================================================================================================
     #
