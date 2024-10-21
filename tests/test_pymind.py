@@ -86,7 +86,7 @@ class TestPyMindCore(unittest.TestCase):
 
         cache_d = self.createCachePaths()
 
-        path = cach_d / Path("example_cache.json")
+        path = cache_d / Path("example_cache.json")
 
         self.assertIsFile(path)
 
