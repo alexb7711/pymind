@@ -23,9 +23,9 @@ class TestTagsPage(unittest.TestCase):
     CONF_DIR = ".config/pymind"
 
     if platform.system() == "Windows":
-        CACHE_DIR = "AppData\Local\Programs\pymind\cache"
-        CONF_DIR = "AppData\Local\Programs\pymind"
-        TMP_DIR = f"{Path.home()}\AppData\Local\Temp"
+        CACHE_DIR = Path("AppData\Local\Programs\pymind\cache")
+        CONF_DIR = Path("AppData\Local\Programs\pymind")
+        TMP_DIR = Path.home() / Path("\AppData\Local\Temp")
 
     CONFIG_FILE = "pymind.yaml"
     CONFIG_PATH = f"{Path.home()}/{CONF_DIR}/{CONFIG_FILE}"
