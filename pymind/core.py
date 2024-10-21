@@ -157,7 +157,7 @@ class PyMind:
     #
     def __copyInputDirectory(self):
         """!
-        @brief Copy `input` directory into `tmp` directory
+        @brief Copy `input` directory into `cache` directory
         """
 
         # If the engine is not enabled, there is no need to create the working directory
