@@ -138,7 +138,7 @@ def __createTagsPage(input: str, tags: TypedDict) -> bool:
         ## Append the list of files to the output string
         out_str += ", ".join(link_list)
 
-    out_p = f"{input}/tags_page.md"
+    out_p = Path(f"{input}/tags_page.md")
 
     with open(out_p, "w") as f:
         f.write(out_str)
