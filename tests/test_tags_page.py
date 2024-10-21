@@ -13,23 +13,23 @@ class TestTagsPage(unittest.TestCase):
     ####################################################################################################################
     # CONSTANTS
     ####################################################################################################################
-    INPUT = Path("./tests/example")
-    OUTPUT = Path("./tests/example-output")
+    INPUT = "./tests/example"
+    OUTPUT = "./tests/example-output"
 
-    CORE_ENGINE_PATH = Path("pymind/engine/")
+    CORE_ENGINE_PATH = "pymind/engine/"
 
     # Select cache directory location based on the operating system
-    CACHE_DIR = Path(".cache/pymind")
-    CONF_DIR = Path(".config/pymind")
+    CACHE_DIR = ".cache/pymind"
+    CONF_DIR = ".config/pymind"
 
     if platform.system() == "Windows":
-        CACHE_DIR = Path("AppData\Local\Programs\pymind\cache")
-        CONF_DIR = Path("AppData\Local\Programs\pymind")
-        TMP_DIR = Path(f"{Path.home()}\AppData\Local\Temp")
+        CACHE_DIR = "AppData\Local\Programs\pymind\cache"
+        CONF_DIR = "AppData\Local\Programs\pymind"
+        TMP_DIR = f"{Path.home()}\AppData\Local\Temp"
 
     CONFIG_FILE = "pymind.yaml"
-    CONFIG_PATH = Path(f"{Path.home()}/{CONF_DIR}/{CONFIG_FILE}")
-    CACHE_PATH = Path(f"{Path.home()}/{CACHE_DIR}")
+    CONFIG_PATH = f"{Path.home()}/{CONF_DIR}/{CONFIG_FILE}"
+    CACHE_PATH = f"{Path.home()}/{CACHE_DIR}"
 
     ##==================================================================================================================
     #
@@ -77,7 +77,6 @@ class TestTagsPage(unittest.TestCase):
 
         # Ensure the tags file is created
         self.assertTrue(
-            # Path(f"{TestTagsPage.INPUT}/tags_page.md").exists(),
             tags_page_md.exists(),
             f"The tags page was not created: {tags_page_md}",
         )
