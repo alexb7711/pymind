@@ -29,19 +29,19 @@ class PyMind:
     ####################################################################################################################
     # CONSTANTS
     ####################################################################################################################
-    CORE_ENGINE_PATH = "pymind/engine/"
+    CORE_ENGINE_PATH = Path("pymind/engine/")
 
     # Select cache directory location based on the operating system
     CACHE_DIR = ".cache/pymind"
-    CONF_DIR = ".config/pymind"
+    CONF_DIR = "config/pymind"
 
     if platform.system() == "Windows":
-        CACHE_DIR = "AppData\Local\Programs\pymind\cache"
-        CONF_DIR = "AppData\Local\Programs\pymind"
+        CACHE_DIR = Path("AppData\Local\Programs\pymind\cache")
+        CONF_DIR = Path("AppData\Local\Programs\pymind")
 
     CONFIG_FILE = "pymind.yaml"
-    CONFIG_PATH = f"{Path.home()}/{CONF_DIR}/{CONFIG_FILE}"
-    CACHE_PATH = f"{Path.home()}/{CACHE_DIR}"
+    CONFIG_PATH = Path(f"{Path.home()}/{CONF_DIR}/{CONFIG_FILE}")
+    CACHE_PATH = Path(f"{Path.home()}/{CACHE_DIR}")
 
     ####################################################################################################################
     # PUBLIC
@@ -72,6 +72,7 @@ class PyMind:
 
         # Read in the configuration if provided
         if self.config_file:
+            self.config_file = Path(self.config_file)
             self.__setConfig()
 
         # Set the working directory
@@ -89,6 +90,9 @@ class PyMind:
         if self.input == None:
             print("WARNING: AN INPUT DIRECTORY WAS NEVER PROVIDED!!!\nABORTING!!!")
             return
+
+        self.input = Path(self.input)
+        self.output = Path(self.output)
 
         # Create the website
         self.__createBrain()
@@ -111,8 +115,8 @@ class PyMind:
                 conf = yaml.load(f, Loader=yaml.SafeLoader)
 
                 ## Read in the configuration file
-                self.input = conf.get("input", None)
-                self.output = conf.get("output", None)
+                self.input = Path(conf.get("input", None))
+                self.output = Path(conf.get("output", None))
 
         except Exception as e:
             print(f"WARNING: COULD NOT FIND THE CONFIGURATION FILE: {self.config_file}")
@@ -153,7 +157,7 @@ class PyMind:
     #
     def __copyInputDirectory(self):
         """!
-        @brief Copy `input` directory into `tmp` directory
+        @brief Copy `input` directory into `cache` directory
         """
 
         # If the engine is not enabled, there is no need to create the working directory
@@ -323,15 +327,16 @@ class PyMind:
             return
 
         # Ensure the output directory exists
-        Path(self.output).mkdir(parents=True, exist_ok=True)
+        self.output.mkdir(parents=True, exist_ok=True)
 
         # Convert each markdown file
         for bf in self.build_files:
             ## Create the output file path
-            output_file = self.output + "/" + Path(bf).stem + ".html"
+            output_file = self.output / Path(bf).stem
+            output_file = output_file.with_suffix(".html")
 
             ## Convert the markdown file to HTML
-            html = markdown.markdownFromFile(input=str(bf), output=output_file)
+            html = markdown.markdownFromFile(input=str(bf), output=str(output_file))
 
         return
 
@@ -411,16 +416,16 @@ class PyMind:
         # List the directories in the engine directory
         engine_path = [str(x) for x in engine_dir.iterdir() if x.is_dir()]
 
-        PRE_PATH = str(engine_dir) + "/pre"
-        POST_PATH = str(engine_dir) + "/post"
+        PRE_PATH = engine_dir / Path("pre")
+        POST_PATH = engine_dir / Path("post")
         path = Path("")
 
         # If pre-processing, look for a `pre` directory
-        if process_type == "PRE" and PRE_PATH in engine_path:
-            path = Path(str(engine_dir) + "/pre/").absolute()
+        if process_type == "PRE" and str(PRE_PATH) in engine_path:
+            path = PRE_PATH.absolute()
         # Else if post-processing, look for a `post` directory
-        elif process_type == "POST" and POST_PATH in engine_path:
-            path = Path(str(engine_dir) + "/post/").absolute()
+        elif process_type == "POST" and str(POST_PATH) in engine_path:
+            path = POST_PATH.absolute()
 
         # For each file in the engine directories
         self.__executeSubprocess(path)
@@ -429,7 +434,7 @@ class PyMind:
 
     ##==================================================================================================================
     #
-    def __executeSubprocess(self, script_d: str) -> bool:
+    def __executeSubprocess(self, script_d) -> bool:
         """!
         @brief Executes a subprocess from PyMind.
 
@@ -439,6 +444,7 @@ class PyMind:
         """
         import subprocess
 
+        print(f"===========> {script_d}")
         # Execute subprocesses
         for file in script_d.iterdir():
             ## Ensure the item is a python script

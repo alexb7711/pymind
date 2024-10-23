@@ -23,9 +23,8 @@ class TestTagsPage(unittest.TestCase):
     CONF_DIR = ".config/pymind"
 
     if platform.system() == "Windows":
-        CACHE_DIR = "AppData\Local\Programs\pymind\cache"
-        CONF_DIR = "AppData\Local\Programs\pymind"
-        TMP_DIR = f"{Path.home()}\AppData\Local\Temp"
+        CACHE_DIR = Path("AppData\Local\Programs\pymind\cache")
+        CONF_DIR = Path("AppData\Local\Programs\pymind")
 
     CONFIG_FILE = "pymind.yaml"
     CONFIG_PATH = f"{Path.home()}/{CONF_DIR}/{CONFIG_FILE}"
@@ -36,8 +35,8 @@ class TestTagsPage(unittest.TestCase):
     def getPM(self, force: bool = False, dry_run: bool = False):
         pm = pymind.PyMind(
             **{
-                "input": TestTagsPage.INPUT,
-                "output": TestTagsPage.OUTPUT,
+                "input": str(TestTagsPage.INPUT),
+                "output": str(TestTagsPage.OUTPUT),
                 "force": force,
                 "dry_run ": dry_run,
             }
@@ -77,15 +76,15 @@ class TestTagsPage(unittest.TestCase):
 
         # Ensure the tags file is created
         self.assertTrue(
-            # Path(f"{TestTagsPage.INPUT}/tags_page.md").exists(),
             tags_page_md.exists(),
-            "The tags page was not created!",
+            f"The tags page was not created: {tags_page_md}",
         )
 
         # Verify the tags file was converted
+        tags_page_html = Path(f"{TestTagsPage.OUTPUT}/tags_page.html")
         self.assertTrue(
-            Path(f"{TestTagsPage.OUTPUT}/tags_page.html").exists(),
-            "The tags page was not converted!",
+            tags_page_html.exists(),
+            f"The tags HTML file was not created: {tags_page_html}",
         )
 
         # Delete the tags file page
