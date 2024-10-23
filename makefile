@@ -46,6 +46,7 @@ test: setup ## Run unit tests
 .ONESHELL:
 setup: ## Set up the project
 	@$(PYTHON) -m venv $(ENV_DIR)
+	ls -R $(ENV_DIR)
 	@source $(BIN)/activate
 	@pip install --upgrade pip
 	@pip install .
