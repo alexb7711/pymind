@@ -416,17 +416,17 @@ class PyMind:
         # List the directories in the engine directory
         engine_path = [str(x) for x in engine_dir.iterdir() if x.is_dir()]
 
-        ## TODO: Fix
-        PRE_PATH = str(engine_dir) + "/pre"
-        POST_PATH = str(engine_dir) + "/post"
+        ## TODO: Test
+        PRE_PATH = engine_dir / Path("pre")
+        POST_PATH = engine_dir / Path("post")
         path = Path("")
 
         # If pre-processing, look for a `pre` directory
-        if process_type == "PRE" and PRE_PATH in engine_path:
-            path = Path(str(engine_dir) + "/pre/").absolute()
+        if process_type == "PRE" and str(PRE_PATH) in engine_path:
+            path = PRE_PATH.absolute()
         # Else if post-processing, look for a `post` directory
-        elif process_type == "POST" and POST_PATH in engine_path:
-            path = Path(str(engine_dir) + "/post/").absolute()
+        elif process_type == "POST" and str(POST_PATH) in engine_path:
+            path = POST_PATH.absolute()
 
         # For each file in the engine directories
         self.__executeSubprocess(path)
