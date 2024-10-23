@@ -33,16 +33,15 @@ all: setup update run ## Default action
 #
 .ONESHELL:
 test: setup ## Run unit tests
-	source $(BIN)/activate
-	$(PYTHON) -m unittest discover -s $(TST_D) -p "test_*.py"
+	@source "$(BIN)/activate"
+	@$(PYTHON) -m unittest discover -s $(TST_D) -p "test_*.py"
 
 ##==============================================================================
 #
 .ONESHELL:
 setup: ## Set up the project
-	$(PYTHON) -m venv $(ENV_DIR)
-	ls $(BIN)
-	source "$(BIN)/activate"
+	@$(PYTHON) -m venv $(ENV_DIR)
+	@source "$(BIN)/activate"
 	@pip install --upgrade pip
 	@pip install .
 
@@ -50,7 +49,7 @@ setup: ## Set up the project
 #
 .ONESHELL:
 update: ## Update the virtual environment packages
-	@source $(BIN)/activate
+	@source "$(BIN)/activate"
 	@pip install --upgrade pip
 	@pip install .
 
@@ -58,9 +57,9 @@ update: ## Update the virtual environment packages
 #
 .ONESHELL:
 run: ## Execute the program
-	make setup
-	source $(BIN)/activate
-	$(PYTHON) pymind
+	@make setup
+	@source "$(BIN)/activate"
+	@$(PYTHON) pymind
 
 ##==============================================================================
 #
