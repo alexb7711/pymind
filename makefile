@@ -7,15 +7,10 @@
 SRC_D     = pymind
 TST_D     = tests
 ENV_DIR   = .venv
-ifneq ($(wildcard $(ENV_DIR)/bin/.),)
-NOSE_DIR  = $(ENV_DIR)/bin
-else
-NOSE_DIR  = $(ENV_DIR)/Scripts
-endif
 
 ##==============================================================================
 # File Paths
-ifneq ($(shell uname -s), "Windows_NT")
+ifeq ($(shell uname -s), "Windows_NT")
 BIN     = $(ENV_DIR)/Scripts
 else
 BIN     = $(ENV_DIR)/bin
