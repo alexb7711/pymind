@@ -15,10 +15,10 @@ endif
 
 ##==============================================================================
 # File Paths
-ifneq ($(shell uname -s), "Linux")
-BIN     = $(ENV_DIR)/bin
-else
+ifneq ($(shell uname -s), "Windows_NT")
 BIN     = $(ENV_DIR)/Scripts
+else
+BIN     = $(ENV_DIR)/bin
 endif
 PYTHON  = python
 
