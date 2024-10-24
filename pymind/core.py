@@ -142,9 +142,6 @@ class PyMind:
         # Run pre-processing engine
         self.__runEngine("PRE")
 
-        # TODO: Generate home page
-        self.__createHome()
-
         # Convert the files
         self.__convertFiles()
 
@@ -464,14 +461,6 @@ class PyMind:
             self.work_d = Path(PyMind.CACHE_PATH) / Path(self.input).parts[-1]
         else:
             self.work_d = self.input
-        return
-
-    ##==================================================================================================================
-    #
-    def __createHome(self):
-        """!
-        @brief Create the landing page.
-        """
         return
 
 
