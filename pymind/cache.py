@@ -25,17 +25,18 @@ def cacheVar(var: Any, path: Path, name: str) -> bool:
     success: bool = True
 
     try:
-        # Construct the path
-        output_f = path / Path(name)
+        with open(output_f, "wb") as f:
+            # Construct the path
+	    output_f = path / Path(name)
 
-        # Create the directory if it does not exist
-        path.mkdir(parents=True, exist_ok=True)
+	    # Create the directory if it does not exist
+	    path.mkdir(parents=True, exist_ok=True)
 
-        # If the 'pkl' suffix was not provided or too many suffixes were provided
-        output_f = __checkSuffix(output_f)
+	    # If the 'pkl' suffix was not provided or too many suffixes were provided
+	    output_f = __checkSuffix(output_f)
 
-        # Attempt to create the cached variable
-        pickle.dump(var, open(output_f, "wb"))
+	    # Attempt to create the cached variable
+	    pickle.dump(var, f)
 
     except Exception as e:
         # Print exception
@@ -65,14 +66,15 @@ def deCacheVar(path: Path, name: str) -> (bool, Any):
     var: Any = None
 
     try:
-        # Construct the path
-        output_f = path / Path(name)
+        with open(output_f, "rb") as f:
+            # Construct the path
+            output_f = path / Path(name)
 
-        # If the 'pkl' suffix was not provided or too many suffixes were provided
-        output_f = __checkSuffix(output_f)
+            # If the 'pkl' suffix was not provided or too many suffixes were provided
+            output_f = __checkSuffix(output_f)
 
-        # Attempt to create the cached variable
-        var = pickle.load(open(output_f, "rb"))
+            # Attempt to create the cached variable
+            var = pickle.load(f)
 
     except Exception as e:
         # Print exception
