@@ -22,12 +22,12 @@ def cacheVar(var: Any, path: Path, name: str) -> bool:
 
     @return True is successful, False otherwise
     """
+    # Variables
     success: bool = True
+    output_f = path / Path(name)
 
     try:
         with open(output_f, "wb") as f:
-            # Construct the path
-            output_f = path / Path(name)
 
             # Create the directory if it does not exist
             path.mkdir(parents=True, exist_ok=True)
@@ -64,11 +64,10 @@ def deCacheVar(path: Path, name: str) -> (bool, Any):
     # Variables
     success: bool = True
     var: Any = None
+    output_f = path / Path(name)
 
     try:
         with open(output_f, "rb") as f:
-            # Construct the path
-            output_f = path / Path(name)
 
             # If the 'pkl' suffix was not provided or too many suffixes were provided
             output_f = __checkSuffix(output_f)
