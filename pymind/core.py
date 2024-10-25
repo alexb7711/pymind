@@ -489,7 +489,7 @@ class PyMind:
         """
         # Variables
         var = {"files": self.files_found, "build_files": self.build_files, "tags": self.tags}
-        cache_dir, _ = self.__createCachePaths()
+        cache_dir, _ = PyMind.CACHE_PATH / Path("variables")
 
         # Cache the variable
         cacheVar(var, cache_dir, self.project_name)
