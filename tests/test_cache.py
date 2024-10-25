@@ -77,7 +77,7 @@ class TestCacheModule(unittest.TestCase):
         # Ensure the tags file is created
         self.assertTrue(
             cache_var.exists(),
-            f"The tags page was not created: {cache_var}",
+            f"The cached variable was not created: {cache_var}",
         )
 
         # Deconstruct the PyMind Object
@@ -86,7 +86,7 @@ class TestCacheModule(unittest.TestCase):
         # Delete the tags file page
         self.assertFalse(
             cache_var.exists(),
-            f"The tags page was not created: {cache_var}",
+            f"The cached variable was not deleted: {cache_var}",
         )
 
         return

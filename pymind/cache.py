@@ -36,7 +36,7 @@ def cacheVar(var: Any, path: Path, name: str) -> bool:
 
     except Exception as e:
         # Print exception
-        print(f"UNABLE TO CACHE {name} AT THE LOCATION {path}")
+        print(f"UNABLE TO CACHE {name} AT THE LOCATION {output_f}")
         print("EXCEPTION: ", e)
 
         # Indicate a failure
@@ -73,7 +73,7 @@ def deCacheVar(path: Path, name: str) -> (bool, Any):
 
     except Exception as e:
         # Print exception
-        print(f"UNABLE TO READ {name} FROM THE LOCATION {path}")
+        print(f"UNABLE TO READ {name} FROM THE LOCATION {output_f}")
         print("EXCEPTION: ", e)
 
         # Indicate a failure
@@ -106,7 +106,7 @@ def deleteCacheVar(path: Path, name, str):
 
     except Exception as e:
         # Print exception
-        print(f"UNABLE TO REMOVE {name} FROM THE LOCATION {path}")
+        print(f"UNABLE TO REMOVE {name} FROM THE LOCATION {output_f}")
         print("EXCEPTION: ", e)
 
     return success
@@ -123,6 +123,7 @@ def __checkSuffix(p: Path) -> Path:
     """
     # If the 'pkl' suffix was not provided or too many suffixes were provided
     if not all(".pkl" == x for x in p.suffixes) or len(p.suffixes) > 1:
+        print("==========> HERE")
         ## Append the correct suffix
         p = p.with_suffix(".pkl")
 

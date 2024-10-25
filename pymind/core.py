@@ -59,7 +59,7 @@ class PyMind:
 
         # Member variables
         self.files_found = []
-        self.project_name = ""
+        self.project_name: str = ""
 
         # Read in the parameters
         self.input = kwargs.get("input", None)
