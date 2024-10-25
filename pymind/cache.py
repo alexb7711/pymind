@@ -57,7 +57,9 @@ def deCacheVar(path: Path, name: str) -> (bool, Any):
 
     @return True is successful, False otherwise
     """
+    # Variables
     success: bool = True
+    var: Any = None
 
     try:
         # Construct the path
@@ -67,7 +69,7 @@ def deCacheVar(path: Path, name: str) -> (bool, Any):
         output_f = __checkSuffix(output_f)
 
         # Attempt to create the cached variable
-        pickle.load(open(output_f, "rb"))
+        var = pickle.load(open(output_f, "rb"))
 
     except Exception as e:
         # Print exception
@@ -77,7 +79,37 @@ def deCacheVar(path: Path, name: str) -> (bool, Any):
         # Indicate a failure
         success = False
 
-    return (success, var)
+
+        return (success, var)
+##======================================================================================================================
+#
+def deleteCacheVar(path: Path, name, str):
+    """!
+    @brief Delete the cached variable.
+
+    @param p Path to the cache variable.
+
+    @return Path to the cache variable with the correct 'pkl' suffix.
+    """
+    # Variables
+    success = True
+
+    try:
+        # Construct the path
+        cached_f = path / Path(name)
+
+        # If the 'pkl' suffix was not provided or too many suffixes were provided
+        cached_f = __checkSuffix(output_f)
+
+        # Delete the cached variable
+        cached_f.unlink()
+
+    except Exception as e:
+        # Print exception
+        print(f"UNABLE TO REMOVE {name} FROM THE LOCATION {path}")
+        print("EXCEPTION: ", e)
+
+    return success
 
 ##======================================================================================================================
 #
