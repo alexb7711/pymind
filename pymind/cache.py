@@ -105,7 +105,7 @@ def deleteCacheVar(path: Path, name: str) -> bool:
         cached_f = __checkSuffix(cached_f)
 
         # Delete the cached variable
-        cached_f.unlink()
+        cached_f.unlink(missing_ok=True)
 
     except Exception as e:
         # Print exception
