@@ -444,7 +444,6 @@ class PyMind:
         """
         import subprocess
 
-        print(f"===========> {script_d}")
         # Execute subprocesses
         for file in script_d.iterdir():
             ## Ensure the item is a python script
