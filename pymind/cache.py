@@ -102,14 +102,14 @@ def deleteCacheVar(path: Path, name: str) -> bool:
         cached_f = path / Path(name)
 
         # If the 'pkl' suffix was not provided or too many suffixes were provided
-        cached_f = __checkSuffix(output_f)
+        cached_f = __checkSuffix(cached_f)
 
         # Delete the cached variable
         cached_f.unlink()
 
     except Exception as e:
         # Print exception
-        print(f"UNABLE TO REMOVE {name} FROM THE LOCATION {output_f}")
+        print(f"UNABLE TO REMOVE {name} FROM THE LOCATION {cached_f}")
         print("EXCEPTION: ", e)
 
     return success
