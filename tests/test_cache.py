@@ -81,10 +81,7 @@ class TestCacheModule(unittest.TestCase):
         )
 
         # Deconstruct the PyMind Object
-        pm.run()
-        pm.run()
-        pm.run()
-        # del pm
+        del pm
 
         # Delete the tags file page
         self.assertFalse(
