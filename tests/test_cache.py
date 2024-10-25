@@ -35,8 +35,8 @@ class TestCacheModule(unittest.TestCase):
     def getPM(self, force: bool = False, dry_run: bool = False):
         pm = pymind.PyMind(
             **{
-                "input": str(TestTagsPage.INPUT),
-                "output": str(TestTagsPage.OUTPUT),
+                "input": str(TestCacheModule.INPUT),
+                "output": str(TestCacheModule.OUTPUT),
                 "force": force,
                 "dry_run ": dry_run,
             }
@@ -54,14 +54,14 @@ class TestCacheModule(unittest.TestCase):
         @return Returns tuple of strings (cache_dir, cache_file)
         """
 
-        cache_dir = Path(f"{TestTagsPage.CACHE_PATH}/")
+        cache_dir = Path(f"{TestCacheModule.CACHE_PATH}/")
 
         return cache_dir
 
     ##==================================================================================================================
     #
     def deleteTagsFile(self):
-        Path(f"{TestTagsPage.INPUT}/tags_page.md").unlink(missing_ok=True)
+        Path(f"{TestCacheModule.INPUT}/tags_page.md").unlink(missing_ok=True)
         Path(f"{self.createCachePaths()}/example/tags_page.md").unlink(missing_ok=True)
 
     ##==================================================================================================================
