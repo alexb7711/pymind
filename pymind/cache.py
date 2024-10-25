@@ -121,10 +121,4 @@ def __checkSuffix(p: Path) -> Path:
 
     @return Path to the cache variable with the correct 'pkl' suffix.
     """
-    # If the 'pkl' suffix was not provided or too many suffixes were provided
-    if not all(".pkl" == x for x in p.suffixes) or len(p.suffixes) > 1:
-        print("==========> HERE")
-        ## Append the correct suffix
-        p = p.with_suffix(".pkl")
-
-    return p
+    return p.with_suffix(".pkl")
