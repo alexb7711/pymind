@@ -25,16 +25,15 @@ def cacheVar(var: Any, path: Path, name: str) -> bool:
     success: bool = True
 
     try:
+        # Construct the path
+        output_f = path / Path(name)
+
+        # If the 'pkl' suffix was not provided or too many suffixes were provided
+        output_f = __checkSuffix(output_f)
+
         # Attempt to create the cached variable
-        with open(var, "wb") as f:
-            output_f = path / Path(name)
+        pickle.dump(var, open(output_f, "wb"))
 
-            ## If a suffix was not added
-            if not output_f.suffixes:
-                ### Add the suffix
-                output_f = output_f + ".pkl"
-
-            pickle.dump(var, f)
     except Exception as e:
         # Print exception
         print(f"UNABLE TO CACHE {name} AT THE LOCATION {path}")
@@ -59,19 +58,17 @@ def deCacheVar(path: Path, name: str) -> (bool, Any):
     @return True is successful, False otherwise
     """
     success: bool = True
-    var: Any = None
 
     try:
+        # Construct the path
+        output_f = path / Path(name)
+
+        # If the 'pkl' suffix was not provided or too many suffixes were provided
+        output_f = __checkSuffix(output_f)
+
         # Attempt to create the cached variable
-        with open(var, "rb") as f:
-            output_f = path / Path(name)
+        pickle.load(open(output_f, "rb"))
 
-            ## If a suffix was not added
-            if not output_f.suffixes:
-                ### Add the suffix
-                output_f = output_f + ".pkl"
-
-            pickle.load(dsuccessict, f)
     except Exception as e:
         # Print exception
         print(f"UNABLE TO READ {name} FROM THE LOCATION {path}")
@@ -81,3 +78,20 @@ def deCacheVar(path: Path, name: str) -> (bool, Any):
         success = False
 
     return (success, var)
+
+##======================================================================================================================
+#
+def __checkSuffix(p: Path) -> Path:
+    """!
+    @brief Check the suffix of the file provided, and add the correct 'pkl' suffix if necessary.
+
+    @param p Path to the cache variable.
+
+    @return Path to the cache variable with the correct 'pkl' suffix.
+    """
+    # If the 'pkl' suffix was not provided or too many suffixes were provided
+    if not all(".pkl" == x for x in p.suffixes) or len(p.suffixes) > 1:
+        ## Append the correct suffix
+        p = p.with_suffix(".pkl")
+
+    return p
