@@ -86,7 +86,7 @@ def deCacheVar(path: Path, name: str) -> (bool, Any):
         return (success, var)
 ##======================================================================================================================
 #
-def deleteCacheVar(path: Path, name, str):
+def deleteCacheVar(path: Path, name: str) -> bool:
     """!
     @brief Delete the cached variable.
 
