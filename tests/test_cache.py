@@ -72,7 +72,7 @@ class TestCacheModule(unittest.TestCase):
 
         # Get the cache path
         cache_d = self.createCachePaths()
-        cache_var = cache_d / Path("example/example.pkl")
+        cache_var = cache_d / Path("variables/example.pkl")
 
         # Ensure the tags file is created
         self.assertTrue(
