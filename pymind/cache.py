@@ -48,7 +48,7 @@ def cacheVar(var: Any, path: Path, name: str) -> bool:
 
 ##======================================================================================================================
 #
-def deCacheVar(var: Any, path: Path, name: str) -> (bool, Any):
+def deCacheVar(path: Path, name: str) -> (bool, Any):
     """!
     @brief The cache variable function caches `var` in `path` by pickling the data.
 

@@ -6,6 +6,7 @@ import markdown
 import yaml
 from pathlib import Path
 from typing import Any, TypedDict, List
+from pymind.cache import cacheVar, deCacheVar
 
 
 __all__ = ["PyMind", "pymind"]
@@ -82,6 +83,20 @@ class PyMind:
 
     ##==================================================================================================================
     #
+    def __del__(self):
+        """!
+        @brief PyMind deconstructor.
+        """
+        # Delete cached variables
+        cache_dir, _ = self.__createCachePaths()
+
+        # Cache the variable
+        deCacheVar(cache_dir, self.project_name)
+
+        return
+
+    ##==================================================================================================================
+    #
     def run(self):
         """!
         @brief Execute PyMind.
@@ -139,11 +154,11 @@ class PyMind:
         # Get the list of tags from the files
         self.tags = self.__getTags()
 
+        # Cache variables
+        self.__cacheVar()
+
         # Run pre-processing engine
         self.__runEngine("PRE")
-
-        # TODO: Generate home page
-        # self.__createHome()
 
         # Convert the files
         self.__convertFiles()
@@ -466,6 +481,20 @@ class PyMind:
             self.work_d = self.input
         return
 
+    ##==================================================================================================================
+    #
+    def __cacheVar(self):
+        """!
+        @brief Cache variables
+        """
+        # Variables
+        var = {"files": self.files_found, "build_files": self.build_files, "tags": self.tags}
+        cache_dir, _ = self.__createCachePaths()
+
+        # Cache the variable
+        cacheVar(var, cache_dir, self.project_name)
+        return
+
 
 ########################################################################################################################
 # EXPORTED FUNCTIONS
@@ -480,6 +509,7 @@ def pymind(**kwargs: Any):
 
     This is a shortcut function which initializes an instance of `PyMind` and calls the `generate_output` function.
 
+    TODO: UPDATE
     @param kwargs['input'] Path to directory to read from
     @param kwargs['output'] Path to directory to output to
     @param kwargs['force'] Regenerate all files
