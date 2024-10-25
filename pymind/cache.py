@@ -29,12 +29,11 @@ def cacheVar(var: Any, path: Path, name: str) -> bool:
     # If the 'pkl' suffix was not provided or too many suffixes were provided
     output_f = __checkSuffix(output_f)
 
+    # Create the directory if it does not exist
+    path.mkdir(parents=True, exist_ok=True)
+
     try:
         with open(output_f, "wb") as f:
-
-            # Create the directory if it does not exist
-            path.mkdir(parents=True, exist_ok=True)
-
             # Attempt to create the cached variable
             pickle.dump(var, f)
 
