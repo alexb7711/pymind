@@ -91,6 +91,7 @@ class PyMind:
         cache_dir = PyMind.CACHE_PATH / Path("variables")
 
         # Cache the variable
+        print(f"============> {self.project_name}")
         deleteCacheVar(cache_dir, str(self.project_name))
 
         return
