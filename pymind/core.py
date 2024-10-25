@@ -91,7 +91,7 @@ class PyMind:
         cache_dir = PyMind.CACHE_PATH / Path("variables")
 
         # Cache the variable
-        # deleteCacheVar(cache_dir, self.project_name)
+        deleteCacheVar(cache_dir, self.project_name)
 
         return
 
