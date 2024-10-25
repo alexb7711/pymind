@@ -26,7 +26,7 @@ def cacheVar(var: Any, path: Path, name: str) -> bool:
 
     try:
         # Construct the path
-        output_f = path / Path(name)
+        output_f = path / Path("variables") / Path(name)
 
         # Create the directory if it does not exist
         path.mkdir(parents=True, exist_ok=True)
