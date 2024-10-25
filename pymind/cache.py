@@ -34,8 +34,6 @@ def cacheVar(var: Any, path: Path, name: str) -> bool:
         # If the 'pkl' suffix was not provided or too many suffixes were provided
         output_f = __checkSuffix(output_f)
 
-        print(f"OUTPUT====> {output_f}")
-
         # Attempt to create the cached variable
         pickle.dump(var, open(output_f, "wb"))
 
