@@ -88,7 +88,7 @@ class PyMind:
         @brief PyMind deconstructor.
         """
         # Delete cached variables
-        cache_dir, _ = self.__createCachePaths()
+        cache_dir = PyMind.CACHE_PATH / Path("variables")
 
         # Cache the variable
         deleteCacheVar(cache_dir, self.project_name)
@@ -181,6 +181,7 @@ class PyMind:
 
         import shutil
 
+        # TODO: Cleanup
         cache_dir, _ = self.__createCachePaths()
         out_d = str(cache_dir) + "/" + self.project_name + "/"
         shutil.copytree(self.input, out_d, dirs_exist_ok=True)
@@ -236,9 +237,11 @@ class PyMind:
 
     ##==================================================================================================================
     #
-    def __getProjectName(self):
+    def __getProjectName(self) -> str:
         """!
         @brief Return the project name.
+
+        @return Project name a string
         """
 
         # Get the project name
@@ -246,7 +249,7 @@ class PyMind:
         project_name = project_name.absolute()
         project_name = project_name.parts[-1]
 
-        return project_name
+        return str(project_name)
 
     ##==================================================================================================================
     #
