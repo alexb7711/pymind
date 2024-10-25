@@ -54,7 +54,7 @@ class TestCacheModule(unittest.TestCase):
         @return Returns tuple of strings (cache_dir, cache_file)
         """
 
-        cache_dir = Path(f"{TestCacheModule.CACHE_PATH}/")
+        cache_dir = Path(f"{TestCacheModule.CACHE_PATH}")
 
         return cache_dir
 
@@ -72,7 +72,7 @@ class TestCacheModule(unittest.TestCase):
 
         # Get the cache path
         cache_d = self.createCachePaths()
-        cache_var = cache_d / Path("variables/example.pkl")
+        cache_var = cache_d / Path("variables") / Path("example.pkl")
 
         # Ensure the tags file is created
         self.assertTrue(
