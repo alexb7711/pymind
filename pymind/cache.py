@@ -39,6 +39,10 @@ def cacheVar(var: Any, path: Path, name: str) -> bool:
             # Attempt to create the cached variable
             pickle.dump(var, f, pickle.DEFAULT_PROTOCOL)
 
+            # Verify creation
+            if not output_f.exists():
+                raise Exception(f"ERROR: PICKLING DID NOT CREATE THE FILE: {f}")
+
     except Exception as e:
         # Print exception
         print(f"UNABLE TO CACHE {name} AT THE LOCATION {output_f}")
