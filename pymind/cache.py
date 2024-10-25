@@ -34,6 +34,8 @@ def cacheVar(var: Any, path: Path, name: str) -> bool:
 
     try:
         with open(output_f, "wb") as f:
+
+            print(f"Caching variables to {output_f}...")
             # Attempt to create the cached variable
             pickle.dump(var, f)
 
