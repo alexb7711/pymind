@@ -89,19 +89,19 @@ def main(**kwargs) -> bool:
         return False
 
     # Create an instance of PyMind
-    pm = pymind.PyMind(**options)
-    pm.run()
+    # pm = pymind.PyMind(**options)
+    # pm.run()
 
     # Retrieve the list of files and tags
-    tags = pm.tags
+    # tags = pm.tags
 
     # Write the string to disk
-    __createTagsPage(options["input"], tags)
+    # __createTagsPage(options["input"], tags)
 
     # Re-run PyMind without the `force` and `dry_run` flags
-    pm.force_build = False
-    pm.dry_run = False
-    pm.run()
+    # pm.force_build = False
+    # pm.dry_run = False
+    # pm.run()
 
     return True
 
