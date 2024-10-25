@@ -6,7 +6,7 @@ import markdown
 import yaml
 from pathlib import Path
 from typing import Any, TypedDict, List
-from pymind.cache import cacheVar, deCacheVar
+from pymind.cache import cacheVar, deleteCacheVar
 
 
 __all__ = ["PyMind", "pymind"]
