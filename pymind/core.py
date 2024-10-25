@@ -243,16 +243,16 @@ class PyMind:
 
         @return Project name a string
         """
-        from datetime import datetime
+        # from datetime import datetime
 
         # Set up datetime
-        dt = datetime.now()
+        # dt = datetime.now()
 
         # Get the project name
         project_name = Path(self.input)
         project_name = project_name.absolute()
         project_name = project_name.parts[-1]
-        project_name = str(project_name) + dt.strftime("%d-%m-%m-%H-%M-%S")
+        # project_name = str(project_name) + dt.strftime("%d-%m-%m-%H-%M-%S")
 
         return project_name
 
