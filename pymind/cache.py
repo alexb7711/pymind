@@ -37,7 +37,7 @@ def cacheVar(var: Any, path: Path, name: str) -> bool:
 
             print(f"Caching variables to {output_f}...")
             # Attempt to create the cached variable
-            pickle.dump(var, f)
+            pickle.dump(var, f, pickle.DEFAULT_PROTOCOL)
 
     except Exception as e:
         # Print exception
