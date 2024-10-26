@@ -16,8 +16,7 @@ This module generates the file that groups and links to all of the tags found. T
 import optparse
 from typing import TypedDict
 from pathlib import Path
-
-from pymind.cache import deCacheVar
+import pymind
 
 
 ##======================================================================================================================
@@ -112,7 +111,7 @@ def main(**kwargs) -> bool:
         return False
 
     # Retrieve the list of files and tags
-    success, var = deCacheVar(options["var_p"], options["name"])
+    success, var = pymind.cache.deCacheVar(options["var_p"], options["name"])
 
     # Ensure the cached variables were loaded
     if success:
