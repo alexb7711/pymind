@@ -5,6 +5,7 @@ import unittest
 from pathlib import Path
 
 import pymind
+from pymind.cache import deCacheVar
 
 ########################################################################################################################
 
@@ -89,4 +90,37 @@ class TestCacheModule(unittest.TestCase):
             f"The cached variable was not deleted: {cache_var}",
         )
 
+        return
+
+    ##==================================================================================================================
+    #
+    def test_cache_variable_content(self):
+        pm = self.getPM(force=True)
+        pm.run()
+
+        # Get the cache path
+        cache_d = self.createCachePaths()
+        cache_d = cache_d / Path("variables")
+
+        # Extract the cached variable
+        success, var = deCacheVar(cache_d, "example")
+
+        # Ensure the de-caching was successful
+        self.assertTrue(success, "The pickled variable was not loaded!")
+
+        # Ensure the tags variable is created
+        self.assertTrue(
+            len(var["tags"]) > 0,
+            f"The tags variable does not exist!",
+        )
+        # Ensure the found_files variable is created
+        self.assertTrue(
+            len(var["files"]) > 0,
+            f"The files variable does not exist!",
+        )
+        # Ensure the build_files variable is created
+        self.assertTrue(
+            len(var["build_files"]) > 0,
+            f"The build files variable does not exist!",
+        )
         return

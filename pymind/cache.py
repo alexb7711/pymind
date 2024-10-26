@@ -58,7 +58,6 @@ def deCacheVar(path: Path, name: str) -> (bool, Any):
     """!
     @brief The cache variable function caches `var` in `path` by pickling the data.
 
-    @param var Variable to be pickled
     @param path Directory to cache the variable in
     @param name Name of the file to load
 
