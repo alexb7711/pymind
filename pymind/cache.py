@@ -34,8 +34,6 @@ def cacheVar(var: Any, path: Path, name: str) -> bool:
 
     try:
         with open(output_f, "wb") as f:
-
-            print(f"Caching variables to {output_f}...")
             # Attempt to create the cached variable
             pickle.dump(var, f, pickle.DEFAULT_PROTOCOL)
 
@@ -64,16 +62,19 @@ def deCacheVar(path: Path, name: str) -> (bool, Any):
     @param path Directory to cache the variable in
     @param name Name of the file to load
 
-    @return True is successful, False otherwise
+    @return success True is successful, False otherwise
+    @return var The loaded cached pickle file
     """
     # Variables
     success: bool = True
     var: Any = None
     output_f = path / Path(name)
 
+    # If the 'pkl' suffix was not provided or too many suffixes were provided
+    output_f = __checkSuffix(output_f)
+
     try:
         with open(output_f, "rb") as f:
-
             # If the 'pkl' suffix was not provided or too many suffixes were provided
             output_f = __checkSuffix(output_f)
 
@@ -88,8 +89,9 @@ def deCacheVar(path: Path, name: str) -> (bool, Any):
         # Indicate a failure
         success = False
 
+    return (success, var)
 
-        return (success, var)
+
 ##======================================================================================================================
 #
 def deleteCacheVar(path: Path, name: str) -> bool:
@@ -119,6 +121,7 @@ def deleteCacheVar(path: Path, name: str) -> bool:
         print("EXCEPTION: ", e)
 
     return success
+
 
 ##======================================================================================================================
 #

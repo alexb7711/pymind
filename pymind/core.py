@@ -9,7 +9,7 @@ from typing import Any, TypedDict, List
 from pymind.cache import cacheVar, deleteCacheVar
 
 
-__all__ = ["PyMind", "pymind"]
+__all__ = ["PyMind", "pymind", "cache"]
 
 logger = logging.getLogger("PYMIND")
 
@@ -467,11 +467,27 @@ class PyMind:
         """
         import subprocess
 
+        # Convert cache variable directory path to a string
+        cache_p = str(PyMind.CACHE_PATH / Path("variables"))
+
         # Execute subprocesses
         for file in script_d.iterdir():
             ## Ensure the item is a python script
             if file.is_file() and file.suffix == ".py":
-                subprocess.run(["python", file, "-i", self.work_d, "-o", self.output])
+                subprocess.run(
+                    [
+                        "python",
+                        file,
+                        "-i",
+                        self.work_d,
+                        "-o",
+                        self.output,
+                        "-n",
+                        self.project_name,
+                        "-v",
+                        cache_p,
+                    ]
+                )
 
         return True
 
@@ -496,7 +512,11 @@ class PyMind:
         @brief Cache variables
         """
         # Variables
-        var = {"files": self.files_found, "build_files": self.build_files, "tags": self.tags}
+        var = {
+            "files": self.files_found,
+            "build_files": self.build_files,
+            "tags": self.tags,
+        }
         cache_dir = PyMind.CACHE_PATH / Path("variables")
 
         # Cache the variable
