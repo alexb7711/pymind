@@ -111,16 +111,16 @@ class TestCacheModule(unittest.TestCase):
         # Ensure the tags variable is created
         self.assertTrue(
             len(var["tags"]) > 0,
-            f"The tags variable does not exist!",
+            f"The tags variable does not exist!\n{var["tags"]}",
         )
         # Ensure the found_files variable is created
         self.assertTrue(
             len(var["files"]) > 0,
-            f"The files variable does not exist!",
+            f"The files variable does not exist!\n{var["files"]}",
         )
         # Ensure the build_files variable is created
         self.assertTrue(
             len(var["build_files"]) > 0,
-            f"The build files variable does not exist!",
+            f"The build files variable does not exist!\n{var["files"]}",
         )
         return
