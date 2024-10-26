@@ -517,6 +517,7 @@ class PyMind:
             "build_files": self.build_files,
             "tags": self.tags,
         }
+        print("=======>", var)
         cache_dir = PyMind.CACHE_PATH / Path("variables")
 
         # Cache the variable
