@@ -37,8 +37,8 @@ class TestCacheModule(unittest.TestCase):
     def getPM(self, force: bool = False, dry_run: bool = False):
         pm = pymind.PyMind(
             **{
-                "input": str(TestCacheModule.INPUT),
-                "output": str(TestCacheModule.OUTPUT),
+                "input": TestCacheModule.INPUT,
+                "output": TestCacheModule.OUTPUT,
                 "force": force,
                 "dry_run ": dry_run,
             }

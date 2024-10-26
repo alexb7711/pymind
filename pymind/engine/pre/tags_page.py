@@ -14,10 +14,10 @@ This module generates the file that groups and links to all of the tags found. T
 """
 
 import optparse
-from typing import TypedDict
 from pathlib import Path
-import pymind
+from typing import TypedDict
 
+import pymind
 
 ##======================================================================================================================
 # CONSTANTS
