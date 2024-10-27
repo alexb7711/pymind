@@ -254,7 +254,7 @@ class PyMind:
         """!
         @brief Return the project name.
 
-        @return Project name a string
+        @return Project name as a string.
         """
         # from datetime import datetime
 
