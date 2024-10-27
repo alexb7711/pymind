@@ -534,8 +534,6 @@ class PyMind:
     def __cacheVar(self):
         """!
         @brief Cache variables
-
-        TODO: CLEANUP - Create caching utility file
         """
         # Variables
         var = {
