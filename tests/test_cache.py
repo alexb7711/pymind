@@ -6,8 +6,6 @@ from pathlib import Path
 
 import pymind
 
-# from pymind.cache import deCacheVar
-
 ########################################################################################################################
 
 
@@ -104,10 +102,7 @@ class TestCacheModule(unittest.TestCase):
         cache_d = cache_d / Path("variables")
 
         # Extract the cached variable
-        success, var = pymind.cache.deCacheVar(cache_d, "example")
-
-        # Ensure the de-caching was successful
-        self.assertTrue(success, "The pickled variable was not loaded!")
+        var = pymind.cache.deCacheVar(cache_d, "example")
 
         # Ensure the tags variable is created
         self.assertTrue(

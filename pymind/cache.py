@@ -12,18 +12,15 @@ from typing import Any
 
 ##======================================================================================================================
 #
-def cacheVar(var: Any, path: Path, name: str) -> bool:
+def cacheVar(var: Any, path: Path, name: str):
     """!
     @brief The cache variable function caches `var` in `path` by pickling the data.
 
     @param var Variable to be pickled
     @param path Directory to cache the variable in
     @param name Name of the file
-
-    @return True is successful, False otherwise
     """
     # Variables
-    success: bool = True
     output_f = path / Path(name)
 
     # If the 'pkl' suffix was not provided or too many suffixes were provided
@@ -44,28 +41,23 @@ def cacheVar(var: Any, path: Path, name: str) -> bool:
     except Exception as e:
         # Print exception
         print(f"UNABLE TO CACHE {name} AT THE LOCATION {output_f}")
-        print("EXCEPTION: ", e)
+        raise e
 
-        # Indicate a failure
-        success = False
-
-    return success
+    return
 
 
 ##======================================================================================================================
 #
-def deCacheVar(path: Path, name: str) -> (bool, Any):
+def deCacheVar(path: Path, name: str) -> Any:
     """!
     @brief The cache variable function caches `var` in `path` by pickling the data.
 
     @param path Directory to cache the variable in
     @param name Name of the file to load
 
-    @return success True is successful, False otherwise
     @return var The loaded cached pickle file
     """
     # Variables
-    success: bool = True
     var: Any = None
     output_f = path / Path(name)
 
@@ -83,27 +75,19 @@ def deCacheVar(path: Path, name: str) -> (bool, Any):
     except Exception as e:
         # Print exception
         print(f"UNABLE TO READ {name} FROM THE LOCATION {output_f}")
-        print("EXCEPTION: ", e)
+        raise e
 
-        # Indicate a failure
-        success = False
-
-    return (success, var)
+    return var
 
 
 ##======================================================================================================================
 #
-def deleteCacheVar(path: Path, name: str) -> bool:
+def deleteCacheVar(path: Path, name: str):
     """!
     @brief Delete the cached variable.
 
     @param p Path to the cache variable.
-
-    @return Path to the cache variable with the correct 'pkl' suffix.
     """
-    # Variables
-    success = True
-
     try:
         # Construct the path
         cached_f = path / Path(name)
@@ -117,9 +101,9 @@ def deleteCacheVar(path: Path, name: str) -> bool:
     except Exception as e:
         # Print exception
         print(f"UNABLE TO REMOVE {name} FROM THE LOCATION {cached_f}")
-        print("EXCEPTION: ", e)
+        raise e
 
-    return success
+    return
 
 
 ##======================================================================================================================

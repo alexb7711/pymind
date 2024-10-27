@@ -111,7 +111,7 @@ def main(**kwargs) -> bool:
         return False
 
     # Retrieve the list of files and tags
-    success, var = pymind.cache.deCacheVar(options["var_p"], options["name"])
+    var = pymind.cache.deCacheVar(options["var_p"], options["name"])
 
     # Ensure the cached variables were loaded
     if success:
