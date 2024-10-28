@@ -162,9 +162,7 @@ class PyMind:
 
         ##--------------------------------------------------------------------------------------------------------------
         # POST-PROCESS
-
-        # Run post-processing engine
-        self.__runEngine("POST")
+        self.__postProcess()
 
         return
 
@@ -188,6 +186,17 @@ class PyMind:
 
         # Run pre-processing engine
         self.__runEngine("PRE")
+
+        return
+
+    ##==================================================================================================================
+    #
+    def __postProcess(self):
+        """!
+        @brief Run the post-processor.
+        """
+        # Run post-processing engine
+        self.__runEngine("POST")
 
         return
 
