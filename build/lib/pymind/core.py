@@ -202,8 +202,6 @@ class PyMind:
     def __copyInputDirectory(self):
         """!
         @brief Copy `input` directory into `cache` directory
-
-        TODO: CLEANUP - Move this to a utility file
         """
         import shutil
 
