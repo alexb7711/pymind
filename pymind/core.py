@@ -6,9 +6,10 @@ import markdown
 import yaml
 from pathlib import Path
 from typing import Any, TypedDict, List
+from pymind.cache import cacheVar, deleteCacheVar
 
 
-__all__ = ["PyMind", "pymind"]
+__all__ = ["PyMind", "pymind", "cache"]
 
 logger = logging.getLogger("PYMIND")
 
@@ -32,8 +33,8 @@ class PyMind:
     CORE_ENGINE_PATH = Path("pymind/engine/")
 
     # Select cache directory location based on the operating system
-    CACHE_DIR = ".cache/pymind"
-    CONF_DIR = "config/pymind"
+    CACHE_DIR = Path(".cache/pymind")
+    CONF_DIR = Path("config/pymind")
 
     if platform.system() == "Windows":
         CACHE_DIR = Path("AppData\Local\Programs\pymind\cache")
@@ -58,7 +59,7 @@ class PyMind:
 
         # Member variables
         self.files_found = []
-        self.project_name = ""
+        self.project_name: str = ""
 
         # Read in the parameters
         self.input = kwargs.get("input", None)
@@ -75,8 +76,35 @@ class PyMind:
             self.config_file = Path(self.config_file)
             self.__setConfig()
 
+        # Create input and output Path variables
+        self.input = Path(self.input).absolute()
+        self.output = Path(self.output).absolute()
+
         # Set the working directory
         self.__setWorkingDirectory()
+
+        return
+
+    ##==================================================================================================================
+    #
+    def __del__(self):
+        """!
+        @brief PyMind deconstructor.
+
+        The deconstructor removes any cached files that should not be persistent between runs.
+        """
+        # Delete cached variables
+        cache_dir = PyMind.CACHE_PATH / Path("variables")
+
+        # Remove the cached variable
+        try:
+            deleteCacheVar(cache_dir, self.project_name)
+
+        except Exception as e:
+            print(e)
+
+        # Remove the copied working tree
+        self.__recursive_delete(Path(self.work_d))
 
         return
 
@@ -90,9 +118,6 @@ class PyMind:
         if self.input == None:
             print("WARNING: AN INPUT DIRECTORY WAS NEVER PROVIDED!!!\nABORTING!!!")
             return
-
-        self.input = Path(self.input)
-        self.output = Path(self.output)
 
         # Create the website
         self.__createBrain()
@@ -130,23 +155,34 @@ class PyMind:
         """!
         @brief Entry function to start creating the PyMind second brain.
         """
-        # Get the list of files to convert
-        self.build_files = self.__getFilesList()
+
+        ##--------------------------------------------------------------------------------------------------------------
+        # PRE-PROCESS
+        # TODO: CLEANUP - Could move this to its own function
 
         # Create a copy of the input directory into a temporary directory
         self.__copyInputDirectory()
 
+        # Get the list of files to convert
+        self.build_files = self.__getFilesList()
+
         # Get the list of tags from the files
         self.tags = self.__getTags()
+
+        # Cache variables
+        self.__cacheVar()
 
         # Run pre-processing engine
         self.__runEngine("PRE")
 
-        # TODO: Generate home page
-        # self.__createHome()
+        ##--------------------------------------------------------------------------------------------------------------
+        # EXECUTE CONVERSION PROCESS
 
         # Convert the files
         self.__convertFiles()
+
+        ##--------------------------------------------------------------------------------------------------------------
+        # POST-PROCESS
 
         # Run post-processing engine
         self.__runEngine("POST")
@@ -158,14 +194,15 @@ class PyMind:
     def __copyInputDirectory(self):
         """!
         @brief Copy `input` directory into `cache` directory
+
+        TODO: CLEANUP - Move this to a utility file
         """
-
-        # If the engine is not enabled, there is no need to create the working directory
-        if not self.engine:
-            return
-
         import shutil
 
+        # Extract the project name based on the base directory name
+        self.project_name = self.__getProjectName()
+
+        # TODO: CLEANUP - Migrate into Path objects
         cache_dir, _ = self.__createCachePaths()
         out_d = str(cache_dir) + "/" + self.project_name + "/"
         shutil.copytree(self.input, out_d, dirs_exist_ok=True)
@@ -180,11 +217,8 @@ class PyMind:
         # Create database of files
         self.files_found = self.__findFiles()
 
-        # Extract the project name based on the base directory name
-        self.project_name = self.__getProjectName()
-
         # If `force_build` not active
-        build_files = {}
+        build_files = []
         if self.force_build:
             ## Use the found files as the build list
             build_files = [str(f) for f in self.files_found.keys()]
@@ -204,10 +238,9 @@ class PyMind:
         @brief Create a database of all the files in the `input` directory
 
         @return Dictionary of files and their modified times from within the `input` directory
-        """
-        # Input directory
-        i = self.work_d
 
+        TODO: CLEANUP - Move to a utility directory
+        """
         # Create a list `Path`s for each `*.md` file in the `input` directory
         files = [f.resolve() for f in Path(self.work_d).rglob("*.md")]
 
@@ -221,15 +254,23 @@ class PyMind:
 
     ##==================================================================================================================
     #
-    def __getProjectName(self):
+    def __getProjectName(self) -> str:
         """!
         @brief Return the project name.
+
+        @return Project name as a string.
         """
+        # TODO: CLEANUP - ADD NAME MANGLING
+        # from datetime import datetime
+
+        # Set up datetime
+        # dt = datetime.now()
 
         # Get the project name
         project_name = Path(self.input)
         project_name = project_name.absolute()
         project_name = project_name.parts[-1]
+        # project_name = str(project_name) + dt.strftime("-%d-%m-%m-%H-%M-%S")
 
         return project_name
 
@@ -266,6 +307,8 @@ class PyMind:
         """!
         @brief Load the cached dictionary of modified files.
         @return Return dictionary of files and modified times
+
+        TODO: CLEANUP - Create utility file
         """
         # Create the path objects
         _, cache_file = self.__createCachePaths()
@@ -284,6 +327,8 @@ class PyMind:
     def __cacheFiles(self):
         """!
         @brief Cache files in the default cache location.
+
+        TODO: CLEANUP - Create utility file
         """
         # Create the path objects
         cache_dir, cache_file = self.__createCachePaths()
@@ -307,8 +352,8 @@ class PyMind:
 
         @return Returns tuple of strings (cache_dir, cache_file)
         """
-        cache_dir = Path(f"{PyMind.CACHE_PATH}/")
-        cache_file = Path(f"{PyMind.CACHE_PATH}/{self.project_name}_cache.json")
+        cache_dir = PyMind.CACHE_PATH
+        cache_file = PyMind.CACHE_PATH / Path(f"{self.project_name}_cache.json")
 
         # Create the directory if it does not exist
         cache_dir.mkdir(parents=True, exist_ok=True)
@@ -347,6 +392,8 @@ class PyMind:
         @brief Retrieve tags from the files
 
         @return A dictionary where the key is the tag found and the item is a list of files where the tag was found.
+
+        TODO: CLEANUP - Move to a utility file
         """
         bf = self.build_files
         tags = {}
@@ -384,6 +431,8 @@ class PyMind:
         @param
 
         @return Update dictionary of tag => [list of files with tag]
+
+        TODO: CLEANUP - Move to a utility file
         """
         # Loop through each matched tag found in `fn`
         for m in matches:
@@ -430,6 +479,11 @@ class PyMind:
         # For each file in the engine directories
         self.__executeSubprocess(path)
 
+        # If the engine being ran is the pre-processor
+        if process_type == "PRE":
+            # Update the build files
+            self.build_files = self.__getFilesList()
+
         return
 
     ##==================================================================================================================
@@ -444,12 +498,27 @@ class PyMind:
         """
         import subprocess
 
-        print(f"===========> {script_d}")
+        # Convert cache variable directory path to a string
+        cache_p = str(PyMind.CACHE_PATH / Path("variables"))
+
         # Execute subprocesses
         for file in script_d.iterdir():
             ## Ensure the item is a python script
             if file.is_file() and file.suffix == ".py":
-                subprocess.run(["python", file, "-i", self.work_d, "-o", self.output])
+                subprocess.run(
+                    [
+                        "python",
+                        file,
+                        "-i",
+                        self.work_d,
+                        "-o",
+                        self.output,
+                        "-n",
+                        self.project_name,
+                        "-v",
+                        cache_p,
+                    ]
+                )
 
         return True
 
@@ -461,10 +530,45 @@ class PyMind:
 
         The working directory is where the actions performed by PyMind or the engine scripts will take place.
         """
-        if self.engine and self.input:
-            self.work_d = Path(PyMind.CACHE_PATH) / Path(self.input).parts[-1]
-        else:
-            self.work_d = self.input
+        self.work_d = Path(PyMind.CACHE_PATH) / Path(self.input).parts[-1]
+        return
+
+    ##==================================================================================================================
+    #
+    def __cacheVar(self):
+        """!
+        @brief Cache variables
+        """
+        # Variables
+        var = {
+            "files": self.files_found,
+            "build_files": self.build_files,
+            "tags": self.tags,
+        }
+        cache_dir = PyMind.CACHE_PATH / Path("variables")
+
+        # Cache the variable
+        cacheVar(var, cache_dir, self.project_name)
+
+        return
+
+    ##==================================================================================================================
+    #
+    def __recursive_delete(self, directory: Path):
+        """!
+        @brief Recursively delete files from the starting point `directory`
+
+        TODO: CLEANUP - This file should be moved to some sort of utility file!
+
+        @param directory Path to the directory to recursively delete
+        """
+        for path in directory.rglob("*"):
+            if path.is_file():
+                path.unlink()
+            elif path.is_dir():
+                self.__recursive_delete(path)
+                path.rmdir()
+
         return
 
 
@@ -481,6 +585,7 @@ def pymind(**kwargs: Any):
 
     This is a shortcut function which initializes an instance of `PyMind` and calls the `generate_output` function.
 
+    TODO: UPDATE
     @param kwargs['input'] Path to directory to read from
     @param kwargs['output'] Path to directory to output to
     @param kwargs['force'] Regenerate all files

@@ -30,13 +30,13 @@ class TestPyMindCore(unittest.TestCase):
 
     ##==================================================================================================================
     #
-    def getPM(self, force: bool = False, dry_run: bool = False):
+    def getPM(self, force: bool = False, dry_run: bool = False, engine: bool = False):
         pm = pymind.PyMind(
             **{
                 "input": TestPyMindCore.INPUT,
                 "output": TestPyMindCore.OUTPUT,
                 "force": force,
-                "engine": False,
+                "engine": engine,
                 "dry_run ": dry_run,
             }
         )
@@ -71,7 +71,7 @@ class TestPyMindCore(unittest.TestCase):
         for path in directory.rglob("*"):
             if path.is_file():
                 path.unlink()
-            elif path.is_dir(missing_ok=True):
+            elif path.is_dir():
                 recursive_delete(path)
                 path.rmdir()
 
@@ -102,11 +102,11 @@ class TestPyMindCore(unittest.TestCase):
     ##==================================================================================================================
     #
     def test_find_files(self):
-        pm = self.getPM()
+        pm = self.getPM(force=True)
         pm.run()
 
         # Check the input file
-        self.assertEqual(pm.input, Path(TestPyMindCore.INPUT))
+        self.assertEqual(pm.input, Path(TestPyMindCore.INPUT).absolute())
 
         # Check the number of elements
         self.assertEqual(len(pm.files_found), 5)
@@ -143,7 +143,7 @@ class TestPyMindCore(unittest.TestCase):
 
         self.assertEqual(pm.config_file, Path("./tests/config/pymind/pymind.yml"))
         self.assertEqual(pm.project_name, "example")
-        self.assertEqual(pm.input, Path("./tests/example"))
+        self.assertEqual(pm.input, Path("./tests/example").absolute())
 
         return
 
@@ -218,13 +218,15 @@ class TestPyMindCore(unittest.TestCase):
     #
     def test_work_directory_creation(self):
         # Run PyMind with `dry_run = true` to only process the files, but convert anything
-        pm = self.getPM()
+        pm = self.getPM(engine=True)
         pm.run()
 
         # Get path to the cache directory
         cache_d = self.createCachePaths()
         work_d = cache_d / Path("example")
 
-        self.assertTrue(work_d.is_dir(), "The working directory was not created!")
+        self.assertTrue(
+            work_d.is_dir(), f"The working directory was not created: {work_d}"
+        )
 
         return

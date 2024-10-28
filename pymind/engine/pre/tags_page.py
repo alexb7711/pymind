@@ -14,11 +14,10 @@ This module generates the file that groups and links to all of the tags found. T
 """
 
 import optparse
-from typing import TypedDict
 from pathlib import Path
+from typing import TypedDict
 
 import pymind
-
 
 ##======================================================================================================================
 # CONSTANTS
@@ -56,6 +55,22 @@ def parseInput(args=None) -> TypedDict:
         metavar="OUTPUT_DIR",
         help="Use to specify output directory, default is `doc`.",
     )
+    parser.add_option(
+        "-n",
+        "--name",
+        dest="name",
+        default="",
+        metavar="PROJECT_NAME",
+        help="Name of the project, default is an empty string.",
+    )
+    parser.add_option(
+        "-v",
+        "--variable_p",
+        dest="var_p",
+        default="",
+        metavar="VARIABLE_PATH",
+        help="Path to the cached variable directory, default is an empty string.",
+    )
 
     # Parse the input arguments
     (options, args) = parser.parse_args(args)
@@ -63,9 +78,8 @@ def parseInput(args=None) -> TypedDict:
     opts = {
         "input": options.input,
         "output": options.output,
-        "force": True,
-        "engine": False,
-        "dry_run": True,
+        "name": options.name,
+        "var_p": options.var_p,
     }
     return opts
 
@@ -80,30 +94,33 @@ def main(**kwargs) -> bool:
 
     @return True if creation was successful, False if creation failed
     """
+    # Success flag
+    success = True
+
     # Parse the input arguments
     options = parseInput()
 
     # If the input or output directory were not provided
-    if not options["input"] or not options["output"]:
+    if (
+        not options["input"]
+        or not options["output"]
+        or not options["name"]
+        or not options["var_p"]
+    ):
         ## Fail the file creation
         return False
 
-    # Create an instance of PyMind
-    pm = pymind.PyMind(**options)
-    pm.run()
-
     # Retrieve the list of files and tags
-    tags = pm.tags
+    var = pymind.cache.deCacheVar(options["var_p"], options["name"])
 
-    # Write the string to disk
-    __createTagsPage(options["input"], tags)
+    # Ensure the cached variables were loaded
+    if success:
+        tags = var["tags"]
 
-    # Re-run PyMind without the `force` and `dry_run` flags
-    pm.force_build = False
-    pm.dry_run = False
-    pm.run()
+        ## Write the string to disk
+        success = __createTagsPage(options["input"], tags)
 
-    return True
+    return success
 
 
 ##======================================================================================================================
