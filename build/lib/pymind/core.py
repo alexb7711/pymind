@@ -209,11 +209,11 @@ class PyMind:
 
         # Extract the project name based on the base directory name
         self.project_name = self.__getProjectName()
-
-        # TODO: CLEANUP - Migrate into Path objects
         cache_dir, _ = self.__createCachePaths()
-        out_d = str(cache_dir) + "/" + self.project_name + "/"
+        out_d = cache_dir / Path(self.project_name)
+
         shutil.copytree(self.input, out_d, dirs_exist_ok=True)
+
         return
 
     ##==================================================================================================================
