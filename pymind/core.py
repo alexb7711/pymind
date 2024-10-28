@@ -97,7 +97,11 @@ class PyMind:
         cache_dir = PyMind.CACHE_PATH / Path("variables")
 
         # Remove the cached variable
-        deleteCacheVar(cache_dir, self.project_name)
+        try:
+            deleteCacheVar(cache_dir, self.project_name)
+
+        except Exception as e:
+            print(e)
 
         # Remove the copied working tree
         self.__recursive_delete(Path(self.work_d))
@@ -545,6 +549,7 @@ class PyMind:
 
         # Cache the variable
         cacheVar(var, cache_dir, self.project_name)
+
         return
 
     ##==================================================================================================================
