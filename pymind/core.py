@@ -14,6 +14,7 @@ from pymind.utility.cache import (
 )
 from pymind.utility.search import findFiles
 from pymind.utility.tags import getTags
+from pymind.utility.misc import recursiveDelete
 
 logger = logging.getLogger("PYMIND")
 
@@ -111,7 +112,7 @@ class PyMind:
             print(e)
 
         # Remove the copied working tree
-        self.__recursive_delete(Path(self.work_d))
+        recursiveDelete(Path(self.work_d))
 
         return
 
@@ -440,25 +441,6 @@ class PyMind:
 
         # Cache the variable
         pickleVar(var, cache_dir, self.project_name)
-
-        return
-
-    ##==================================================================================================================
-    #
-    def __recursive_delete(self, directory: Path):
-        """!
-        @brief Recursively delete files from the starting point `directory`
-
-        TODO: CLEANUP - This file should be moved to some sort of utility file!
-
-        @param directory Path to the directory to recursively delete
-        """
-        for path in directory.rglob("*"):
-            if path.is_file():
-                path.unlink()
-            elif path.is_dir():
-                self.__recursive_delete(path)
-                path.rmdir()
 
         return
 
