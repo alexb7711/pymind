@@ -4,7 +4,7 @@ import platform
 import unittest
 from pathlib import Path
 
-import pymind
+from pymind import PyMind, utility
 
 ########################################################################################################################
 
@@ -33,7 +33,7 @@ class TestCacheModule(unittest.TestCase):
     ##==================================================================================================================
     #
     def getPM(self, force: bool = False, dry_run: bool = False):
-        pm = pymind.PyMind(
+        pm = PyMind(
             **{
                 "input": TestCacheModule.INPUT,
                 "output": TestCacheModule.OUTPUT,
@@ -102,7 +102,7 @@ class TestCacheModule(unittest.TestCase):
         cache_d = cache_d / Path("variables")
 
         # Extract the cached variable
-        var = pymind.cache.deCacheVar(cache_d, "example")
+        var = utility.cache.deCacheVar(cache_d, "example")
 
         # Ensure the tags variable is created
         self.assertTrue(

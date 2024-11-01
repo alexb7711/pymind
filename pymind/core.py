@@ -6,10 +6,12 @@ import markdown
 import yaml
 from pathlib import Path
 from typing import Any, TypedDict, List
-from pymind.cache import cacheVar, deleteCacheVar
+from pymind.utility.cache import cacheVar, deleteCacheVar
+from pymind.utility.search import findFiles
 
 
-__all__ = ["PyMind", "pymind", "cache"]
+# TODO: CLEANUP - Can this be deleted?
+__all__ = ["PyMind", "pymind", "utility"]
 
 logger = logging.getLogger("PYMIND")
 
@@ -220,7 +222,7 @@ class PyMind:
         @brief Returns a list of files to convert
         """
         # Create database of files
-        self.files_found = self.__findFiles()
+        self.files_found = findFiles(self.work_d)
 
         # If `force_build` not active
         build_files = []
@@ -235,27 +237,6 @@ class PyMind:
         self.__cacheFiles()
 
         return build_files
-
-    ##==================================================================================================================
-    #
-    def __findFiles(self) -> dict[Path]:
-        """!
-        @brief Create a database of all the files in the `input` directory
-
-        @return Dictionary of files and their modified times from within the `input` directory
-
-        TODO: CLEANUP - Move to a utility directory
-        """
-        # Create a list `Path`s for each `*.md` file in the `input` directory
-        files = [f.resolve() for f in Path(self.work_d).rglob("*.md")]
-
-        # Create file database
-        file_database = {}
-        for f in files:
-            mod_time = f.lstat().st_mtime
-            file_database[str(f)] = mod_time
-
-        return file_database
 
     ##==================================================================================================================
     #
