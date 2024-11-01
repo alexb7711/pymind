@@ -158,8 +158,25 @@ class PyMind:
 
         ##--------------------------------------------------------------------------------------------------------------
         # PRE-PROCESS
-        # TODO: CLEANUP - Could move this to its own function
+        self.__preProcess()
 
+        ##--------------------------------------------------------------------------------------------------------------
+        # EXECUTE CONVERSION PROCESS
+
+        # Convert the files
+        self.__convertFiles()
+
+        ##--------------------------------------------------------------------------------------------------------------
+        # POST-PROCESS
+
+        # Run post-processing engine
+        self.__runEngine("POST")
+
+        return
+
+    ##==================================================================================================================
+    #
+    def __preProcess(self):
         # Create a copy of the input directory into a temporary directory
         self.__copyInputDirectory()
 
@@ -174,18 +191,6 @@ class PyMind:
 
         # Run pre-processing engine
         self.__runEngine("PRE")
-
-        ##--------------------------------------------------------------------------------------------------------------
-        # EXECUTE CONVERSION PROCESS
-
-        # Convert the files
-        self.__convertFiles()
-
-        ##--------------------------------------------------------------------------------------------------------------
-        # POST-PROCESS
-
-        # Run post-processing engine
-        self.__runEngine("POST")
 
         return
 
