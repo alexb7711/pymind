@@ -14,9 +14,6 @@ from pymind.utility.cache import (
 from pymind.utility.search import findFiles
 
 
-# TODO: CLEANUP - Can this be deleted?
-__all__ = ["PyMind", "pymind", "utility"]
-
 logger = logging.getLogger("PYMIND")
 
 ########################################################################################################################
