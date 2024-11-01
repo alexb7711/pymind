@@ -17,8 +17,6 @@ def getTags(files: list[str]) -> dict:
     @param bf List of files to search
 
     @return A dictionary where the key is the tag found and the item is a list of files where the tag was found.
-
-    TODO: CLEANUP - Move to a utility file
     """
     tags = {}
 
@@ -53,11 +51,9 @@ def __updateTags(fn: str, tags: dict, matches: list) -> dict:
 
     @param fn Name of the parse file
     @param tags Dictionary of found tags associated with a list of the files in which that tag was found
-    @param
+    @param matches List of tags that were found in a file
 
     @return Update dictionary of tag => [list of files with tag]
-
-    TODO: CLEANUP - Move to a utility file
     """
     # Loop through each matched tag found in `fn`
     for m in matches:
