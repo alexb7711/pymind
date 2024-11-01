@@ -177,6 +177,9 @@ class PyMind:
     ##==================================================================================================================
     #
     def __preProcess(self):
+        """!
+        @brief Run the PyMind pre-processor.
+        """
         # Create a copy of the input directory into a temporary directory
         self.__copyInputDirectory()
 
@@ -265,17 +268,11 @@ class PyMind:
 
         @return Project name as a string.
         """
-        # TODO: CLEANUP - ADD NAME MANGLING
-        # from datetime import datetime
-
-        # Set up datetime
-        # dt = datetime.now()
 
         # Get the project name
         project_name = Path(self.input)
         project_name = project_name.absolute()
         project_name = project_name.parts[-1]
-        # project_name = str(project_name) + dt.strftime("-%d-%m-%m-%H-%M-%S")
 
         return project_name
 
