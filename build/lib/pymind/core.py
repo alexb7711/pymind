@@ -97,7 +97,11 @@ class PyMind:
         cache_dir = PyMind.CACHE_PATH / Path("variables")
 
         # Remove the cached variable
-        deleteCacheVar(cache_dir, self.project_name)
+        try:
+            deleteCacheVar(cache_dir, self.project_name)
+
+        except Exception as e:
+            print(e)
 
         # Remove the copied working tree
         self.__recursive_delete(Path(self.work_d))
@@ -152,23 +156,27 @@ class PyMind:
         @brief Entry function to start creating the PyMind second brain.
         """
 
+        ##--------------------------------------------------------------------------------------------------------------
         # PRE-PROCESS
         self.__preProcess()
 
+        ##--------------------------------------------------------------------------------------------------------------
         # EXECUTE CONVERSION PROCESS
+
+        # Convert the files
         self.__convertFiles()
 
+        ##--------------------------------------------------------------------------------------------------------------
         # POST-PROCESS
-        self.__postProcess()
+
+        # Run post-processing engine
+        self.__runEngine("POST")
 
         return
 
     ##==================================================================================================================
     #
     def __preProcess(self):
-        """!
-        @brief Run the pre-processor.
-        """
         # Create a copy of the input directory into a temporary directory
         self.__copyInputDirectory()
 
@@ -188,30 +196,21 @@ class PyMind:
 
     ##==================================================================================================================
     #
-    def __postProcess(self):
-        """!
-        @brief Run the post-processor.
-        """
-        # Run post-processing engine
-        self.__runEngine("POST")
-
-        return
-
-    ##==================================================================================================================
-    #
     def __copyInputDirectory(self):
         """!
         @brief Copy `input` directory into `cache` directory
+
+        TODO: CLEANUP - Move this to a utility file
         """
         import shutil
 
         # Extract the project name based on the base directory name
         self.project_name = self.__getProjectName()
+
+        # TODO: CLEANUP - Migrate into Path objects
         cache_dir, _ = self.__createCachePaths()
-        out_d = cache_dir / Path(self.project_name)
-
+        out_d = str(cache_dir) + "/" + self.project_name + "/"
         shutil.copytree(self.input, out_d, dirs_exist_ok=True)
-
         return
 
     ##==================================================================================================================
@@ -266,6 +265,7 @@ class PyMind:
 
         @return Project name as a string.
         """
+        # TODO: CLEANUP - ADD NAME MANGLING
         # from datetime import datetime
 
         # Set up datetime
@@ -543,8 +543,6 @@ class PyMind:
     def __cacheVar(self):
         """!
         @brief Cache variables
-
-        TODO: CLEANUP - Create caching utility file
         """
         # Variables
         var = {
@@ -556,6 +554,7 @@ class PyMind:
 
         # Cache the variable
         cacheVar(var, cache_dir, self.project_name)
+
         return
 
     ##==================================================================================================================
