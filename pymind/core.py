@@ -5,7 +5,12 @@ import markdown
 import yaml
 from pathlib import Path
 from typing import Any, TypedDict, List
-from pymind.utility.cache import cacheVar, deleteCacheVar, loadCacheJSON, writeCacheJSON
+from pymind.utility.cache import (
+    pickleVar,
+    deleteCacheVar,
+    loadCacheJSON,
+    writeCacheJSON,
+)
 from pymind.utility.search import findFiles
 
 
@@ -497,7 +502,7 @@ class PyMind:
         cache_dir = PyMind.CACHE_PATH / Path("variables")
 
         # Cache the variable
-        cacheVar(var, cache_dir, self.project_name)
+        pickleVar(var, cache_dir, self.project_name)
 
         return
 

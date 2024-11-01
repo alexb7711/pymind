@@ -102,7 +102,7 @@ class TestCacheModule(unittest.TestCase):
         cache_d = cache_d / Path("variables")
 
         # Extract the cached variable
-        var = utility.cache.deCacheVar(cache_d, "example")
+        var = utility.cache.unPickleVar(cache_d, "example")
 
         # Ensure the tags variable is created
         self.assertTrue(

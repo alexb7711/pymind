@@ -62,7 +62,7 @@ def writeCacheJSON(cache_dir: Path, var: Any):
 
 ##======================================================================================================================
 #
-def cacheVar(var: Any, path: Path, name: str):
+def pickleVar(var: Any, path: Path, name: str):
     """!
     @brief The cache variable function caches `var` in `path` by pickling the data.
 
@@ -98,7 +98,7 @@ def cacheVar(var: Any, path: Path, name: str):
 
 ##======================================================================================================================
 #
-def deCacheVar(path: Path, name: str) -> Any:
+def unPickleVar(path: Path, name: str) -> Any:
     """!
     @brief The cache variable function caches `var` in `path` by pickling the data.
 
