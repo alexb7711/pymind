@@ -1,4 +1,3 @@
-import json
 import logging
 import platform
 import re
@@ -6,7 +5,7 @@ import markdown
 import yaml
 from pathlib import Path
 from typing import Any, TypedDict, List
-from pymind.utility.cache import cacheVar, deleteCacheVar
+from pymind.utility.cache import cacheVar, deleteCacheVar, loadCacheJSON, writeCacheJSON
 from pymind.utility.search import findFiles
 
 
@@ -82,6 +81,9 @@ class PyMind:
         self.input = Path(self.input).absolute()
         self.output = Path(self.output).absolute()
 
+        # Create the cache directory if it does not exist
+        PyMind.CACHE_PATH.mkdir(parents=True, exist_ok=True)
+
         # Set the working directory
         self.__setWorkingDirectory()
 
@@ -124,6 +126,32 @@ class PyMind:
         # Create the website
         self.__createBrain()
         return
+
+    ##==================================================================================================================
+    #
+    def getCachePaths(self, path: str) -> Path:
+        """!
+        @brief Create `Path` objects for cache
+
+        This method creates the cache file paths, and ensures that the path to the cache directory exists.
+
+        @param path String that specifies the desired path to be returned. [base, database]
+
+        @return Returns a path to either the cached directory, cached file database, or cached variable
+        """
+        # Variables
+        dir = None
+        path = path.lower()
+
+        # Select the path
+        if path == "base":
+            dir = PyMind.CACHE_PATH
+        elif path == "database":
+            dir = PyMind.CACHE_PATH / Path(f"{self.project_name}_cache.json")
+        else:
+            raise ("PyMind: Path type not specified!")
+
+        return dir
 
     ####################################################################################################################
     # PRIVATE
@@ -209,7 +237,7 @@ class PyMind:
 
         # Extract the project name based on the base directory name
         self.project_name = self.__getProjectName()
-        cache_dir, _ = self.__createCachePaths()
+        cache_dir = self.getCachePaths("base")
         out_d = cache_dir / Path(self.project_name)
 
         shutil.copytree(self.input, out_d, dirs_exist_ok=True)
@@ -234,7 +262,7 @@ class PyMind:
             build_files = self.__getBuildFiles()
 
         # Update the cached database
-        self.__cacheFiles()
+        writeCacheJSON(self.getCachePaths("database"), self.files_found)
 
         return build_files
 
@@ -265,7 +293,7 @@ class PyMind:
         p_files = []
 
         # Get data from the previous run
-        prev_data = self.__loadCache()
+        prev_data = loadCacheJSON(self.getCachePaths("database"))
 
         # For each file that has been found in the input directory
         for f, mod in self.files_found.items():
@@ -280,65 +308,6 @@ class PyMind:
                 continue
 
         return p_files
-
-    ##==================================================================================================================
-    #
-    def __loadCache(self):
-        """!
-        @brief Load the cached dictionary of modified files.
-        @return Return dictionary of files and modified times
-
-        TODO: CLEANUP - Create utility file
-        """
-        # Create the path objects
-        _, cache_file = self.__createCachePaths()
-
-        # Ensure the cached file exists
-        if cache_file.exists():
-            ## Read in the cached files from the previous run
-            with open(cache_file, "r") as cf:
-                run_data = json.load(cf)
-                return run_data
-
-        return {}
-
-    ##==================================================================================================================
-    #
-    def __cacheFiles(self):
-        """!
-        @brief Cache files in the default cache location.
-
-        TODO: CLEANUP - Create utility file
-        """
-        # Create the path objects
-        cache_dir, cache_file = self.__createCachePaths()
-
-        # Create JSON object
-        file_data = json.dumps(self.files_found, indent=4)
-
-        # Write the found file data to the cache file
-        with open(cache_file, "w") as cf:
-            cf.write(file_data)
-
-        return
-
-    ##==================================================================================================================
-    #
-    def __createCachePaths(self):
-        """!
-        @brief Create `Path` objects for cache
-
-        This method creates the cache file paths, and ensures that the path to the cache directory exists.
-
-        @return Returns tuple of strings (cache_dir, cache_file)
-        """
-        cache_dir = PyMind.CACHE_PATH
-        cache_file = PyMind.CACHE_PATH / Path(f"{self.project_name}_cache.json")
-
-        # Create the directory if it does not exist
-        cache_dir.mkdir(parents=True, exist_ok=True)
-
-        return (cache_dir, cache_file)
 
     ##==================================================================================================================
     #
