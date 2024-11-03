@@ -23,9 +23,7 @@ def parse_options(args=None, values=None):
         "A Python implementation of a text-based second brain that just works. "
         "https://Python-Markdown.github.io/"
     )
-    ## TODO: Ad a version option
-    # ver = "%%prog %s" % markdown.__version__
-    ver = "%%prog 0.0"
+    ver = str(pymind.__version__)
 
     # Optional flags
     parser = optparse.OptionParser(usage=usage, description=desc, version=ver)
