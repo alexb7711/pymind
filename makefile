@@ -35,6 +35,7 @@ all: setup update run ## Default action
 test: setup ## Run unit tests
 	@source "$(BIN)/activate"
 	@$(PYTHON) -m unittest discover -s $(TST_D) -p "test_*.py"
+	@$(PYTHON) -m unittest discover -s $(TST_D) -p "test_*.py"
 
 ##==============================================================================
 #

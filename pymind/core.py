@@ -1,15 +1,20 @@
-import json
 import logging
 import platform
-import re
+from pathlib import Path
+from typing import Any, List, TypedDict
+
 import markdown
 import yaml
-from pathlib import Path
-from typing import Any, TypedDict, List
-from pymind.cache import cacheVar, deleteCacheVar
 
-
-__all__ = ["PyMind", "pymind", "cache"]
+from pymind.utility.cache import (
+    deleteCacheVar,
+    loadCacheJSON,
+    pickleVar,
+    writeCacheJSON,
+)
+from pymind.utility.search import findFiles
+from pymind.utility.tags import getTags
+from pymind.utility.misc import recursiveDelete
 
 logger = logging.getLogger("PYMIND")
 
@@ -80,6 +85,9 @@ class PyMind:
         self.input = Path(self.input).absolute()
         self.output = Path(self.output).absolute()
 
+        # Create the cache directory if it does not exist
+        PyMind.CACHE_PATH.mkdir(parents=True, exist_ok=True)
+
         # Set the working directory
         self.__setWorkingDirectory()
 
@@ -104,7 +112,7 @@ class PyMind:
             print(e)
 
         # Remove the copied working tree
-        self.__recursive_delete(Path(self.work_d))
+        recursiveDelete(Path(self.work_d))
 
         return
 
@@ -122,6 +130,34 @@ class PyMind:
         # Create the website
         self.__createBrain()
         return
+
+    ##==================================================================================================================
+    #
+    def getCachePaths(self, path: str) -> Path:
+        """!
+        @brief Create `Path` objects for cache
+
+        This method creates the cache file paths, and ensures that the path to the cache directory exists.
+
+        @param path String that specifies the desired path to be returned. [base, database]
+
+        @return Returns a path to either the cached directory, cached file database, or cached variable
+        """
+        # Variables
+        dir = None
+        path = path.lower()
+
+        # Select the path
+        if path == "base":
+            dir = PyMind.CACHE_PATH
+        elif path == "database":
+            dir = PyMind.CACHE_PATH / Path(f"{self.project_name}_cache.json")
+        elif path == "var":
+            dir = PyMind.CACHE_PATH / Path("variables")
+        else:
+            raise ("PyMind: Path type not specified!")
+
+        return dir
 
     ####################################################################################################################
     # PRIVATE
@@ -158,22 +194,7 @@ class PyMind:
 
         ##--------------------------------------------------------------------------------------------------------------
         # PRE-PROCESS
-        # TODO: CLEANUP - Could move this to its own function
-
-        # Create a copy of the input directory into a temporary directory
-        self.__copyInputDirectory()
-
-        # Get the list of files to convert
-        self.build_files = self.__getFilesList()
-
-        # Get the list of tags from the files
-        self.tags = self.__getTags()
-
-        # Cache variables
-        self.__cacheVar()
-
-        # Run pre-processing engine
-        self.__runEngine("PRE")
+        self.__preProcess()
 
         ##--------------------------------------------------------------------------------------------------------------
         # EXECUTE CONVERSION PROCESS
@@ -191,20 +212,40 @@ class PyMind:
 
     ##==================================================================================================================
     #
+    def __preProcess(self):
+        """!
+        @brief Run the PyMind pre-processor.
+        """
+        # Create a copy of the input directory into a temporary directory
+        self.__copyInputDirectory()
+
+        # Get the list of files to convert
+        self.build_files = self.__getFilesList()
+
+        # Get the list of tags from the files
+        self.tags = getTags(self.build_files)
+
+        # Cache variables
+        self.__cacheVar()
+
+        # Run pre-processing engine
+        self.__runEngine("PRE")
+
+        return
+
+    ##==================================================================================================================
+    #
     def __copyInputDirectory(self):
         """!
         @brief Copy `input` directory into `cache` directory
-
-        TODO: CLEANUP - Move this to a utility file
         """
         import shutil
 
         # Extract the project name based on the base directory name
         self.project_name = self.__getProjectName()
+        cache_dir = self.getCachePaths("base")
+        out_d = cache_dir / Path(self.project_name)
 
-        # TODO: CLEANUP - Migrate into Path objects
-        cache_dir, _ = self.__createCachePaths()
-        out_d = str(cache_dir) + "/" + self.project_name + "/"
         shutil.copytree(self.input, out_d, dirs_exist_ok=True)
         return
 
@@ -215,7 +256,7 @@ class PyMind:
         @brief Returns a list of files to convert
         """
         # Create database of files
-        self.files_found = self.__findFiles()
+        self.files_found = findFiles(self.work_d)
 
         # If `force_build` not active
         build_files = []
@@ -227,30 +268,9 @@ class PyMind:
             build_files = self.__getBuildFiles()
 
         # Update the cached database
-        self.__cacheFiles()
+        writeCacheJSON(self.getCachePaths("database"), self.files_found)
 
         return build_files
-
-    ##==================================================================================================================
-    #
-    def __findFiles(self) -> dict[Path]:
-        """!
-        @brief Create a database of all the files in the `input` directory
-
-        @return Dictionary of files and their modified times from within the `input` directory
-
-        TODO: CLEANUP - Move to a utility directory
-        """
-        # Create a list `Path`s for each `*.md` file in the `input` directory
-        files = [f.resolve() for f in Path(self.work_d).rglob("*.md")]
-
-        # Create file database
-        file_database = {}
-        for f in files:
-            mod_time = f.lstat().st_mtime
-            file_database[str(f)] = mod_time
-
-        return file_database
 
     ##==================================================================================================================
     #
@@ -260,17 +280,11 @@ class PyMind:
 
         @return Project name as a string.
         """
-        # TODO: CLEANUP - ADD NAME MANGLING
-        # from datetime import datetime
-
-        # Set up datetime
-        # dt = datetime.now()
 
         # Get the project name
         project_name = Path(self.input)
         project_name = project_name.absolute()
         project_name = project_name.parts[-1]
-        # project_name = str(project_name) + dt.strftime("-%d-%m-%m-%H-%M-%S")
 
         return project_name
 
@@ -285,7 +299,7 @@ class PyMind:
         p_files = []
 
         # Get data from the previous run
-        prev_data = self.__loadCache()
+        prev_data = loadCacheJSON(self.getCachePaths("database"))
 
         # For each file that has been found in the input directory
         for f, mod in self.files_found.items():
@@ -300,65 +314,6 @@ class PyMind:
                 continue
 
         return p_files
-
-    ##==================================================================================================================
-    #
-    def __loadCache(self):
-        """!
-        @brief Load the cached dictionary of modified files.
-        @return Return dictionary of files and modified times
-
-        TODO: CLEANUP - Create utility file
-        """
-        # Create the path objects
-        _, cache_file = self.__createCachePaths()
-
-        # Ensure the cached file exists
-        if cache_file.exists():
-            ## Read in the cached files from the previous run
-            with open(cache_file, "r") as cf:
-                run_data = json.load(cf)
-                return run_data
-
-        return {}
-
-    ##==================================================================================================================
-    #
-    def __cacheFiles(self):
-        """!
-        @brief Cache files in the default cache location.
-
-        TODO: CLEANUP - Create utility file
-        """
-        # Create the path objects
-        cache_dir, cache_file = self.__createCachePaths()
-
-        # Create JSON object
-        file_data = json.dumps(self.files_found, indent=4)
-
-        # Write the found file data to the cache file
-        with open(cache_file, "w") as cf:
-            cf.write(file_data)
-
-        return
-
-    ##==================================================================================================================
-    #
-    def __createCachePaths(self):
-        """!
-        @brief Create `Path` objects for cache
-
-        This method creates the cache file paths, and ensures that the path to the cache directory exists.
-
-        @return Returns tuple of strings (cache_dir, cache_file)
-        """
-        cache_dir = PyMind.CACHE_PATH
-        cache_file = PyMind.CACHE_PATH / Path(f"{self.project_name}_cache.json")
-
-        # Create the directory if it does not exist
-        cache_dir.mkdir(parents=True, exist_ok=True)
-
-        return (cache_dir, cache_file)
 
     ##==================================================================================================================
     #
@@ -384,67 +339,6 @@ class PyMind:
             html = markdown.markdownFromFile(input=str(bf), output=str(output_file))
 
         return
-
-    ##==================================================================================================================
-    #
-    def __getTags(self) -> TypedDict:
-        """!
-        @brief Retrieve tags from the files
-
-        @return A dictionary where the key is the tag found and the item is a list of files where the tag was found.
-
-        TODO: CLEANUP - Move to a utility file
-        """
-        bf = self.build_files
-        tags = {}
-
-        # For each file in the 'build files' list
-        for f in bf:
-            ## Open the build file
-            with open(f, "r") as txt:
-                ### For each row in the build file
-                for l in txt:
-                    #### Search for tags in the file
-                    matches = re.findall(r"^<!--\s*:?(.*?):\s*-->", l)
-
-                    #### If tags were found
-                    if matches:
-                        ## Create a list of the tags
-                        matches = matches[0].split(":")
-
-                        ##### Add the tag to the table of tags
-                        tags = self.__updateTags(f, tags, matches)
-
-                        ##### Continue looking for tags in other files
-                        continue
-
-        return tags
-
-    ##==================================================================================================================
-    #
-    def __updateTags(self, fn: str, tags: TypedDict, matches: List):
-        """!
-        @brief Updates `tags` with the data found in `matches` for the provided `file`
-
-        @param fn Name of the parse file
-        @param tags Dictionary of found tags associated with a list of the files in which that tag was found
-        @param
-
-        @return Update dictionary of tag => [list of files with tag]
-
-        TODO: CLEANUP - Move to a utility file
-        """
-        # Loop through each matched tag found in `fn`
-        for m in matches:
-            ## If the tag already exists
-            if tags.get(m):
-                ### Append the tag
-                tags[m].append(fn)
-            else:
-                ### Create a new tag
-                tags[m] = [fn]
-
-        return tags
 
     ##==================================================================================================================
     #
@@ -499,7 +393,7 @@ class PyMind:
         import subprocess
 
         # Convert cache variable directory path to a string
-        cache_p = str(PyMind.CACHE_PATH / Path("variables"))
+        cache_p = str(self.getCachePaths("var"))
 
         # Execute subprocesses
         for file in script_d.iterdir():
@@ -545,29 +439,10 @@ class PyMind:
             "build_files": self.build_files,
             "tags": self.tags,
         }
-        cache_dir = PyMind.CACHE_PATH / Path("variables")
+        cache_dir = self.getCachePaths("var")
 
         # Cache the variable
-        cacheVar(var, cache_dir, self.project_name)
-
-        return
-
-    ##==================================================================================================================
-    #
-    def __recursive_delete(self, directory: Path):
-        """!
-        @brief Recursively delete files from the starting point `directory`
-
-        TODO: CLEANUP - This file should be moved to some sort of utility file!
-
-        @param directory Path to the directory to recursively delete
-        """
-        for path in directory.rglob("*"):
-            if path.is_file():
-                path.unlink()
-            elif path.is_dir():
-                self.__recursive_delete(path)
-                path.rmdir()
+        pickleVar(var, cache_dir, self.project_name)
 
         return
 
@@ -585,10 +460,11 @@ def pymind(**kwargs: Any):
 
     This is a shortcut function which initializes an instance of `PyMind` and calls the `generate_output` function.
 
-    TODO: UPDATE
     @param kwargs['input'] Path to directory to read from
     @param kwargs['output'] Path to directory to output to
     @param kwargs['force'] Regenerate all files
+    @param kwargs['dry_run'] Run PyMind, but don't output anything
+    @param kwargs['engine'] Execute the plugin engine
     @param kwargs['config'] Configuration file to read from
     """
     pm = PyMind(**kwargs)

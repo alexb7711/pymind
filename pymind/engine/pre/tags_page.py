@@ -17,7 +17,7 @@ import optparse
 from pathlib import Path
 from typing import TypedDict
 
-import pymind
+from pymind import utility
 
 ##======================================================================================================================
 # CONSTANTS
@@ -111,7 +111,7 @@ def main(**kwargs) -> bool:
         return False
 
     # Retrieve the list of files and tags
-    var = pymind.cache.deCacheVar(options["var_p"], options["name"])
+    var = utility.cache.unPickleVar(options["var_p"], options["name"])
 
     # Ensure the cached variables were loaded
     if success:
