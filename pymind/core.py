@@ -458,10 +458,11 @@ def pymind(**kwargs: Any):
 
     This is a shortcut function which initializes an instance of `PyMind` and calls the `generate_output` function.
 
-    TODO: UPDATE
     @param kwargs['input'] Path to directory to read from
     @param kwargs['output'] Path to directory to output to
     @param kwargs['force'] Regenerate all files
+    @param kwargs['dry_run'] Run PyMind, but don't output anything
+    @param kwargs['engine'] Execute the plugin engine
     @param kwargs['config'] Configuration file to read from
     """
     pm = PyMind(**kwargs)
