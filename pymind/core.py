@@ -152,6 +152,8 @@ class PyMind:
             dir = PyMind.CACHE_PATH
         elif path == "database":
             dir = PyMind.CACHE_PATH / Path(f"{self.project_name}_cache.json")
+        elif path == "var":
+            dir = PyMind.CACHE_PATH / Path("variables")
         else:
             raise ("PyMind: Path type not specified!")
 
@@ -391,7 +393,7 @@ class PyMind:
         import subprocess
 
         # Convert cache variable directory path to a string
-        cache_p = str(PyMind.CACHE_PATH / Path("variables"))
+        cache_p = str(self.getCachePaths("var"))
 
         # Execute subprocesses
         for file in script_d.iterdir():
@@ -437,7 +439,7 @@ class PyMind:
             "build_files": self.build_files,
             "tags": self.tags,
         }
-        cache_dir = PyMind.CACHE_PATH / Path("variables")
+        cache_dir = self.getCachePaths("var")
 
         # Cache the variable
         pickleVar(var, cache_dir, self.project_name)
