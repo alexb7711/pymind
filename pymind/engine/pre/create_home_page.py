@@ -103,7 +103,7 @@ def main(**kwargs) -> bool:
     tags = pm.tags
 
     # Write the string to disk
-    __createTagsPage(options["input"], tags)
+    __createLandingPage(options["input"], tags)
 
     # Re-run PyMind without the `force` and `dry_run` flags
     pm.force_build = False
