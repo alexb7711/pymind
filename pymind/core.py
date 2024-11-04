@@ -382,7 +382,7 @@ class PyMind:
 
     ##==================================================================================================================
     #
-    def __executeSubprocess(self, script_d) -> bool:
+    def __executeSubprocess(self, script_d):
         """!
         @brief Executes a subprocess from PyMind.
 
@@ -399,7 +399,8 @@ class PyMind:
         for file in script_d.iterdir():
             ## Ensure the item is a python script
             if file.is_file() and file.suffix == ".py":
-                subprocess.run(
+                ### Execute the process
+                process = subprocess.run(
                     [
                         "python",
                         file,
@@ -414,7 +415,9 @@ class PyMind:
                     ]
                 )
 
-        return True
+                ### Check if the process succeeded
+                process.check_returncode()
+        return
 
     ##==================================================================================================================
     #

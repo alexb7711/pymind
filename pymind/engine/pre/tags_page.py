@@ -13,7 +13,7 @@ This module generates the file that groups and links to all of the tags found. T
 ```
 """
 
-import optparse
+import optparse, sys
 from pathlib import Path
 from typing import TypedDict
 
@@ -86,7 +86,7 @@ def parseInput(args=None) -> TypedDict:
 
 ##======================================================================================================================
 #
-def main(**kwargs) -> bool:
+def main(**kwargs) -> int:
     """!
     @brief Executes the tag page creation engine.
 
@@ -120,7 +120,7 @@ def main(**kwargs) -> bool:
         ## Write the string to disk
         success = __createTagsPage(options["input"], tags)
 
-    return success
+    sys.exit(not success)
 
 
 ##======================================================================================================================
