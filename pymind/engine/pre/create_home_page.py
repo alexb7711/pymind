@@ -95,27 +95,15 @@ def main(**kwargs) -> bool:
         ## Fail the file creation
         return False
 
-    # Create an instance of PyMind
-    pm = pymind.PyMind(**options)
-    pm.run()
-
-    # Retrieve the list of files and tags
-    tags = pm.tags
-
     # Write the string to disk
-    __createLandingPage(options["input"], tags)
+    success = __createLandingPage(options["input"])
 
-    # Re-run PyMind without the `force` and `dry_run` flags
-    pm.force_build = False
-    pm.dry_run = False
-    pm.run()
-
-    return True
+    sys.exit(not success)
 
 
 ##======================================================================================================================
 #
-def __createLandingPage(input: str, tags: TypedDict) -> bool:
+def __createLandingPage(input: str) -> bool:
     """!
     @brief Create the default landing page.
 
@@ -124,33 +112,7 @@ def __createLandingPage(input: str, tags: TypedDict) -> bool:
     # Create output strings
     out_str = """# Home Page\n"""
 
-    # For each tag and files list
-    for k, files in tags.items():
-        ## Create a new section header
-        out_str += f"\n## {k.capitalize()}\n"
-
-        ## Create dummy variable to store the file link
-        link_list = []
-
-        ## For every file in the files list
-        for f in files:
-            ### Create a copy of NEW_LINK and replace with file attributes
-            new_link = NEW_LINK
-            new_link = new_link.replace("%file%", str(Path(f).name))
-            new_link = new_link.replace("%path%", str(Path(f)))
-
-            ### Create another item in the list
-            link_list.append(new_link)
-
-        ## Append the list of files to the output string
-        out_str += ", ".join(link_list)
-
-    out_p = Path(input) / Path("index.md")
-
-    with open(out_p, "w") as f:
-        f.write(out_str)
-
-    return True
+    return False
 
 
 ########################################################################################################################
