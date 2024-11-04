@@ -48,6 +48,22 @@ def parseInput(args=None) -> TypedDict:
         metavar="OUTPUT_DIR",
         help="Use to specify output directory, default is `doc`.",
     )
+    parser.add_option(
+        "-n",
+        "--name",
+        dest="name",
+        default="",
+        metavar="PROJECT_NAME",
+        help="Name of the project, default is an empty string.",
+    )
+    parser.add_option(
+        "-v",
+        "--variable_p",
+        dest="var_p",
+        default="",
+        metavar="VARIABLE_PATH",
+        help="Path to the cached variable directory, default is an empty string.",
+    )
 
     # Parse the input arguments
     (options, args) = parser.parse_args(args)
@@ -55,9 +71,8 @@ def parseInput(args=None) -> TypedDict:
     opts = {
         "input": options.input,
         "output": options.output,
-        "force": True,
-        "engine": False,
-        "dry_run": True,
+        "name": options.name,
+        "var_p": options.var_p,
     }
     return opts
 
