@@ -13,9 +13,9 @@ This module generates the file that groups and links to all of the tags found. T
 ```
 """
 
-import optparse, sys
+import optparse
+import sys
 from pathlib import Path
-from typing import TypedDict
 
 from pymind import utility
 
@@ -28,7 +28,7 @@ VERSION = "0.0.1"
 
 ##======================================================================================================================
 #
-def parseInput(args=None) -> TypedDict:
+def parseInput(args=None) -> dict:
     """!
     @brief Read in the inputs and create a dictionary of parameters
 
@@ -114,18 +114,17 @@ def main(**kwargs) -> int:
     var = utility.cache.unPickleVar(options["var_p"], options["name"])
 
     # Ensure the cached variables were loaded
-    if success:
-        tags = var["tags"]
+    tags = var["tags"]
 
-        ## Write the string to disk
-        success = __createTagsPage(options["input"], tags)
+    # Write the string to disk
+    success = __createTagsPage(options["input"], tags)
 
     sys.exit(not success)
 
 
 ##======================================================================================================================
 #
-def __createTagsPage(input: str, tags: TypedDict) -> bool:
+def __createTagsPage(input: str, tags: dict) -> bool:
     """!
     @brief Create an HTML file given a dictionary of tags provided
 

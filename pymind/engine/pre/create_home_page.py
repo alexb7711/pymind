@@ -6,11 +6,12 @@ This module generates the default landing page for PyMind.
 """
 
 import optparse
-from typing import TypedDict
+import sys
 from pathlib import Path
+from typing import TypedDict
 
 import pymind
-
+from pymind import utility
 
 ##======================================================================================================================
 # CONSTANTS
@@ -95,24 +96,55 @@ def main(**kwargs) -> bool:
         ## Fail the file creation
         return False
 
+    # Retrieve the list of files and tags
+    var = utility.cache.unPickleVar(options["var_p"], options["name"])
+
     # Write the string to disk
-    success = __createLandingPage(options["input"])
+    success = __createLandingPage(
+        var["build_files"], options["input"], options["output"]
+    )
 
     sys.exit(not success)
 
 
 ##======================================================================================================================
 #
-def __createLandingPage(input: str) -> bool:
+def __createLandingPage(bf: list, input: str, output: str) -> bool:
     """!
     @brief Create the default landing page.
+
+    @param bf
+    @param output
 
     @return True if successful, false if not
     """
     # Create output strings
-    out_str = """# Home Page\n"""
+    out_str = """# Home Page
+    # UPDATES
 
-    return False
+    # Recently Added/Updated
+
+    %recent%
+    """
+
+    # Recently added/updated files
+    recent = []
+    for f in bf:
+        new_link = NEW_LINK
+        new_link = new_link.replace("%file%", str(Path(f).name))
+        new_link = new_link.replace("%path%", str(Path(f)))
+
+        recent.append(new_link)
+
+    recent = "\n".join(recent)
+
+    out_str = out_str.replace("%recent%", recent)
+
+    out_p = Path(input) / Path("index.md")
+    with open(out_p, "w") as f:
+        f.write(out_str)
+
+    return True
 
 
 ########################################################################################################################
