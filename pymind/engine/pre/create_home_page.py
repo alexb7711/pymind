@@ -119,12 +119,13 @@ def __createLandingPage(bf: list, input: str, output: str) -> bool:
     @return True if successful, false if not
     """
     # Create output strings
-    out_str = """# Home Page
-    # UPDATES
+    out_str = """ # Home
+# UPDATES
+%update%
 
-    # Recently Added/Updated
+# Recently Added/Updated
 
-    %recent%
+%recent%
     """
 
     # Recently added/updated files
