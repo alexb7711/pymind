@@ -128,6 +128,17 @@ def __createLandingPage(bf: list, input: str, output: str) -> bool:
 %recent%
     """
 
+    # Include the `uptades.md` file
+    updates = ""
+    try:
+        with open(Path(input) / Path("updates.md")) as f:
+            updates = f.read()
+            out_str = out_str.replace("%update%", updates)
+    except:
+        print("COULD NOT FIND UPDATES FILE.\nREMOVING SECTION FROM LANDING PAGE.")
+        out_str = out_str.replace("%update%", "")
+
+
     # Recently added/updated files
     recent = []
     for f in bf:
