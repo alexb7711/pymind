@@ -1,22 +1,16 @@
 """!
-@file tags_page.py
-@package Tags Page
+@file creahe_home_page.py
+@package Home (Landing) Page
 
-This module generates the file that groups and links to all of the tags found. The file structure will be as follows:
-
-```markdown
-## Tag 1
-[file1](path/to/file), [file2](path/to/file), [file3](path/to/file)
-
-## Tag 2
-[file2](path/to/file), [file3](path/to/file)
-```
+This module generates the default landing page for PyMind.
 """
 
 import optparse
 import sys
 from pathlib import Path
+from typing import TypedDict
 
+import pymind
 from pymind import utility
 
 ##======================================================================================================================
@@ -28,7 +22,7 @@ VERSION = "0.0.1"
 
 ##======================================================================================================================
 #
-def parseInput(args=None) -> dict:
+def parseInput(args=None) -> TypedDict:
     """!
     @brief Read in the inputs and create a dictionary of parameters
 
@@ -86,7 +80,7 @@ def parseInput(args=None) -> dict:
 
 ##======================================================================================================================
 #
-def main(**kwargs) -> int:
+def main(**kwargs) -> bool:
     """!
     @brief Executes the tag page creation engine.
 
@@ -94,68 +88,71 @@ def main(**kwargs) -> int:
 
     @return True if creation was successful, False if creation failed
     """
-    # Success flag
-    success = True
-
     # Parse the input arguments
     options = parseInput()
 
     # If the input or output directory were not provided
-    if (
-        not options["input"]
-        or not options["output"]
-        or not options["name"]
-        or not options["var_p"]
-    ):
+    if not options["input"] or not options["output"]:
         ## Fail the file creation
         return False
 
     # Retrieve the list of files and tags
     var = utility.cache.unPickleVar(options["var_p"], options["name"])
 
-    # Ensure the cached variables were loaded
-    tags = var["tags"]
-
     # Write the string to disk
-    success = __createTagsPage(options["input"], tags)
+    success = __createLandingPage(
+        var["build_files"], options["input"], options["output"]
+    )
 
     sys.exit(not success)
 
 
 ##======================================================================================================================
 #
-def __createTagsPage(input: str, tags: dict) -> bool:
+def __createLandingPage(bf: list, input: str, output: str) -> bool:
     """!
-    @brief Create an HTML file given a dictionary of tags provided
+    @brief Create the default landing page.
+
+    @param bf
+    @param output
 
     @return True if successful, false if not
     """
     # Create output strings
-    out_str = """# Tags Page\n"""
+    out_str = """ # Home
+# UPDATES
+%update%
 
-    # For each tag and files list
-    for k, files in tags.items():
-        ## Create a new section header
-        out_str += f"\n## {k.capitalize()}\n"
+# Recently Added/Updated
 
-        ## Create dummy variable to store the file link
-        link_list = []
+%recent%
+    """
 
-        ## For every file in the files list
-        for f in files:
-            ### Create a copy of NEW_LINK and replace with file attributes
-            new_link = NEW_LINK
-            new_link = new_link.replace("%file%", str(Path(f).name))
-            new_link = new_link.replace("%path%", str(Path(f)))
+    # Include the `uptades.md` file
+    updates = ""
+    try:
+        with open(Path(input) / Path("updates.md")) as f:
+            updates = f.read()
+            out_str = out_str.replace("%update%", updates)
+    except:
+        print("COULD NOT FIND UPDATES FILE.\nREMOVING SECTION FROM LANDING PAGE.")
+        out_str = out_str.replace("%update%", "")
 
-            ### Create another item in the list
-            link_list.append(new_link)
 
-        ## Append the list of files to the output string
-        out_str += ", ".join(link_list)
+    # Recently added/updated files
+    recent = []
+    for f in bf:
+        new_link = NEW_LINK
+        new_link = new_link.replace("%file%", str(Path(f).name))
+        new_link = new_link.replace("%path%", str(Path(f)))
 
-    out_p = Path(input) / Path("tags_page.md")
+        recent.append(new_link)
 
+    recent = "\n".join(recent)
+
+    out_str = out_str.replace("%recent%", recent)
+
+    out_p = Path(input) / Path("index.md")
     with open(out_p, "w") as f:
         f.write(out_str)
 

@@ -109,7 +109,7 @@ class TestPyMindCore(unittest.TestCase):
         self.assertEqual(pm.input, Path(TestPyMindCore.INPUT).absolute())
 
         # Check the number of elements
-        self.assertEqual(len(pm.files_found), 5)
+        self.assertEqual(len(pm.files_found), 6)
 
         return
 
@@ -176,7 +176,7 @@ class TestPyMindCore(unittest.TestCase):
 
         # Count the number of files output
         fc = len(glob.glob(os.path.join(TestPyMindCore.OUTPUT, "*")))
-        self.assertEqual(fc, 5)
+        self.assertEqual(fc, 6)
 
         return
 
