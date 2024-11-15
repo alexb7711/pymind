@@ -1,0 +1,2 @@
+- Hello, PyMind!
+- Created landing page script
