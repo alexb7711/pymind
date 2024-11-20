@@ -13,6 +13,8 @@ from typing import TypedDict
 import pymind
 from pymind import utility
 
+logger = logging.getLogger("PYMIND")
+
 ##======================================================================================================================
 # CONSTANTS
 
@@ -129,6 +131,7 @@ def __createLandingPage(bf: list, input: str, output: str) -> bool:
     """
 
     # Include the `uptades.md` file
+    logger.debug("Landing: Updates section")
     updates = ""
     try:
         with open(Path(input) / Path("updates.md")) as f:
@@ -138,8 +141,8 @@ def __createLandingPage(bf: list, input: str, output: str) -> bool:
         print("COULD NOT FIND UPDATES FILE.\nREMOVING SECTION FROM LANDING PAGE.")
         out_str = out_str.replace("%update%", "")
 
-
     # Recently added/updated files
+    logger.debug("Landing: Recently updated")
     recent = []
     for f in bf:
         new_link = NEW_LINK
@@ -153,6 +156,7 @@ def __createLandingPage(bf: list, input: str, output: str) -> bool:
     out_str = out_str.replace("%recent%", recent)
 
     out_p = Path(input) / Path("index.md")
+    logger.debug(f"Tags: Writing to disk {out_p}")
     with open(out_p, "w") as f:
         f.write(out_str)
 

@@ -19,6 +19,8 @@ from pathlib import Path
 
 from pymind import utility
 
+logger = logging.getLogger("PYMIND")
+
 ##======================================================================================================================
 # CONSTANTS
 
@@ -134,6 +136,7 @@ def __createTagsPage(input: str, tags: dict) -> bool:
     out_str = """# Tags Page\n"""
 
     # For each tag and files list
+    logger.debug("Tags: Searching for tags")
     for k, files in tags.items():
         ## Create a new section header
         out_str += f"\n## {k.capitalize()}\n"
@@ -152,10 +155,12 @@ def __createTagsPage(input: str, tags: dict) -> bool:
             link_list.append(new_link)
 
         ## Append the list of files to the output string
+        logger.debug("Tags: Creating a list out of the tags")
         out_str += ", ".join(link_list)
 
     out_p = Path(input) / Path("tags_page.md")
 
+    logger.debug(f"Tags: Writing to disk {out_p}")
     with open(out_p, "w") as f:
         f.write(out_str)
 
