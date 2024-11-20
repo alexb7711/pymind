@@ -6,6 +6,7 @@ This module generates the default landing page for PyMind.
 """
 
 import optparse
+import logging
 import sys
 from pathlib import Path
 from typing import TypedDict

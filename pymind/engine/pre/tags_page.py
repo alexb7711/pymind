@@ -14,6 +14,7 @@ This module generates the file that groups and links to all of the tags found. T
 """
 
 import optparse
+import logging
 import sys
 from pathlib import Path
 

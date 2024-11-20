@@ -28,7 +28,7 @@ def loadCacheJSON(cache_file: Path):
 
     @return Return dictionary of files and modified times
     """
-    logger.degbug(f"JSON: Attempting to load {cache_file}")
+    logger.debug(f"JSON: Attempting to load {cache_file}")
 
     try:
         # Ensure the cached file exists
@@ -36,7 +36,7 @@ def loadCacheJSON(cache_file: Path):
             ## Read in the cached files from the previous run
             with open(cache_file, "r") as cf:
                 run_data = json.load(cf)
-                logger.degbug("Successfully loaded")
+                logger.debug("Successfully loaded")
                 return run_data
     except:
         logger.warning("Failed to load")
@@ -52,7 +52,7 @@ def writeCacheJSON(cache_dir: Path, var: Any):
     @param cache_dir Path to the directory
     @param var Variable to be cached as JSON file
     """
-    logger.degbug(f"JSON: Attempting to write to {cache_dir}")
+    logger.debug(f"JSON: Attempting to write to {cache_dir}")
 
     # Create JSON object
     file_data = json.dumps(var, indent=4)
@@ -79,7 +79,7 @@ def pickleVar(var: Any, path: Path, name: str):
     @param path Directory to cache the variable in
     @param name Name of the file
     """
-    logger.degbug(f"Pickle: Attempting to load {path}/{name}")
+    logger.debug(f"Pickle: Attempting to load {path}/{name}")
 
     # Variables
     output_f = path / Path(name)
@@ -120,7 +120,7 @@ def unPickleVar(path: Path, name: str) -> Any:
 
     @return var The loaded cached pickle file
     """
-    logger.degbug(f"Pickle: Attempting write to {path}/{name}")
+    logger.debug(f"Pickle: Attempting write to {path}/{name}")
 
     # Variables
     var: Any = None
