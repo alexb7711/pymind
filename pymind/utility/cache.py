@@ -6,9 +6,12 @@ plugin generating scripts.
 """
 
 import json
+import logging
 import pickle
 from pathlib import Path
 from typing import Any
+
+logger = logging.getLogger("PYMIND")
 
 ########################################################################################################################
 # FILE DATABASE CACHING
@@ -25,14 +28,18 @@ def loadCacheJSON(cache_file: Path):
 
     @return Return dictionary of files and modified times
     """
+    logger.debug(f"JSON: Attempting to load {cache_file}")
+
     try:
         # Ensure the cached file exists
         if cache_file.exists():
             ## Read in the cached files from the previous run
             with open(cache_file, "r") as cf:
                 run_data = json.load(cf)
+                logger.debug("JSON: Successfully loaded file")
                 return run_data
     except:
+        logger.warning("JSON: Failed to load")
         return {}
 
 
@@ -45,6 +52,8 @@ def writeCacheJSON(cache_dir: Path, var: Any):
     @param cache_dir Path to the directory
     @param var Variable to be cached as JSON file
     """
+    logger.debug(f"JSON: Attempting to write to {cache_dir}")
+
     # Create JSON object
     file_data = json.dumps(var, indent=4)
 
@@ -70,6 +79,8 @@ def pickleVar(var: Any, path: Path, name: str):
     @param path Directory to cache the variable in
     @param name Name of the file
     """
+    logger.debug(f"PICKLE: Attempting to load {path}/{name}")
+
     # Variables
     output_f = path / Path(name)
 
@@ -88,9 +99,11 @@ def pickleVar(var: Any, path: Path, name: str):
             if not output_f.exists():
                 raise Exception(f"ERROR: PICKLING DID NOT CREATE THE FILE: {f}")
 
+            logger.debug("PICKLE: Successfully loaded")
+
     except Exception as e:
         # Print exception
-        print(f"UNABLE TO CACHE {name} AT THE LOCATION {output_f}")
+        logger.warning(f"PICKLE: UNABLE TO CACHE {name} AT THE LOCATION {output_f}")
         raise e
 
     return
@@ -107,6 +120,8 @@ def unPickleVar(path: Path, name: str) -> Any:
 
     @return var The loaded cached pickle file
     """
+    logger.debug(f"PICKLE: Attempting write to {path}/{name}")
+
     # Variables
     var: Any = None
     output_f = path / Path(name)
@@ -122,9 +137,11 @@ def unPickleVar(path: Path, name: str) -> Any:
             # Attempt to create the cached variable
             var = pickle.load(f)
 
+            logger.debug("PICKLE: Successfully written")
+
     except Exception as e:
         # Print exception
-        print(f"UNABLE TO READ {name} FROM THE LOCATION {output_f}")
+        logger.warning(f"PICKLE: UNABLE TO READ {name} FROM THE LOCATION {output_f}")
         raise e
 
     return var
@@ -138,6 +155,8 @@ def deleteCacheVar(path: Path, name: str):
 
     @param p Path to the cache variable.
     """
+    logger.debug(f"CACHE: Deleting cached variable {path}/{name}")
+
     try:
         # Construct the path
         cached_f = path / Path(name)
@@ -148,9 +167,11 @@ def deleteCacheVar(path: Path, name: str):
         # Delete the cached variable
         cached_f.unlink(missing_ok=True)
 
+        logger.debug("CACHE: Successfully deleted")
+
     except Exception as e:
         # Print exception
-        print(f"UNABLE TO REMOVE {name} FROM THE LOCATION {cached_f}")
+        logger.warning(f"CACHE: UNABLE TO REMOVE {name} FROM THE LOCATION {cached_f}")
         raise e
 
     return

@@ -5,8 +5,10 @@
 """
 
 import re
+import logging
 from pathlib import Path
 
+logger = logging.getLogger("PYMIND")
 
 ##======================================================================================================================
 #
@@ -21,6 +23,7 @@ def getTags(files: list[str]) -> dict:
     tags = {}
 
     # For each file in the 'build files' list
+    logger.debug("TAGS: Searching for tags in files list.")
     for f in files:
         ## Open the build file
         with open(f, "r") as txt:
@@ -56,6 +59,7 @@ def __updateTags(fn: str, tags: dict, matches: list) -> dict:
     @return Update dictionary of tag => [list of files with tag]
     """
     # Loop through each matched tag found in `fn`
+    logger.debug("TAGS: Updating dictionary of tags")
     for m in matches:
         ## If the tag already exists
         if tags.get(m):
