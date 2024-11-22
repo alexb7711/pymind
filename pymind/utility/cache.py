@@ -79,7 +79,7 @@ def pickleVar(var: Any, path: Path, name: str):
     @param path Directory to cache the variable in
     @param name Name of the file
     """
-    logger.debug(f"Pickle: Attempting to load {path}/{name}")
+    logger.debug(f"PICKLE: Attempting to load {path}/{name}")
 
     # Variables
     output_f = path / Path(name)
@@ -99,11 +99,11 @@ def pickleVar(var: Any, path: Path, name: str):
             if not output_f.exists():
                 raise Exception(f"ERROR: PICKLING DID NOT CREATE THE FILE: {f}")
 
-            logger.debug("Pickle: Successfully loaded")
+            logger.debug("PICKLE: Successfully loaded")
 
     except Exception as e:
         # Print exception
-        logger.warning(f"Pickle: UNABLE TO CACHE {name} AT THE LOCATION {output_f}")
+        logger.warning(f"PICKLE: UNABLE TO CACHE {name} AT THE LOCATION {output_f}")
         raise e
 
     return
@@ -120,7 +120,7 @@ def unPickleVar(path: Path, name: str) -> Any:
 
     @return var The loaded cached pickle file
     """
-    logger.debug(f"Pickle: Attempting write to {path}/{name}")
+    logger.debug(f"PICKLE: Attempting write to {path}/{name}")
 
     # Variables
     var: Any = None
@@ -137,11 +137,11 @@ def unPickleVar(path: Path, name: str) -> Any:
             # Attempt to create the cached variable
             var = pickle.load(f)
 
-            logger.debug("Pickle: Successfully written")
+            logger.debug("PICKLE: Successfully written")
 
     except Exception as e:
         # Print exception
-        logger.warning(f"Pickle: UNABLE TO READ {name} FROM THE LOCATION {output_f}")
+        logger.warning(f"PICKLE: UNABLE TO READ {name} FROM THE LOCATION {output_f}")
         raise e
 
     return var
@@ -155,7 +155,7 @@ def deleteCacheVar(path: Path, name: str):
 
     @param p Path to the cache variable.
     """
-    logger.debug(f"Cache: Deleting cached variable {path}/{name}")
+    logger.debug(f"CACHE: Deleting cached variable {path}/{name}")
 
     try:
         # Construct the path
@@ -167,11 +167,11 @@ def deleteCacheVar(path: Path, name: str):
         # Delete the cached variable
         cached_f.unlink(missing_ok=True)
 
-        logger.debug("Cache: Successfully deleted")
+        logger.debug("CACHE: Successfully deleted")
 
     except Exception as e:
         # Print exception
-        logger.warning(f"Cache: UNABLE TO REMOVE {name} FROM THE LOCATION {cached_f}")
+        logger.warning(f"CACHE: UNABLE TO REMOVE {name} FROM THE LOCATION {cached_f}")
         raise e
 
     return
