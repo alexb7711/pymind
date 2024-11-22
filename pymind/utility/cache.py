@@ -36,10 +36,10 @@ def loadCacheJSON(cache_file: Path):
             ## Read in the cached files from the previous run
             with open(cache_file, "r") as cf:
                 run_data = json.load(cf)
-                logger.debug("Successfully loaded")
+                logger.debug("JSON: Successfully loaded file")
                 return run_data
     except:
-        logger.warning("Failed to load")
+        logger.warning("JSON: Failed to load")
         return {}
 
 
@@ -99,11 +99,11 @@ def pickleVar(var: Any, path: Path, name: str):
             if not output_f.exists():
                 raise Exception(f"ERROR: PICKLING DID NOT CREATE THE FILE: {f}")
 
-            logger.debug("Successfully loaded")
+            logger.debug("Pickle: Successfully loaded")
 
     except Exception as e:
         # Print exception
-        logger.warning(f"UNABLE TO CACHE {name} AT THE LOCATION {output_f}")
+        logger.warning(f"Pickle: UNABLE TO CACHE {name} AT THE LOCATION {output_f}")
         raise e
 
     return
@@ -137,11 +137,11 @@ def unPickleVar(path: Path, name: str) -> Any:
             # Attempt to create the cached variable
             var = pickle.load(f)
 
-            logger.debug("Successfully written")
+            logger.debug("Pickle: Successfully written")
 
     except Exception as e:
         # Print exception
-        logger.warning(f"UNABLE TO READ {name} FROM THE LOCATION {output_f}")
+        logger.warning(f"Pickle: UNABLE TO READ {name} FROM THE LOCATION {output_f}")
         raise e
 
     return var
@@ -155,7 +155,7 @@ def deleteCacheVar(path: Path, name: str):
 
     @param p Path to the cache variable.
     """
-    logger.debug(f"Deleting cached variable {path}/{name}")
+    logger.debug(f"Cache: Deleting cached variable {path}/{name}")
 
     try:
         # Construct the path
@@ -167,11 +167,11 @@ def deleteCacheVar(path: Path, name: str):
         # Delete the cached variable
         cached_f.unlink(missing_ok=True)
 
-        logger.debug("Successfully deleted")
+        logger.debug("Cache: Successfully deleted")
 
     except Exception as e:
         # Print exception
-        logger.warning(f"UNABLE TO REMOVE {name} FROM THE LOCATION {cached_f}")
+        logger.warning(f"Cache: UNABLE TO REMOVE {name} FROM THE LOCATION {cached_f}")
         raise e
 
     return
