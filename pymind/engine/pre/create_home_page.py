@@ -122,7 +122,7 @@ def __createLandingPage(bf: list, input: str, output: str) -> bool:
     @return True if successful, false if not
     """
     # Create output strings
-    out_str = """ # Home
+    out_str = """# Home
 # UPDATES
 %update%
 
