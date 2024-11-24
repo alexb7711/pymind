@@ -1,17 +1,23 @@
 """!
-@file creahe_home_page.py
-@package Home (Landing) Page
+@file navigation_bar.py
+@package Tags Page
 
-This module generates the default landing page for PyMind.
+This module generates the file that groups and links to all of the tags found. The file structure will be as follows:
+
+```markdown
+## Tag 1
+[file1](path/to/file), [file2](path/to/file), [file3](path/to/file)
+
+## Tag 2
+[file2](path/to/file), [file3](path/to/file)
+```
 """
 
 import optparse
 import logging
 import sys
 from pathlib import Path
-from typing import TypedDict
 
-import pymind
 from pymind import utility
 
 logger = logging.getLogger("PYMIND")
@@ -19,13 +25,19 @@ logger = logging.getLogger("PYMIND")
 ##======================================================================================================================
 # CONSTANTS
 
-NEW_LINK = "[%file%](%path%)"
 VERSION = "0.0.1"
+NAV_BAR = """<div id="navigation">
+<ul>
+%list%
+</ul>
+</div>
+"""
+LIST_ITEM = '<li><a class="%class%" href="%item%">%name%</a></li>'
 
 
 ##======================================================================================================================
 #
-def parseInput(args=None) -> TypedDict:
+def parseInput(args=None) -> dict:
     """!
     @brief Read in the inputs and create a dictionary of parameters
 
@@ -83,7 +95,7 @@ def parseInput(args=None) -> TypedDict:
 
 ##======================================================================================================================
 #
-def main(**kwargs) -> bool:
+def main(**kwargs) -> int:
     """!
     @brief Executes the tag page creation engine.
 
@@ -91,96 +103,90 @@ def main(**kwargs) -> bool:
 
     @return True if creation was successful, False if creation failed
     """
+    # Success flag
+    success = True
+
     # Parse the input arguments
     options = parseInput()
 
     # If the input or output directory were not provided
-    if not options["input"] or not options["output"]:
+    if (
+        not options["input"]
+        or not options["output"]
+        or not options["name"]
+        or not options["var_p"]
+    ):
         ## Fail the file creation
         return False
 
     # Retrieve the list of files and tags
     var = utility.cache.unPickleVar(options["var_p"], options["name"])
 
+    # Ensure the cached variables were loaded
+    tags = var["tags"]
+    files = var["files"]
+
     # Write the string to disk
-    success = __createLandingPage(
-        var["build_files"], options["input"], options["output"]
-    )
+    success = __navigationBar(options["output"], tags, files)
 
     sys.exit(not success)
 
 
 ##======================================================================================================================
 #
-def __includeFile(in_f: Path, out_str: str, token: str) -> str:
+def __navigationBar(input: str, tags: dict, files: dict) -> bool:
     """!
-    @brief Include text of a file in the output string at the location of the token
+    @brief Inject custom HTML navigation bar to each file
 
-    @param in_f Path to the file
-    @param out_str String to be updated
-    @param token
-
-    @return Updated output string
-    """
-    logger.debug(f"LANDING: Including text from {in_f}")
-    updates = ""
-    try:
-        with open(in_f) as f:
-            updates = f.read()
-            out_str = out_str.replace(token, updates)
-    except:
-        logger.warning(
-            f"LANDING: COULD NOT FIND {in_f}.\nREMOVING SECTION FROM LANDING PAGE."
-        )
-        out_str = out_str.replace(token, "")
-
-    return out_str
-
-
-##======================================================================================================================
-#
-def __createLandingPage(bf: list, input: str, output: str) -> bool:
-    """!
-    @brief Create the default landing page.
-
-    @param bf
-    @param output
+    The navigation bar items are created based on the `nav` tag. When the navigation bar is being applied to a file
+    with the `nav` tag, a custom `active` class is also included to highlight the currently selected tab.
 
     @return True if successful, false if not
     """
-    # Create output strings
-    out_str = """%index%
-# UPDATES
-%update%
+    # List navigation bar items
+    items = tags.get("nav", [])
+    items = [Path(input) / Path(x).name for x in items]
+    items = [str(x.with_suffix(".html")) for x in items]
 
-# Recently Added/Updated
+    # If `index.py` is not included
+    index_p = Path(input) / Path("index.md")
+    if not items or index_p not in items:
+        logger.warning("NAV: Index has not been included, adding it to the list!")
+        items.append(str(index_p))
+        files[index_p] = 0
 
-%recent%
-    """
-    # Include the `index.md` file
-    out_str = __includeFile(Path(input) / Path("index.md"), out_str, "%index%")
+    # Create unordered list
+    logger.debug("NAV: Creating list of navigation bar items")
+    ul = []
+    for i in items:
+        new_item = LIST_ITEM
+        new_item = new_item.replace("%item%", i)
+        new_item = new_item.replace("%name%", Path(i).name)
+        new_item = new_item.replace("%class%", "%" + str(Path(i).name) + "%")
+        ul.append(new_item)
 
-    # Include the `uptades.md` file
-    out_str = __includeFile(Path(input) / Path("updates.md"), out_str, "%update%")
+    # Generate navigation bar source
+    logger.debug("NAV: Generating navigation bar HTML.")
+    ul = "\n".join(ul)
+    nav_bar = NAV_BAR.replace("%list%", ul)
 
-    # Recently added/updated files
-    logger.debug("LANDING: Recently updated")
-    recent = []
-    for f in bf:
-        new_link = NEW_LINK
-        new_link = new_link.replace("%file%", str(Path(f).name))
-        new_link = new_link.replace("%path%", str(Path(f)))
+    # Inject Navigation bar to each file
+    logger.debug(f"NAV: Beginning navigation bar code injection")
 
-        recent.append(new_link)
+    # For every file
+    logger.info(f"NAV: Updating `nav` tagged files.")
+    for file in Path(input).glob("*.html"):
+        # [
+        #     Path(input) / Path(str(Path(x).name)).with_suffix(".html") for x in files
+        # ]:
+        logger.debug(f"NAV: Injecting navigation bar HTML to {file}")
 
-    recent = "\n".join(recent)
+        with open(file, "r") as f:
+            file_content = f.read()
 
-    out_str = out_str.replace("%recent%", recent)
-
-    out_p = Path(input) / Path("index.md")
-    logger.debug(f"LOGGER: Writing to disk {out_p}")
-    with open(out_p, "w") as f:
-        f.write(out_str)
+        with open(file, "w") as f:
+            f.seek(0)
+            f.write(nav_bar + file_content)
 
     return True
 

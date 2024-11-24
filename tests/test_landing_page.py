@@ -61,7 +61,6 @@ class TestLandingPage(unittest.TestCase):
     ##==================================================================================================================
     #
     def deleteTagsFile(self):
-        Path(f"{TestLandingPage.INPUT}/index.md").unlink(missing_ok=True)
         Path(f"{self.createCachePaths()}/example/index.md").unlink(missing_ok=True)
 
     ##==================================================================================================================
