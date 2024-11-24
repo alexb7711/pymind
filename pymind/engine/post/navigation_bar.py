@@ -19,6 +19,7 @@ import sys
 from pathlib import Path
 
 from pymind import utility
+from pymind.utility.modfile import replaceText
 
 logger = logging.getLogger("PYMIND")
 
@@ -174,19 +175,10 @@ def __navigationBar(input: str, tags: dict, files: dict) -> bool:
     logger.debug(f"NAV: Beginning navigation bar code injection")
 
     # For every file
-    logger.info(f"NAV: Updating `nav` tagged files.")
+    logger.debug(f"NAV: Updating `nav` tagged files.")
     for file in Path(input).glob("*.html"):
-        # [
-        #     Path(input) / Path(str(Path(x).name)).with_suffix(".html") for x in files
-        # ]:
-        logger.debug(f"NAV: Injecting navigation bar HTML to {file}")
-
-        with open(file, "r") as f:
-            file_content = f.read()
-
-        with open(file, "w") as f:
-            f.seek(0)
-            f.write(nav_bar + file_content)
+        # Inject the navigation bar
+        replaceText(file, "%nav%", nav_bar)
 
     return True
 
