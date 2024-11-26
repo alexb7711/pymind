@@ -356,7 +356,7 @@ class PyMind:
                 md = f.read()
 
             ### Convert the markdown to HTML
-            content = markdown.markdown(md)
+            content = markdown.markdown(md, extensions=["toc"])
 
             ### Inject content into html file
             html = PyMind.TEMPLATE.replace("%content%", content)
