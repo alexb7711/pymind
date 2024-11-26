@@ -1,8 +1,8 @@
 """!
-@file creahe_home_page.py
-@package Home (Landing) Page
+@file footer.py
+@package Create a common footer
 
-This module generates the default landing page for PyMind.
+This module generates the footer used in the generated website.
 """
 
 import optparse
