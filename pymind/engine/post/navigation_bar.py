@@ -160,9 +160,10 @@ def __navigationBar(input: str, tags: dict, files: dict) -> bool:
     logger.debug("NAV: Creating list of navigation bar items")
     ul = []
     for i in items:
+        i = Path(i)
         new_item = LIST_ITEM
-        new_item = new_item.replace("%item%", i)
-        new_item = new_item.replace("%name%", Path(i).name)
+        new_item = new_item.replace("%item%", str(i.with_suffix(".html")))
+        new_item = new_item.replace("%name%", str(i.stem))
         new_item = new_item.replace("%class%", "%" + str(Path(i).name) + "%")
         ul.append(new_item)
 
