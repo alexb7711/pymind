@@ -1,31 +1,32 @@
 """!
 @file footer.py
-@package Create a common footer
-
-This module generates the footer used in the generated website.
+@package Injects footer into the website
 """
 
-import optparse
 import logging
+import optparse
 import sys
 from pathlib import Path
-from typing import TypedDict
 
-import pymind
+import markdown
 from pymind import utility
+from pymind.utility.modfile import replaceText
 
 logger = logging.getLogger("PYMIND")
 
 ##======================================================================================================================
 # CONSTANTS
 
-NEW_LINK = "[%file%](%path%)"
 VERSION = "0.0.1"
+FOOTER = """<footer>
+%footer%
+</footer>
+"""
 
 
 ##======================================================================================================================
 #
-def parseInput(args=None) -> TypedDict:
+def parseInput(args=None) -> dict:
     """!
     @brief Read in the inputs and create a dictionary of parameters
 
@@ -83,7 +84,7 @@ def parseInput(args=None) -> TypedDict:
 
 ##======================================================================================================================
 #
-def main(**kwargs) -> bool:
+def main(**kwargs) -> int:
     """!
     @brief Executes the tag page creation engine.
 
@@ -91,11 +92,19 @@ def main(**kwargs) -> bool:
 
     @return True if creation was successful, False if creation failed
     """
+    # Success flag
+    success = True
+
     # Parse the input arguments
     options = parseInput()
 
     # If the input or output directory were not provided
-    if not options["input"] or not options["output"]:
+    if (
+        not options["input"]
+        or not options["output"]
+        or not options["name"]
+        or not options["var_p"]
+    ):
         ## Fail the file creation
         return False
 
@@ -103,84 +112,52 @@ def main(**kwargs) -> bool:
     var = utility.cache.unPickleVar(options["var_p"], options["name"])
 
     # Write the string to disk
-    success = __createLandingPage(
-        var["build_files"], options["input"], options["output"]
-    )
+    success = __injectFooter(options["input"], options["output"])
 
     sys.exit(not success)
 
 
 ##======================================================================================================================
 #
-def __includeFile(in_f: Path, out_str: str, token: str) -> str:
+def __injectFooter(input: str, output: str) -> bool:
     """!
-    @brief Include text of a file in the output string at the location of the token
+    @brief Inject custom footer into each file
 
-    @param in_f Path to the file
-    @param out_str String to be updated
-    @param token
-
-    @return Updated output string
-    """
-    logger.debug(f"LANDING: Including text from {in_f}")
-    updates = ""
-    try:
-        with open(in_f) as f:
-            updates = f.read()
-            out_str = out_str.replace(token, updates)
-    except:
-        logger.warning(
-            f"LANDING: COULD NOT FIND {in_f}.\nREMOVING SECTION FROM LANDING PAGE."
-        )
-        out_str = out_str.replace(token, "")
-
-    return out_str
-
-
-##======================================================================================================================
-#
-def __createLandingPage(bf: list, input: str, output: str) -> bool:
-    """!
-    @brief Create the default landing page.
-
-    @param bf
-    @param output
+    @param input Directory with markdown files
+    @param input Directory with HTML files
 
     @return True if successful, false if not
     """
-    # Create output strings
-    out_str = """%index%
-# UPDATES
-%update%
 
-# Recently Added/Updated
+    # Check if the footer file exists
+    footer_p = Path(input) / Path("footer.md")
+    if not footer_p.exists():
+        logger.warning(f"FOOTER: Footer file was not found, exiting early.")
+        return False
 
-%recent%
-    """
-    # Include the `index.md` file
-    out_str = __includeFile(Path(input) / Path("index.md"), out_str, "%index%")
+    # Get the footer html
+    with open(footer_p, "r") as f:
+        footer_md = f.read()
 
-    # Include the `uptades.md` file
-    out_str = __includeFile(Path(input) / Path("updates.md"), out_str, "%update%")
+    # Convert the footer markdown to html
+    footer_html = markdown.markdown(footer_md)
 
-    # Recently added/updated files
-    logger.debug("LANDING: Recently updated")
-    recent = []
-    for f in bf:
-        new_link = NEW_LINK
-        new_link = new_link.replace("%file%", str(Path(f).name))
-        new_link = new_link.replace("%path%", str(Path(f)))
+    # For every file found in the input directory
+    logger.debug(f"FOOTER: Looping though each converted file.")
+    for file in Path(output).glob("*.html"):
+        logger.debug(f"FOOTER: Updating footer in: {file}.")
+        with open(file, "r+") as f:
+            ## Read in the file
+            html = f.readlines()
 
-        recent.append(new_link)
+            ## Inject footer two lines up from the bottom of the file
+            html[-2] = FOOTER.replace("%footer%", footer_html) + "\n" + html[-2]
 
-    recent = "\n".join(recent)
+            ## Joint html back together
+            html = "".join(html)
 
-    out_str = out_str.replace("%recent%", recent)
-
-    out_p = Path(input) / Path("index.md")
-    logger.debug(f"LOGGER: Writing to disk {out_p}")
-    with open(out_p, "w") as f:
-        f.write(out_str)
+            ## Inject the footer
+            f.write(html)
 
     return True
 
