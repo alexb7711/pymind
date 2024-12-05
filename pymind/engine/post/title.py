@@ -144,7 +144,7 @@ def __title(input: str) -> bool:
     logger.debug(f"TITLE: Updating `title` for each file.")
     for file in Path(input).glob("*.html"):
         # Inject the title bar
-        replaceText(file, "%title%", file.name)
+        replaceText(file, "%title%", file.stem)
 
     return True
 
