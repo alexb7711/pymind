@@ -231,7 +231,7 @@ class PyMind:
         """!
         @brief Run the PyMind pre-processor.
         """
-        # Create a copy of the input directory into a orary directory
+        # Create a copy of the input directory into a temporary directory
         self.__copyInputDirectory()
 
         # Get the list of files to convert
