@@ -60,33 +60,14 @@ class TestLandingPage(unittest.TestCase):
 
     ##==================================================================================================================
     #
-    def deleteTagsFile(self):
-        Path(f"{self.createCachePaths()}/example/index.md").unlink(missing_ok=True)
-
-    ##==================================================================================================================
-    #
     def test_file_creation(self):
         pm = self.getPM(force=True)
         pm.run()
 
-        # Get the cache path
-        cache_d = self.createCachePaths()
-        index_md = cache_d / Path("example/index.md")
-
-        # Ensure the tags file is created
-        self.assertTrue(
-            index_md.exists(),
-            f"The tags page was not created: {index_md}",
-        )
-
-        # Verify the tags file was converted
-        index_html = Path(f"{TestLandingPage.OUTPUT}/index.html")
-        self.assertTrue(
-            index_html.exists(),
-            f"The tags HTML file was not created: {index_html}",
-        )
-
-        # Delete the tags file page
-        self.deleteTagsFile()
+        # Check that each file had its title changed
+        for file in Path(pm.output).glob("*.html"):
+            with open(file, "r") as f:
+                t = f.read()
+                self.assertTrue(t.find(f"<title>{file.stem}</title>"))
 
         return
