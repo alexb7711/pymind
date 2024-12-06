@@ -37,6 +37,7 @@ def parseInput(version, args=None) -> dict:
     """!
     @brief Read in the inputs and create a dictionary of parameters
 
+    @param version Version of the plugin being passed in
     @param args Input arguments
 
     @return Dictionary of parameter inputs
@@ -86,4 +87,5 @@ def parseInput(version, args=None) -> dict:
         "name": options.name,
         "var_p": options.var_p,
     }
+
     return opts
