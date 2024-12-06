@@ -1,1 +1,1 @@
-__all__ = ["cache.py", "search.py", "tags.py", "misc.py"]
+__all__ = ["cache.py", "search.py", "tags.py", "misc.py", "modfile.py"]

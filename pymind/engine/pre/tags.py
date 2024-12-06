@@ -1,5 +1,5 @@
 """!
-@file tags_page.py
+@file tags.py
 @package Tags Page
 
 This module generates the file that groups and links to all of the tags found. The file structure will be as follows:

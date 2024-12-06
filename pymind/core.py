@@ -49,6 +49,22 @@ class PyMind:
     CONFIG_PATH = Path(f"{Path.home()}/{CONF_DIR}/{CONFIG_FILE}")
     CACHE_PATH = Path(f"{Path.home()}/{CACHE_DIR}")
 
+    TEMPLATE = """<!DOCTYPE html>
+<html>
+<head>
+    <title>%title%</title>
+    <link href="%css%" rel="stylesheet">
+</head>
+<body>
+%nav%
+<div class="content">
+%content%
+</div>
+{{footer}}
+</body>
+</html>
+"""
+
     ####################################################################################################################
     # PUBLIC
     ####################################################################################################################
@@ -335,8 +351,20 @@ class PyMind:
             output_file = self.output / Path(bf).stem
             output_file = output_file.with_suffix(".html")
 
-            ## Convert the markdown file to HTML
-            html = markdown.markdownFromFile(input=str(bf), output=str(output_file))
+            ## Open the file to be converted
+            with open(bf, "r") as f:
+                ### Read the text from the markdown file
+                md = f.read()
+
+            ## Convert the markdown to HTML
+            content = markdown.markdown(md, extensions=["toc"])
+
+            ## Inject content into html file
+            html = PyMind.TEMPLATE.replace("%content%", content)
+
+            ## Write the HTML to file
+            with open(output_file, "w") as f:
+                f.write(html)
 
         return
 
