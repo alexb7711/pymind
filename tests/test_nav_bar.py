@@ -60,13 +60,18 @@ class TestLandingPage(unittest.TestCase):
 
     ##==================================================================================================================
     #
-    def deleteTagsFile(self):
-        Path(f"{self.createCachePaths()}/example/index.md").unlink(missing_ok=True)
-
-    ##==================================================================================================================
-    #
     def test_file_creation(self):
+        import re
+
         pm = self.getPM(force=True)
         pm.run()
+
+        # Check that each file has a footer
+        for file in Path(pm.output).glob("*.html"):
+            with open(file, "r") as f:
+                t = f.read()
+                regex = re.compile('<div id="navigation">.*</div>', flags=re.DOTALL)
+                match = regex.search(t)
+                self.assertNotEqual(match, None)
 
         return

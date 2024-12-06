@@ -60,13 +60,14 @@ class TestLandingPage(unittest.TestCase):
 
     ##==================================================================================================================
     #
-    def deleteTagsFile(self):
-        Path(f"{self.createCachePaths()}/example/index.md").unlink(missing_ok=True)
-
-    ##==================================================================================================================
-    #
     def test_file_creation(self):
         pm = self.getPM(force=True)
         pm.run()
+
+        # Check that each file had its title changed
+        for file in Path(pm.output).glob("*.html"):
+            with open(file, "r") as f:
+                t = f.read()
+                self.assertTrue(t.find(f"<title>{file.stem}</title>"))
 
         return

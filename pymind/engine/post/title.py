@@ -124,7 +124,7 @@ def main(**kwargs) -> int:
     var = utility.cache.unPickleVar(options["var_p"], options["name"])
 
     # Write the string to disk
-    success = __title(options["output"] files)
+    success = __title(options["output"])
 
     sys.exit(not success)
 
