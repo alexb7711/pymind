@@ -60,6 +60,7 @@ class PyMind:
 <div class="content">
 %content%
 </div>
+{{footer}}
 </body>
 </html>
 """
@@ -355,10 +356,10 @@ class PyMind:
                 ### Read the text from the markdown file
                 md = f.read()
 
-            ### Convert the markdown to HTML
+            ## Convert the markdown to HTML
             content = markdown.markdown(md, extensions=["toc"])
 
-            ### Inject content into html file
+            ## Inject content into html file
             html = PyMind.TEMPLATE.replace("%content%", content)
 
             ## Write the HTML to file

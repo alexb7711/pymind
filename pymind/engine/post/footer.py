@@ -6,6 +6,7 @@
 import logging
 import optparse
 import sys
+from datetime import date
 from pathlib import Path
 
 import markdown
@@ -141,23 +142,30 @@ def __injectFooter(input: str, output: str) -> bool:
 
     # Convert the footer markdown to html
     footer_html = markdown.markdown(footer_md)
+    footer_html = FOOTER.replace("%footer%", footer_html)
+
+    # Get the date
+    today = date.today().strftime("%Y-%m-%d")
 
     # For every file found in the input directory
     logger.debug(f"FOOTER: Looping though each converted file.")
     for file in Path(output).glob("*.html"):
         logger.debug(f"FOOTER: Updating footer in: {file}.")
-        with open(file, "r+") as f:
-            ## Read in the file
-            html = f.readlines()
+        replaceText(file, "{{footer}}", footer_html)
+        replaceText(file, "%date%", today)
 
-            ## Inject footer two lines up from the bottom of the file
-            html[-2] = FOOTER.replace("%footer%", footer_html) + "\n" + html[-2]
-
-            ## Joint html back together
-            html = "".join(html)
-
-            ## Inject the footer
-            f.write(html)
+        # with open(file, "r+") as f:
+        #     ## Read in the file
+        #     html = f.readlines()
+        #
+        #     ## Inject footer two lines up from the bottom of the file
+        #     html[-2] = FOOTER.replace("%footer%", footer_html) + "\n" + html[-2]
+        #
+        #     ## Joint html back together
+        #     html = "".join(html)
+        #
+        #     ## Inject the footer
+        #     f.write(html)
 
     return True
 

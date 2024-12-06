@@ -68,5 +68,6 @@ def replaceText(file: Path, key: str, text: str):
         # Write the text back into the file
         f.seek(0)
         f.write(file_content)
+        f.truncate()
 
     return
