@@ -134,6 +134,12 @@ class PyMind:
 
     ##==================================================================================================================
     #
+    def __call__(self):
+        self.run()
+        return
+
+    ##==================================================================================================================
+    #
     def run(self):
         """!
         @brief Execute PyMind.
@@ -499,4 +505,5 @@ def pymind(**kwargs: Any):
     @param kwargs['config'] Configuration file to read from
     """
     pm = PyMind(**kwargs)
+    pm()
     return
