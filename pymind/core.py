@@ -405,7 +405,7 @@ class PyMind:
             path = POST_PATH.absolute()
 
         # For each file in the engine directories
-        self.__executeSubprocess(path)
+        # self.__executeSubprocess(path)
 
         # If the engine being ran is the pre-processor
         if process_type == "PRE":
