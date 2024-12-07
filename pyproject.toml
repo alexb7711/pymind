@@ -20,7 +20,6 @@ classifiers = [
 dependencies = [
   "markdown == 3.7",
   "pyyaml == 6.0.1",
-  "pytest == 8.3.3"
 ]
 
 [project.optional-dependencies]
