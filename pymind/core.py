@@ -6,15 +6,15 @@ from typing import Any, List, TypedDict
 import markdown
 import yaml
 
-from .utility.cache import (
+from pymind.utility.cache import (
     deleteCacheVar,
     loadCacheJSON,
     pickleVar,
     writeCacheJSON,
 )
-from .utility.search import findFiles
-from .utility.tags import getTags
-from .utility.misc import recursiveDelete
+from pymind.utility.search import findFiles
+from pymind.utility.tags import getTags
+from pymind.utility.misc import recursiveDelete
 
 logger = logging.getLogger("PYMIND")
 
