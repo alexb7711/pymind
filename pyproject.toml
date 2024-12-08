@@ -20,8 +20,12 @@ classifiers = [
 dependencies = [
   "markdown == 3.7",
   "pytest == 8.3.3",
-  "pyyaml == 6.0.1"
+  # "pyyaml == 6.0.1"
 ]
+
+
+[project.optional-dependencies]
+testing = ["pytest == 8.3.3"]
 
 [project.urls]
 Homepage = "https://github.com/alexb7711/socket-interface-generation"
