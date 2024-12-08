@@ -31,5 +31,8 @@ testing = ["pytest == 8.3.3"]
 Homepage = "https://github.com/alexb7711/socket-interface-generation"
 Issues = "https://github.com/alexb7711/socket-interface-generation/issues"
 
+[project.scripts]
+pymind = 'pymind.__main__:run'
+
 [tool.setuptools.dynamic]
 version = {attr = 'pymind.__meta__.__version__'}
