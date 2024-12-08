@@ -33,8 +33,5 @@ Issues = "https://github.com/alexb7711/pymind/issues"
 [project.scripts]
 pymind = 'pymind.__main__:run'
 
-[tool.setuptools]
-packages = ['pymind']
-
 [tool.setuptools.dynamic]
 version = {attr = 'pymind.__meta__.__version__'}
