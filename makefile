@@ -31,11 +31,27 @@ all: setup update run ## Default action
 
 ##==============================================================================
 #
+install: ## Install PyMind locally
+	pipx install .
+
+##==============================================================================
+#
+uninstall: ## Install PyMind locally
+	pipx uninstall pymind
+
+##==============================================================================
+#
+reinstall: ## ReInstall PyMind locally
+	pipx uninstall pymind
+	pipx install .
+
+##==============================================================================
+#
 .ONESHELL:
 test: setup ## Run unit tests
-	@source "$(BIN)/activate"
-	@$(PYTHON) -m unittest discover -s $(TST_D) -p "test_*.py"
-	@$(PYTHON) -m unittest discover -s $(TST_D) -p "test_*.py"
+	source "$(BIN)/activate"
+	$(PYTHON) -m unittest discover -s $(TST_D) -p "test_*.py"
+	$(PYTHON) -m unittest discover -s $(TST_D) -p "test_*.py"
 
 ##==============================================================================
 #

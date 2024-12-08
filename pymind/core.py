@@ -125,11 +125,17 @@ class PyMind:
             deleteCacheVar(cache_dir, self.project_name)
 
         except Exception as e:
-            print(e)
+            logger.error(e)
 
         # Remove the copied working tree
         recursiveDelete(Path(self.work_d))
 
+        return
+
+    ##==================================================================================================================
+    #
+    def __call__(self):
+        self.run()
         return
 
     ##==================================================================================================================
@@ -140,7 +146,7 @@ class PyMind:
         """
         # If an input directory was not provided
         if self.input == None:
-            print("WARNING: AN INPUT DIRECTORY WAS NEVER PROVIDED!!!\nABORTING!!!")
+            logger.critical("AN INPUT DIRECTORY WAS NEVER PROVIDED!!!\nABORTING!!!")
             return
 
         # Create the website
@@ -162,6 +168,8 @@ class PyMind:
         # Variables
         dir = None
         path = path.lower()
+
+        logger.debug(f"Retrieving the {path} cache path.")
 
         # Select the path
         if path == "base":
@@ -196,8 +204,10 @@ class PyMind:
                 self.output = Path(conf.get("output", None))
 
         except Exception as e:
-            print(f"WARNING: COULD NOT FIND THE CONFIGURATION FILE: {self.config_file}")
-            print(f"Error: {e}")
+            logger.warning(
+                f"WARNING: COULD NOT FIND THE CONFIGURATION FILE: {self.config_file}"
+            )
+            logger.error(f"Error: {e}")
 
         return
 
@@ -262,6 +272,8 @@ class PyMind:
         cache_dir = self.getCachePaths("base")
         out_d = cache_dir / Path(self.project_name)
 
+        logger.debug(f"Coping input directory to {out_d}")
+
         shutil.copytree(self.input, out_d, dirs_exist_ok=True)
         return
 
@@ -272,15 +284,18 @@ class PyMind:
         @brief Returns a list of files to convert
         """
         # Create database of files
+        logger.debug("Searching for files.")
         self.files_found = findFiles(self.work_d)
 
         # If `force_build` not active
         build_files = []
         if self.force_build:
             ## Use the found files as the build list
+            logger.debug("Executing a force build.")
             build_files = [str(f) for f in self.files_found.keys()]
         else:
             ## Otherwise compare the database of files with cached database (if one exists)
+            logger.debug("Filtering found files to only the update files.")
             build_files = self.__getBuildFiles()
 
         # Update the cached database
@@ -298,6 +313,7 @@ class PyMind:
         """
 
         # Get the project name
+        logger.debug("Retrieving the project name.")
         project_name = Path(self.input)
         project_name = project_name.absolute()
         project_name = project_name.parts[-1]
@@ -311,6 +327,8 @@ class PyMind:
         @brief Create a list of files that have been modified or added
         @return List of files that need to be re-generated.
         """
+        logger.debug("Filtering the found files to only the modified files.")
+
         # List of files to process
         p_files = []
 
@@ -337,6 +355,7 @@ class PyMind:
         """!
         @brief Convert the list of files to HTML
         """
+        logger.debug("Converting the build files.")
 
         # Do not convert the files if `dry_run` is True
         if self.dry_run:
@@ -399,6 +418,7 @@ class PyMind:
             path = POST_PATH.absolute()
 
         # For each file in the engine directories
+        logger.debug(f"Beginning {process_type}-engine...")
         self.__executeSubprocess(path)
 
         # If the engine being ran is the pre-processor
@@ -427,6 +447,8 @@ class PyMind:
         for file in script_d.iterdir():
             ## Ensure the item is a python script
             if file.is_file() and file.suffix == ".py":
+                logger.debug(f"Executing {file}")
+
                 ### Execute the process
                 process = subprocess.run(
                     [
@@ -445,6 +467,8 @@ class PyMind:
 
                 ### Check if the process succeeded
                 process.check_returncode()
+
+                logger.debug(f"{file} executed successfully.")
         return
 
     ##==================================================================================================================
@@ -464,6 +488,8 @@ class PyMind:
         """!
         @brief Cache variables
         """
+        logger.debug("Caching the environment variables.")
+
         # Variables
         var = {
             "files": self.files_found,
@@ -499,4 +525,5 @@ def pymind(**kwargs: Any):
     @param kwargs['config'] Configuration file to read from
     """
     pm = PyMind(**kwargs)
+    pm()
     return

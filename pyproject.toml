@@ -19,13 +19,18 @@ classifiers = [
 
 dependencies = [
   "markdown == 3.7",
-  "pytest == 8.3.3",
-  "pyyaml == 6.0.1"
+  "pyyaml == 6.0.1",
 ]
 
+[project.optional-dependencies]
+testing = ["pytest == 8.3.3"]
+
 [project.urls]
-Homepage = "https://github.com/alexb7711/socket-interface-generation"
-Issues = "https://github.com/alexb7711/socket-interface-generation/issues"
+Homepage = "https://github.com/alexb7711/pymind"
+Issues = "https://github.com/alexb7711/pymind/issues"
+
+[project.scripts]
+pymind = 'pymind.__main__:run'
 
 [tool.setuptools.dynamic]
 version = {attr = 'pymind.__meta__.__version__'}

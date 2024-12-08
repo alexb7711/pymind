@@ -124,6 +124,7 @@ def parse_options(args=None, values=None):
         "input": options.input,
         "output": options.output,
         "dry_run": options.dry_run,
+        "force": options.force,
         "engine": options.engine,
         "config": config,
     }
@@ -133,7 +134,7 @@ def parse_options(args=None, values=None):
 
 ##======================================================================================================================
 #
-def main():
+def run():
     """Run PyMind from the command line."""
 
     # Parse options and adjust logging level if necessary
@@ -165,4 +166,4 @@ def main():
 if __name__ == "__main__":  # pragma: no cover
     # Support running module as a command line command.
     #     python -m markdown [options] [args]
-    main()
+    run()
