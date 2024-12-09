@@ -1,9 +1,11 @@
 import logging
 import optparse
-import pymind
 from logging import CRITICAL, DEBUG, WARNING
 
+import warnings
 from yaml import load as yaml_load
+
+import pymind
 
 logger = logging.getLogger("PYMIND")
 

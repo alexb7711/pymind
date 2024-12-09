@@ -18,6 +18,7 @@ classifiers = [
 ]
 
 dependencies = [
+  "importlib-metadata>=4.4",
   "markdown == 3.7",
   "pyyaml == 6.0.1",
 ]
@@ -31,6 +32,9 @@ Issues = "https://github.com/alexb7711/pymind/issues"
 
 [project.scripts]
 pymind = 'pymind.__main__:run'
+
+[tool.setuptools]
+packages = ['pymind', 'pymind.utility']
 
 [tool.setuptools.dynamic]
 version = {attr = 'pymind.__meta__.__version__'}

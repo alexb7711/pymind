@@ -74,8 +74,12 @@ def __injectFooter(input: str, output: str) -> bool:
     # Check if the footer file exists
     footer_p = Path(input) / Path("footer.md")
     if not footer_p.exists():
-        logger.warning(f"FOOTER: Footer file was not found, exiting early.")
-        return False
+        logger.warning(f"FOOTER: Footer file was not found. Aborting footer.")
+        logger.debug(f"FOOTER: Looping though each converted file.")
+        for file in Path(output).glob("*.html"):
+            logger.debug(f"FOOTER: Updating footer in: {file}.")
+            replaceText(file, "{{footer}}", "")
+        return True
 
     # Get the footer html
     with open(footer_p, "r") as f:
@@ -94,19 +98,6 @@ def __injectFooter(input: str, output: str) -> bool:
         logger.debug(f"FOOTER: Updating footer in: {file}.")
         replaceText(file, "{{footer}}", footer_html)
         replaceText(file, "%date%", today)
-
-        # with open(file, "r+") as f:
-        #     ## Read in the file
-        #     html = f.readlines()
-        #
-        #     ## Inject footer two lines up from the bottom of the file
-        #     html[-2] = FOOTER.replace("%footer%", footer_html) + "\n" + html[-2]
-        #
-        #     ## Joint html back together
-        #     html = "".join(html)
-        #
-        #     ## Inject the footer
-        #     f.write(html)
 
     return True
 

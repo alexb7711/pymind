@@ -17,7 +17,7 @@ import logging
 import sys
 from pathlib import Path
 
-from pymind import utility
+import pymind.utility as utility
 
 logger = logging.getLogger("PYMIND")
 
