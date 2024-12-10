@@ -15,3 +15,12 @@ class TestInstall(unittest.TestCase):
         process = subprocess.run(["make", "install"])
         process.check_returncode()
         return
+
+    ##==================================================================================================================
+    #
+    def test_execute_pymind(self):
+        os.chdir(r"tests/")
+
+        process = subprocess.run(["pymind", "-f", "-i", "example", "-o", "pymind-output"])
+        process.check_returncode()
+        return
