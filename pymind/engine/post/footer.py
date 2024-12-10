@@ -75,10 +75,8 @@ def __injectFooter(input: str, output: str) -> bool:
     footer_p = Path(input) / Path("footer.md")
     if not footer_p.exists():
         logger.warning(f"FOOTER: Footer file was not found. Aborting footer.")
-        logger.debug(f"FOOTER: Looping though each converted file.")
-        for file in Path(output).glob("*.html"):
-            logger.debug(f"FOOTER: Updating footer in: {file}.")
-            replaceText(file, "{{footer}}", "")
+        # Update the footer
+        __replaceFooter(output, footer_html)
         return True
 
     # Get the footer html
@@ -92,14 +90,26 @@ def __injectFooter(input: str, output: str) -> bool:
     # Get the date
     today = date.today().strftime("%Y-%m-%d")
 
-    # For every file found in the input directory
+    # Update the footer
+    __replaceFooter(output, footer_html, today)
+
+    return True
+
+##======================================================================================================================
+#
+def __replaceFooter(output: str, text: str, today: str = None) -> str:
     logger.debug(f"FOOTER: Looping though each converted file.")
     for file in Path(output).glob("*.html"):
         logger.debug(f"FOOTER: Updating footer in: {file}.")
-        replaceText(file, "{{footer}}", footer_html)
-        replaceText(file, "%date%", today)
+        replaceText(file, "{{footer}}", text)
 
-    return True
+        ## If the date text was provided
+        if today:
+            ### Update the date
+            replaceText(file, "%date%", today)
+
+    return
+
 
 
 ########################################################################################################################
