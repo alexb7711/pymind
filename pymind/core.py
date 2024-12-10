@@ -1,4 +1,5 @@
 import logging
+import os
 import platform
 from pathlib import Path
 from typing import Any, List, TypedDict
@@ -12,9 +13,9 @@ from pymind.utility.cache import (
     pickleVar,
     writeCacheJSON,
 )
+from pymind.utility.misc import recursiveDelete
 from pymind.utility.search import findFiles
 from pymind.utility.tags import getTags
-from pymind.utility.misc import recursiveDelete
 
 logger = logging.getLogger("PYMIND")
 
@@ -35,7 +36,10 @@ class PyMind:
     ####################################################################################################################
     # CONSTANTS
     ####################################################################################################################
-    CORE_ENGINE_PATH = Path("pymind/engine/")
+    # CORE_ENGINE_PATH = Path("pymind/engine/")
+    CORE_ENGINE_PATH = Path(os.path.dirname(os.path.abspath(__file__))) / Path(
+        "engine/"
+    )
 
     # Select cache directory location based on the operating system
     CACHE_DIR = Path(".cache/pymind")
