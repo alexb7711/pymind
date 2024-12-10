@@ -410,6 +410,7 @@ class PyMind:
         # List the directories in the engine directory
         # print(os.listdir(os.path.dirname(os.path.abspath(__file__))))
         print(engine_dir)
+        print(os.listdir(engine_dir))
         engine_path = [str(x) for x in engine_dir.iterdir() if x.is_dir()]
 
         PRE_PATH = engine_dir / Path("pre")
