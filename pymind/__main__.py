@@ -48,6 +48,7 @@ def parse_options(args=None, values=None):
     parser.add_option(
         "-f",
         "--force",
+        action="store_true",
         dest="force",
         default=False,
         help="Regenerate the entire project.",
