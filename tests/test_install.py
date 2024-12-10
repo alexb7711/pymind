@@ -23,4 +23,6 @@ class TestInstall(unittest.TestCase):
 
         process = subprocess.run(["pymind", "-f", "-i", "example", "-o", "pymind-output"])
         process.check_returncode()
+
+        os.chdir(r"..")
         return
