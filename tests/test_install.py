@@ -21,7 +21,7 @@ class TestInstall(unittest.TestCase):
     def test_execute_pymind(self):
         os.chdir(r"tests/")
 
-        process = subprocess.run(["pymind", "-f", "-i", "example", "-o", "pymind-output"])
+        process = subprocess.run(["pymind", "--noisy", "-f", "-i", "example", "-o", "pymind-output"])
         os.chdir(r"..")
         process.check_returncode()
 
