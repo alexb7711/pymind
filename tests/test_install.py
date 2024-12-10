@@ -1,5 +1,6 @@
 import os
 import subprocess
+import unittest
 
 class TestInstall(unittest.TestCase):
 
