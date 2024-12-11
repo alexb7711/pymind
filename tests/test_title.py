@@ -60,7 +60,7 @@ class TestLandingPage(unittest.TestCase):
 
     ##==================================================================================================================
     #
-    def test_file_creation(self):
+    def test_title_injection(self):
         pm = self.getPM(force=True)
         pm.run()
 
