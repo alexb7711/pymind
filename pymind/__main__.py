@@ -1,9 +1,11 @@
 import logging
 import optparse
-import pymind
 from logging import CRITICAL, DEBUG, WARNING
 
+import warnings
 from yaml import load as yaml_load
+
+import pymind
 
 logger = logging.getLogger("PYMIND")
 
@@ -46,6 +48,7 @@ def parse_options(args=None, values=None):
     parser.add_option(
         "-f",
         "--force",
+        action="store_true",
         dest="force",
         default=False,
         help="Regenerate the entire project.",
