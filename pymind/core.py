@@ -85,6 +85,7 @@ class PyMind:
         # Member variables
         self.files_found = []
         self.project_name: str = ""
+        self.css: Path = None
 
         # Read in the parameters
         self.input = kwargs.get("input", None)
