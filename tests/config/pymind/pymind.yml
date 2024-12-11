@@ -1,2 +1,3 @@
 input: "./tests/example"
 output: "./tests/example-output"
+css: "style.css"

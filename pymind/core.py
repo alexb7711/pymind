@@ -206,6 +206,7 @@ class PyMind:
                 ## Read in the configuration file
                 self.input = Path(conf.get("input", None))
                 self.output = Path(conf.get("output", None))
+                self.css = PyMind.CONFIG_PATH / Path(conf.get("css", None))
 
         except Exception as e:
             logger.warning(
@@ -384,6 +385,7 @@ class PyMind:
 
             ## Inject content into html file
             html = PyMind.TEMPLATE.replace("%content%", content)
+            html = html.replace("%css%", self.css)
 
             ## Write the HTML to file
             with open(output_file, "w") as f:
