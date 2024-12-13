@@ -232,3 +232,17 @@ class TestPyMindCore(unittest.TestCase):
         )
 
         return
+
+    ##==================================================================================================================
+    #
+    def test_css_inject(self):
+        pm = self.getPM(force=True)
+        pm.run()
+
+        # Check that each file had its title changed
+        for file in Path(pm.output).glob("*.html"):
+            with open(file, "r") as f:
+                t = f.read()
+                self.assertTrue(t.find(f'<link href="style.css" rel="stylesheet">'))
+
+        return

@@ -85,6 +85,7 @@ class PyMind:
         # Member variables
         self.files_found = []
         self.project_name: str = ""
+        self.css: Path = None
 
         # Read in the parameters
         self.input = kwargs.get("input", None)
@@ -206,6 +207,7 @@ class PyMind:
                 ## Read in the configuration file
                 self.input = Path(conf.get("input", None))
                 self.output = Path(conf.get("output", None))
+                self.css = PyMind.CONFIG_PATH / Path(conf.get("css", None))
 
         except Exception as e:
             logger.warning(
@@ -384,6 +386,9 @@ class PyMind:
 
             ## Inject content into html file
             html = PyMind.TEMPLATE.replace("%content%", content)
+
+            if self.css:
+                html = html.replace("%css%", str(self.css))
 
             ## Write the HTML to file
             with open(output_file, "w") as f:
