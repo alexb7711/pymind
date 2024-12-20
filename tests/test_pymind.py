@@ -250,6 +250,15 @@ class TestPyMindCore(unittest.TestCase):
         pm.run()
 
         # Check that each file had its title changed
-        print(f"=====> {pm.extensions}")
         self.assertTrue(pm.extensions == ["toc", "codehilite"].sort())
+        return
+
+    ##==================================================================================================================
+    #
+    def test_setting_extension(self):
+        pm = pymind.PyMind(**{"config": "./tests/config/pymind/pymind.yml"})
+        pm.run()
+
+        # Check that each file had its title changed
+        self.assertTrue(pm.template.find("MARKER") > 0)
         return

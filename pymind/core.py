@@ -102,7 +102,20 @@ class PyMind:
         # Read in the configuration if provided
         if self.config_file:
             self.config_file = Path(self.config_file)
+            self.CONFIG_PATH = self.config_file
+            self.CONFIG_DIR = self.config_file.parent
             self.__setConfig()
+        elif self.CONFIG_PATH.exists():
+            self.config_file = self.CONFIG_FILE
+
+        # Configure the HTML template
+        tmplt_path = self.CONFIG_DIR / Path("template.html")
+        if tmplt_path.exists():
+            logger.debug("Reading in template html file.")
+            with open(tmplt_path, 'r') as f:
+                self.template = f.read()
+        else:
+            self.template = self.TEMPLATE
 
         # Create input and output Path variables
         self.input = Path(self.input).absolute()
