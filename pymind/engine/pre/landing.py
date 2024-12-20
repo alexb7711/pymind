@@ -109,7 +109,7 @@ def __createLandingPage(bf: list, input: str, output: str) -> bool:
     recent = []
     for f in bf:
         new_link = NEW_LINK
-        new_link = new_link.replace("%file%", str((Path(f).suffix)))
+        new_link = new_link.replace("%file%", str(Path(f).stem))
         new_link = new_link.replace("%path%", str((Path(f).with_suffix('.html').name)))
 
         recent.append(new_link)
