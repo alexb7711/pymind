@@ -87,6 +87,7 @@ class PyMind:
         self.files_found = []
         self.project_name: str = ""
         self.css: Path = None
+        self.extensions: list = ["toc"]
 
         # Read in the parameters
         self.input = kwargs.get("input", None)
@@ -209,6 +210,7 @@ class PyMind:
                 self.input = Path(conf.get("input", None))
                 self.output = Path(conf.get("output", None))
                 self.css = conf.get("css", None)
+                self.extensions = list(set(conf.get("extensions", []) + self.extensions)).sort()
 
         except Exception as e:
             logger.warning(
@@ -390,7 +392,7 @@ class PyMind:
                 md = f.read()
 
             ## Convert the markdown to HTML
-            content = markdown.markdown(md, extensions=["toc"])
+            content = markdown.markdown(md, extensons=self.extensions)
 
             ## Inject content into html file
             html = PyMind.TEMPLATE.replace("%content%", content)

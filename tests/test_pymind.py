@@ -243,4 +243,13 @@ class TestPyMindCore(unittest.TestCase):
                 t = f.read()
                 self.assertTrue(t.find(r'<link href="style.css" rel="stylesheet">') > 0)
 
+    ##==================================================================================================================
+    #
+    def test_setting_extension(self):
+        pm = pymind.PyMind(**{"config": "./tests/config/pymind/pymind.yml"})
+        pm.run()
+
+        # Check that each file had its title changed
+        print(f"=====> {pm.extensions}")
+        self.assertTrue(pm.extensions == ["toc", "codehilite"].sort())
         return
