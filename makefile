@@ -36,12 +36,12 @@ install: ## Install PyMind locally
 
 ##==============================================================================
 #
-uninstall: ## Install PyMind locally
+uninstall: ## Uninstall PyMind
 	pipx uninstall pymind
 
 ##==============================================================================
 #
-reinstall: ## ReInstall PyMind locally
+reinstall: ## Re-install PyMind
 	pipx uninstall pymind
 	pipx install .
 

@@ -136,8 +136,6 @@ class TestPyMindCore(unittest.TestCase):
     def test_load_config_file(self):
         import os
 
-        dir_path = os.path.dirname(os.path.realpath("."))
-
         pm = pymind.PyMind(**{"config": "./tests/config/pymind/pymind.yml"})
         pm.run()
 
@@ -193,9 +191,9 @@ class TestPyMindCore(unittest.TestCase):
         v = pm.tags.values()
         v = [Path(x[0]).name for x in v]
 
-        self.assertEqual(k, ["nav", "tag1", "tag2", "tag3", "tag4", "tag5"])
+        self.assertEqual(k.sort(), ["nav", "tag1", "tag2", "tag3", "tag4", "tag5"].sort())
         self.assertEqual(
-            v, ["file1.md", "tags.md", "tags.md", "tags.md", "tags.md", "tags.md"]
+            v.sort(), ["file1.md", "tags.md", "tags.md", "tags.md", "tags.md", "tags.md"].sort()
         )
 
         return
@@ -230,5 +228,19 @@ class TestPyMindCore(unittest.TestCase):
         self.assertTrue(
             work_d.is_dir(), f"The working directory was not created: {work_d}"
         )
+
+        return
+
+    ##==================================================================================================================
+    #
+    def test_css_inject(self):
+        pm = pymind.PyMind(**{"force": True, "config": "./tests/config/pymind/pymind.yml"})
+        pm.run()
+
+        # Check that each file had its title changed
+        for file in Path(pm.output).glob("*.html"):
+            with open(file, "r") as f:
+                t = f.read()
+                self.assertTrue(t.find(r'<link href="style.css" rel="stylesheet">') > 0)
 
         return

@@ -50,6 +50,7 @@ class PyMind:
         CONF_DIR = Path("AppData\Local\Programs\pymind")
 
     CONFIG_FILE = "pymind.yaml"
+    CONFIG_DIR = Path(f"{Path.home()}/{CONF_DIR}")
     CONFIG_PATH = Path(f"{Path.home()}/{CONF_DIR}/{CONFIG_FILE}")
     CACHE_PATH = Path(f"{Path.home()}/{CACHE_DIR}")
 
@@ -85,6 +86,7 @@ class PyMind:
         # Member variables
         self.files_found = []
         self.project_name: str = ""
+        self.css: Path = None
 
         # Read in the parameters
         self.input = kwargs.get("input", None)
@@ -206,6 +208,7 @@ class PyMind:
                 ## Read in the configuration file
                 self.input = Path(conf.get("input", None))
                 self.output = Path(conf.get("output", None))
+                self.css = conf.get("css", None)
 
         except Exception as e:
             logger.warning(
@@ -221,6 +224,7 @@ class PyMind:
         """!
         @brief Entry function to start creating the PyMind second brain.
         """
+        import shutil
 
         ##--------------------------------------------------------------------------------------------------------------
         # PRE-PROCESS
@@ -237,6 +241,11 @@ class PyMind:
 
         # Run post-processing engine
         self.__runEngine("POST")
+
+        # Copy the CSS file if it exists
+        logger.debug(f"Copying configuration file to {self.output}")
+        if self.css:
+            shutil.copyfile(self.config_file.parent / Path(self.css), self.output / Path(self.css))
 
         return
 
@@ -279,6 +288,7 @@ class PyMind:
         logger.debug(f"Coping input directory to {out_d}")
 
         shutil.copytree(self.input, out_d, dirs_exist_ok=True)
+
         return
 
     ##==================================================================================================================
@@ -384,6 +394,9 @@ class PyMind:
 
             ## Inject content into html file
             html = PyMind.TEMPLATE.replace("%content%", content)
+
+            if self.css:
+                html = html.replace("%css%", str(self.css))
 
             ## Write the HTML to file
             with open(output_file, "w") as f:
