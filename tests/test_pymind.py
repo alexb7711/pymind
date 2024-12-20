@@ -136,8 +136,6 @@ class TestPyMindCore(unittest.TestCase):
     def test_load_config_file(self):
         import os
 
-        dir_path = os.path.dirname(os.path.realpath("."))
-
         pm = pymind.PyMind(**{"config": "./tests/config/pymind/pymind.yml"})
         pm.run()
 
@@ -236,13 +234,13 @@ class TestPyMindCore(unittest.TestCase):
     ##==================================================================================================================
     #
     def test_css_inject(self):
-        pm = self.getPM(force=True)
+        pm = pymind.PyMind(**{"force": True, "config": "./tests/config/pymind/pymind.yml"})
         pm.run()
 
         # Check that each file had its title changed
         for file in Path(pm.output).glob("*.html"):
             with open(file, "r") as f:
                 t = f.read()
-                self.assertTrue(t.find(f'<link href="style.css" rel="stylesheet">'))
+                self.assertTrue(t.find(r'<link href="style.css" rel="stylesheet">') > 0)
 
         return
