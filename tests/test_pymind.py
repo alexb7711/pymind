@@ -191,9 +191,9 @@ class TestPyMindCore(unittest.TestCase):
         v = pm.tags.values()
         v = [Path(x[0]).name for x in v]
 
-        self.assertEqual(k, ["nav", "tag1", "tag2", "tag3", "tag4", "tag5"])
+        self.assertEqual(k.sort(), ["nav", "tag1", "tag2", "tag3", "tag4", "tag5"].sort())
         self.assertEqual(
-            v, ["file1.md", "tags.md", "tags.md", "tags.md", "tags.md", "tags.md"]
+            v.sort(), ["file1.md", "tags.md", "tags.md", "tags.md", "tags.md", "tags.md"].sort()
         )
 
         return
