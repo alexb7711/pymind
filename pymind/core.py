@@ -538,19 +538,32 @@ class PyMind:
         # For each file to be built
         for file in self.build_files:
             with open(file, "r+") as f:
-                # Read in the file
+                ## Read in the file
                 file_content = f.read()
 
-                # Search text for file reference syntax
-                rx_match = re.findall("(?<=\\{\\{).*?(?=\\}\\})", file_content)
+                ## Search text for file reference syntax
 
-                # Create dictionary of text to replace
-                searchAndReplace = {f"{{{{{x}}}}}": f"[{x}]({x}.html)" for x in rx_match}
+                ### Anything that isn't a square closing bracket
+                name_regex = "[^]]+"
 
-                # Replace all matches found
-                file_content = multipleStrReplace(file_content, searchAndReplace)
+                ### Anything that isn't a closing parenthesis
+                url_regex = "[^)]+"
 
-                # Update the file
+                ### Create the regex
+                markup_regex = '\[({0})]\(\s*({1})\s*\)'.format(name_regex, url_regex)
+
+                ### Search for the links
+                rx_match = re.findall(markup_regex, file_content)
+
+                ### if regex matches were found
+                if rx_match != []:
+                    #### Create dictionary of text to replace
+                    searchAndReplace = {f"[{x[0]}]({x[1]})": f"[{x[0]}]({Path(x[1]).stem}.html)" for x in rx_match}
+
+                    #### Replace all matches found
+                    file_content = multipleStrReplace(file_content, searchAndReplace)
+
+                ## Update the file
                 f.seek(0)
                 f.write(file_content)
                 f.truncate()
