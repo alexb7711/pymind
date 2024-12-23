@@ -1,6 +1,7 @@
 import logging
 import os
 import platform
+import re
 from pathlib import Path
 from typing import Any, List, TypedDict
 
@@ -16,6 +17,7 @@ from pymind.utility.cache import (
 from pymind.utility.misc import recursiveDelete
 from pymind.utility.search import findFiles
 from pymind.utility.tags import getTags
+from pymind.utility.modfile import multipleStrReplace
 
 logger = logging.getLogger("PYMIND")
 
@@ -84,20 +86,20 @@ class PyMind:
         """
 
         # Member variables
-        self.files_found = []
-        self.project_name: str = ""
-        self.css: Path = None
-        self.extensions: list = ["toc"]
+        self.files_found = []                                                 #!< List of files found
+        self.project_name: str = ""                                           #!< Name of the project
+        self.css: Path = None                                                 #!< CSS file location
+        self.extensions: list = ["toc"]                                       #!< Markdown extensions list
 
         # Read in the parameters
-        self.input = kwargs.get("input", None)
-        self.output = kwargs.get("output", None)
-        self.config_file = kwargs.get("config", None)
+        self.input = kwargs.get("input", None)                                #!< Input directory
+        self.output = kwargs.get("output", None)                              #!< Output directory
+        self.config_file = kwargs.get("config", None)                         #!< Path to configuration file
 
-        self.force_build = kwargs.get("force", False)
-        self.dry_run = kwargs.get("dry_run", False)
+        self.force_build = kwargs.get("force", False)                         #!< Flag to rebuild entire project
+        self.dry_run = kwargs.get("dry_run", False)                           #!< Do everything except output files
 
-        self.engine = kwargs.get("engine", True)
+        self.engine = kwargs.get("engine", True)                              #!< Path to engine directory
 
         # Read in the configuration if provided
         if self.config_file:
@@ -223,7 +225,7 @@ class PyMind:
                 self.input = Path(conf.get("input", None))
                 self.output = Path(conf.get("output", None))
                 self.css = conf.get("css", None)
-                self.extensions = list(set(conf.get("extensions", []) + self.extensions)).sort()
+                self.extensions = sorted(list(set(conf.get("extensions", []) + self.extensions)))
 
         except Exception as e:
             logger.warning(
@@ -239,8 +241,6 @@ class PyMind:
         """!
         @brief Entry function to start creating the PyMind second brain.
         """
-        import shutil
-
         ##--------------------------------------------------------------------------------------------------------------
         # PRE-PROCESS
         self.__preProcess()
@@ -253,14 +253,7 @@ class PyMind:
 
         ##--------------------------------------------------------------------------------------------------------------
         # POST-PROCESS
-
-        # Run post-processing engine
-        self.__runEngine("POST")
-
-        # Copy the CSS file if it exists
-        logger.debug(f"Copying configuration file to {self.output}")
-        if self.css:
-            shutil.copyfile(self.config_file.parent / Path(self.css), self.output / Path(self.css))
+        self.__postProcess()
 
         return
 
@@ -274,16 +267,37 @@ class PyMind:
         self.__copyInputDirectory()
 
         # Get the list of files to convert
-        self.build_files = self.__getFilesList()
+        self.build_files = self.__getFilesList()                              #!< List of files to be built
 
         # Get the list of tags from the files
-        self.tags = getTags(self.build_files)
+        self.tags = getTags(self.build_files)                                 #!< Dictionary of tags found
+
+        # Convert file references to links
+        self.__refToLink()
 
         # Cache variables
         self.__cacheVar()
 
         # Run pre-processing engine
         self.__runEngine("PRE")
+
+        return
+
+    ##==================================================================================================================
+    #
+    def __postProcess(self):
+        """!
+        @brief Run the PyMind post-processor.
+        """
+        import shutil
+
+        # Run post-processing engine
+        self.__runEngine("POST")
+
+        # Copy the CSS file if it exists
+        logger.debug(f"Copying configuration file to {self.output}")
+        if self.css:
+            shutil.copyfile(self.config_file.parent / Path(self.css), self.output / Path(self.css))
 
         return
 
@@ -405,7 +419,7 @@ class PyMind:
                 md = f.read()
 
             ## Convert the markdown to HTML
-            content = markdown.markdown(md, extensons=self.extensions)
+            content = markdown.markdown(md, extensions=self.extensions)
 
             ## Inject content into html file
             html = PyMind.TEMPLATE.replace("%content%", content)
@@ -512,6 +526,35 @@ class PyMind:
         The working directory is where the actions performed by PyMind or the engine scripts will take place.
         """
         self.work_d = Path(PyMind.CACHE_PATH) / Path(self.input).parts[-1]
+        return
+
+    ##==================================================================================================================
+    #
+    def __refToLink(self):
+        """!
+        @brief Convert file references to markdown styled links.
+        """
+
+        # For each file to be built
+        for file in self.build_files:
+            with open(file, "r+") as f:
+                # Read in the file
+                file_content = f.read()
+
+                # Search text for file reference syntax
+                rx_match = re.findall("(?<=\\{\\{).*?(?=\\}\\})", file_content)
+
+                # Create dictionary of text to replace
+                searchAndReplace = {f"{{{{{x}}}}}": f"[{x}]({x}.html)" for x in rx_match}
+
+                # Replace all matches found
+                file_content = multipleStrReplace(file_content, searchAndReplace)
+
+                # Update the file
+                f.seek(0)
+                f.write(file_content)
+                f.truncate()
+
         return
 
     ##==================================================================================================================
