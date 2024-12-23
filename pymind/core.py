@@ -556,9 +556,14 @@ class PyMind:
                 rx_match = re.findall(markup_regex, file_content)
 
                 ### if regex matches were found
-                if rx_match != []:
-                    #### Create dictionary of text to replace
-                    searchAndReplace = {f"[{x[0]}]({x[1]})": f"[{x[0]}]({Path(x[1]).stem}.html)" for x in rx_match}
+                searchAndReplace = {}
+                if rx_match:
+                    #### For every match
+                    for x in rx_match:
+                        ##### Check if the link is not for an external site
+                        if not re.search("http[s]?://", x[1]):
+                            ###### Add the URL to the search and replace list
+                            searchAndReplace[f"[{x[0]}]({x[1]})"] = f"[{x[0]}]({Path(x[1]).stem}.html)"
 
                     #### Replace all matches found
                     file_content = multipleStrReplace(file_content, searchAndReplace)
