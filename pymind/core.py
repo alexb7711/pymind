@@ -14,7 +14,7 @@ from pymind.utility.cache import (
     pickleVar,
     writeCacheJSON,
 )
-from pymind.utility.misc import recursiveDelete
+from pymind.utility.misc import recursiveDelete, addOrAppend
 from pymind.utility.search import findFiles
 from pymind.utility.tags import getTags
 from pymind.utility.modfile import multipleStrReplace
@@ -86,20 +86,21 @@ class PyMind:
         """
 
         # Member variables
-        self.files_found = []                                                 #!< List of files found
-        self.project_name: str = ""                                           #!< Name of the project
-        self.css: Path = None                                                 #!< CSS file location
-        self.extensions: list = ["toc"]                                       #!< Markdown extensions list
+        self.files_found = []                       #!< List of files found
+        self.project_name: str = ""                 #!< Name of the project
+        self.css: Path = None                       #!< CSS file location
+        self.extensions: list = ["toc"]             #!< Markdown extensions list
+        self.refs: dict = {}                        #!< Dictionary of file references
 
         # Read in the parameters
-        self.input = kwargs.get("input", None)                                #!< Input directory
-        self.output = kwargs.get("output", None)                              #!< Output directory
-        self.config_file = kwargs.get("config", None)                         #!< Path to configuration file
+        self.input = kwargs.get("input", None)        #!< Input directory
+        self.output = kwargs.get("output", None)      #!< Output directory
+        self.config_file = kwargs.get("config", None) #!< Path to configuration file
 
-        self.force_build = kwargs.get("force", False)                         #!< Flag to rebuild entire project
-        self.dry_run = kwargs.get("dry_run", False)                           #!< Do everything except output files
+        self.force_build = kwargs.get("force", False) #!< Flag to rebuild entire project
+        self.dry_run = kwargs.get("dry_run", False) #!< Do everything except output files
 
-        self.engine = kwargs.get("engine", True)                              #!< Path to engine directory
+        self.engine = kwargs.get("engine", True)    #!< Path to engine directory
 
         # Read in the configuration if provided
         if self.config_file:
@@ -542,30 +543,31 @@ class PyMind:
                 file_content = f.read()
 
                 ## Search text for file reference syntax
-
-                ### Anything that isn't a square closing bracket
                 name_regex = "[^]]+"
-
-                ### Anything that isn't a closing parenthesis
                 url_regex = "[^)]+"
-
-                ### Create the regex
                 markup_regex = '\[({0})]\(\s*({1})\s*\)'.format(name_regex, url_regex)
 
-                ### Search for the links
+                ## Search for the links
                 rx_match = re.findall(markup_regex, file_content)
 
-                ### if regex matches were found
+                ## if regex matches were found
                 searchAndReplace = {}
                 if rx_match:
-                    #### For every match
+                    ### For every match
                     for x in rx_match:
-                        ##### Check if the link is not for an external site
+                        #### Check if the link is not for an external site
                         if not re.search("http[s]?://", x[1]):
-                            ###### Add the URL to the search and replace list
-                            searchAndReplace[f"[{x[0]}]({x[1]})"] = f"[{x[0]}]({Path(x[1]).stem}.html)"
+                            ##### Add the URL to the search and replace list
+                            key = f"[{x[0]}]({x[1]})"
+                            value = f"[{x[0]}]({Path(x[1]).stem}.html)"
+                            searchAndReplace[key] = value
 
-                    #### Replace all matches found
+                            ##### Add the files to the refs list
+                            key = str(x[1])
+                            value = str(Path(file).stem)
+                            self.refs = addOrAppend(self.refs, key, value)
+
+                    ### Replace all matches found
                     file_content = multipleStrReplace(file_content, searchAndReplace)
 
                 ## Update the file
