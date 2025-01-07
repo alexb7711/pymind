@@ -250,15 +250,42 @@ class TestPyMindCore(unittest.TestCase):
         pm.run()
 
         # Check that each file had its title changed
-        self.assertTrue(pm.extensions == ["toc", "codehilite"].sort())
+        self.assertTrue(pm.extensions.sort() == ["toc", "codehilite"].sort())
         return
 
     ##==================================================================================================================
     #
-    def test_setting_extension(self):
+    def test_loading_custom_html_template(self):
         pm = pymind.PyMind(**{"config": "./tests/config/pymind/pymind.yml"})
         pm.run()
 
         # Check that each file had its title changed
         self.assertTrue(pm.template.find("MARKER") > 0)
+        return
+
+    ##==================================================================================================================
+    #
+    def test_url_output(self):
+        # Run PyMind with `force = true` to generate all the files
+        pm = self.getPM(force=True)
+        pm.run()
+
+        # Check that each file had its title changed
+        with open(Path(TestPyMindCore.OUTPUT) / Path("file1.html"), 'r') as f:
+            content = f.read()
+            self.assertTrue(content.find("file2.html") > 0)
+            self.assertTrue(content.find("file3.html") > 0)
+            self.assertTrue(content.find("https://www.opensuse.org") > 0)
+
+        return
+
+    ##==================================================================================================================
+    #
+    def test_refs_var(self):
+        # Run PyMind with `force = true` to generate all the files
+        pm = self.getPM(force=True)
+        pm.run()
+
+        self.assertTrue(len(pm.refs["file2"]), 1)
+        self.assertTrue(len(pm.refs["file3"]), 1)
         return

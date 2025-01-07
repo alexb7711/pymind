@@ -6,6 +6,7 @@
 
 import logging
 import optparse
+from typing import Any
 from pathlib import Path
 
 logger = logging.getLogger("PYMIND")
@@ -89,3 +90,23 @@ def parseInput(version, args=None) -> dict:
     }
 
     return opts
+
+# ==================================================================================================================
+#
+def addOrAppend(d: dict, key: Any, v: Any) -> dict:
+    """! @brief Either create the entry or append to the list in the dictionary.
+
+    @param d Dictionary to add or append to
+    @param l Item to be appended/added to dictionary list
+    @param key Item key to be searched for in dictionary
+
+    @returns
+    """
+    # If the key exists in the dictionary
+    if key in d:
+        d[key].append(v)
+    # Otherwise the key does not exist in the dictionary
+    else:
+        d.update({key: [v]})
+
+    return d

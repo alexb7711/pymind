@@ -57,7 +57,7 @@ def replaceText(file: Path, key: str, text: str):
     @param key Text to search for in the file
     @param text Text to replace `key` in the file
     """
-    logger.debug(f"FILE: Prepending {file} with text")
+    logger.debug(f"FILE: Replacing {key} with {text}")
     with open(file, "r+") as f:
         # Retrieve the current content of the file
         file_content = f.read()
@@ -71,3 +71,20 @@ def replaceText(file: Path, key: str, text: str):
         f.truncate()
 
     return
+
+##======================================================================================================================
+#
+def multipleStrReplace(s: str, replacements: dict):
+    """!
+    @brief Perform multiple text replacements in a string.
+
+    @param s Original text string
+    @param replacements Dictionary of current and new sub-strings
+
+    @return
+    Updated string where the current sub-strings have been replaced with the new sub-strings
+    """
+    for old, new in replacements.items():
+        s = s.replace(old, new)
+
+    return s
