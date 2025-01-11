@@ -50,9 +50,6 @@ def main(**kwargs) -> int:
         ## Fail the file creation
         return False
 
-    # Retrieve the list of files and tags
-    var = utility.cache.unPickleVar(options["var_p"], options["name"])
-
     # Write the string to disk
     success = __injectFooter(options["input"], options["output"])
 
