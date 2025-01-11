@@ -91,18 +91,14 @@ class PyMind:
         self.css: Path = None                       #!< CSS file location
         self.extensions: list = ["toc"]             #!< Markdown extensions list
         self.refs: dict = {}                        #!< Dictionary of file references
-
-        # Read in the parameters
-        self.input = kwargs.get("input", None)        #!< Input directory
-        self.output = kwargs.get("output", None)      #!< Output directory
-        self.config_file = kwargs.get("config", None) #!< Path to configuration file
-
-        self.force_build = kwargs.get("force", False) #!< Flag to rebuild entire project
-        self.dry_run = kwargs.get("dry_run", False) #!< Do everything except output files
-
-        self.engine = kwargs.get("engine", True)    #!< Path to engine directory
+        self.input = None                           #!< Input directory
+        self.output = None                          #!< Output directory
+        self.force_build = False                    #!< Flag to rebuild entire project
+        self.dry_run = False                        #!< Do everything except output files
+        self.engine = True                          #!< Path to engine directory
 
         # Read in the configuration if provided
+        self.config_file = kwargs.get("config", None) #!< Path to configuration file
         if self.config_file:
             self.config_file = Path(self.config_file)
             self.CONFIG_PATH = self.config_file
@@ -110,6 +106,15 @@ class PyMind:
             self.__setConfig()
         elif self.CONFIG_PATH.exists():
             self.config_file = self.CONFIG_FILE
+
+        # Read in the parameters
+        self.input = kwargs.get("input", self.input)
+        self.output = kwargs.get("output", self.output)
+
+        self.force_build = kwargs.get("force", self.force_build)
+        self.dry_run = kwargs.get("dry_run", self.dry_run)
+
+        self.engine = kwargs.get("engine", self.engine)
 
         # Configure the HTML template
         tmplt_path = self.CONFIG_DIR / Path("template.html")
