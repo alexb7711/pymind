@@ -77,13 +77,13 @@ def __referenced_in(input: Path, refs: dict) -> bool:
         logger.debug(f"REF: Appending to {file}.")
 
         ## Convert python list into a Markdown list
-        md_refs = [f"- [{x}]({x})" + x for x in refs[file]]
+        md_refs = [f"- [{x}]({x}.html)" for x in refs[file]]
         md_refs = "\n".join(md_refs)
 
         ## Append the list to the file
         refs_section = f"# Related Topics\n{md_refs}"
+        print(f"===>{refs_section}")
         fp = input / Path(file)
-        print(f"===>{fp}")
         appendFile(fp.with_suffix(".md"), refs_section)
     return True
 
