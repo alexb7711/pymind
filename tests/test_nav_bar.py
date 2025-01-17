@@ -60,7 +60,7 @@ class TestLandingPage(unittest.TestCase):
 
     ##==================================================================================================================
     #
-    def test_file_creation(self):
+    def test_nav_bar(self):
         import re
 
         pm = self.getPM(force=True)
