@@ -9,7 +9,7 @@ import sys
 from pathlib import Path
 
 from pymind import utility
-from pymind.utility.modfile import replaceText
+from pymind.utility.modfile import appendFile
 
 logger = logging.getLogger("PYMIND")
 
@@ -17,12 +17,14 @@ logger = logging.getLogger("PYMIND")
 # CONSTANTS
 
 VERSION = "0.0.1"
+NEW_LINK = "[%file%](%path%)"
+
 
 ##======================================================================================================================
 #
 def main(**kwargs) -> int:
     """!
-    @brief Executes the referenced in functionaly.
+    @brief Executes the referenced in functionally.
 
     @param kwargs["input"] Input directory path
     @param kwargs["var_p"] Path to cached variables
@@ -49,14 +51,14 @@ def main(**kwargs) -> int:
     var = utility.cache.unPickleVar(options["var_p"], options["name"])
 
     # Write the string to disk
-    success = __referenced_in(var["refs"])
+    success = __referenced_in(options["input"], var["refs"])
 
     sys.exit(not success)
 
 
 ##======================================================================================================================
 #
-def __referenced_in(refs: dict) -> bool:
+def __referenced_in(input: Path, refs: dict) -> bool:
     """!
     @brief Create a list of file that is the currently visited file is referenced in
 
@@ -69,10 +71,21 @@ def __referenced_in(refs: dict) -> bool:
     @return True if successful, false if not
     """
     # For every file in the directory
-    for file in Path(input).glob("*.html"):
+    print(f"===>{refs.keys()}")
+    ref_keys = list(refs.keys())
+    for file in ref_keys:
         logger.debug(f"REF: Appending to {file}.")
 
-    return False
+        ## Convert python list into a Markdown list
+        md_refs = [f"- [{x}]({x})" + x for x in refs[file]]
+        md_refs = "\n".join(md_refs)
+
+        ## Append the list to the file
+        refs_section = f"# Related Topics\n{md_refs}"
+        fp = input / Path(file)
+        print(f"===>{fp}")
+        appendFile(fp.with_suffix(".md"), refs_section)
+    return True
 
 
 ########################################################################################################################
