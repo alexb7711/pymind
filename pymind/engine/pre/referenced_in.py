@@ -71,7 +71,6 @@ def __referenced_in(input: Path, refs: dict) -> bool:
     @return True if successful, false if not
     """
     # For every file in the directory
-    print(f"===>{refs.keys()}")
     ref_keys = list(refs.keys())
     for file in ref_keys:
         logger.debug(f"REF: Appending to {file}.")
@@ -82,7 +81,6 @@ def __referenced_in(input: Path, refs: dict) -> bool:
 
         ## Append the list to the file
         refs_section = f"# Related Topics\n{md_refs}"
-        print(f"===>{refs_section}")
         fp = input / Path(file)
         appendFile(fp.with_suffix(".md"), refs_section)
     return True
