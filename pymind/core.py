@@ -86,16 +86,16 @@ class PyMind:
         """
 
         # Member variables
-        self.files_found = []                       #!< List of files found
-        self.project_name: str = ""                 #!< Name of the project
         self.css: Path = None                       #!< CSS file location
-        self.extensions: list = ["toc"]             #!< Markdown extensions list
-        self.refs: dict = {}                        #!< Dictionary of file references
-        self.input = None                           #!< Input directory
-        self.output = None                          #!< Output directory
-        self.force_build = False                    #!< Flag to rebuild entire project
         self.dry_run = False                        #!< Do everything except output files
         self.engine = True                          #!< Path to engine directory
+        self.extensions: list = ["toc"]             #!< Markdown extensions list
+        self.files_found = []                       #!< List of files found
+        self.force_build = False                    #!< Flag to rebuild entire project
+        self.input = None                           #!< Input directory
+        self.output = None                          #!< Output directory
+        self.project_name: str = ""                 #!< Name of the project
+        self.refs: dict = {}                        #!< Dictionary of file references
 
         # Read in the configuration if provided
         self.config_file = kwargs.get("config", None) #!< Path to configuration file
@@ -595,6 +595,7 @@ class PyMind:
             "files": self.files_found,
             "build_files": self.build_files,
             "tags": self.tags,
+            "refs": self.refs,
         }
         cache_dir = self.getCachePaths("var")
 
