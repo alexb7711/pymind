@@ -8,6 +8,8 @@ import re
 import logging
 from pathlib import Path
 
+from pymind.utility.modfile import removeLinesMatchingRegex
+
 logger = logging.getLogger("PYMIND")
 
 ##======================================================================================================================
@@ -30,7 +32,11 @@ def getTags(files: list[str]) -> dict:
             ### For each row in the build file
             for l in txt:
                 #### Search for tags in the file
-                matches = re.findall(r"^<!--\s*:?(.*?):\s*-->", l)
+                regex = r"^<!--\s*:?(.*?):\s*-->"
+                matches = re.findall(regex, l)
+
+                #### Strip found tags from the file
+                removeLinesMatchingRegex(f, regex)
 
                 #### If tags were found
                 if matches:
