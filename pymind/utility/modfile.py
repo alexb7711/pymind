@@ -88,3 +88,24 @@ def multipleStrReplace(s: str, replacements: dict):
         s = s.replace(old, new)
 
     return s
+
+##======================================================================================================================
+#
+def removeLinesMatchingRegex(filename: Path, pattern: str):
+    import re
+
+    # Compile the regex pattern
+    compiled_pattern = re.compile(pattern)
+
+    # Open the file for reading and a new file for writing
+    with open(filename, 'r') as file:
+        lines = file.readlines()
+
+    # Filter out lines that match the regex pattern
+    filtered_lines = [line for line in lines if not compiled_pattern.search(line)]
+
+    # Write the filtered lines back to the file
+    with open(filename, 'w') as file:
+        file.writelines(filtered_lines)
+
+    return

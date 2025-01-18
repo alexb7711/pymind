@@ -91,3 +91,21 @@ class TestTagsPage(unittest.TestCase):
         self.deleteTagsFile()
 
         return
+
+    ##==================================================================================================================
+    #
+    def test_tag_removal(self):
+        import re
+
+        pm = self.getPM(force=True)
+        pm.run()
+
+        # Ensure all of the tags have been stripped
+        for file in Path(pm.output).glob("*.html"):
+            with open(file, "r") as f:
+                t = f.read()
+                regex = re.compile(r"^<!--\s*:?(.*?):\s*-->", flags=re.DOTALL)
+                match = regex.search(t)
+                self.assertEqual(match, None)
+
+        return
