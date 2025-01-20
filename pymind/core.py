@@ -279,7 +279,7 @@ class PyMind:
         # Copy the CSS file if it exists
         logger.debug(f"Copying footer {self.output}")
         if self.footer:
-            shutil.copyfile(self.config_file.parent / Path(self.footer), self.output / Path(self.footer))
+            shutil.copyfile(self.config_file.parent / Path(self.footer), self.work_d / Path(self.footer))
 
         # Get the list of files to convert
         self.build_files = self.__getFilesList()                              #!< List of files to be built
