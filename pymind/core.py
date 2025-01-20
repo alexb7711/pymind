@@ -91,6 +91,7 @@ class PyMind:
         self.engine = True                          #!< Path to engine directory
         self.extensions: list = ["toc"]             #!< Markdown extensions list
         self.files_found = []                       #!< List of files found
+        self.footer: Path = None                    #!< Footer file location
         self.force_build = False                    #!< Flag to rebuild entire project
         self.input = None                           #!< Input directory
         self.output = None                          #!< Output directory
@@ -231,6 +232,7 @@ class PyMind:
                 self.input = Path(conf.get("input", None))
                 self.output = Path(conf.get("output", None))
                 self.css = conf.get("css", None)
+                self.footer = conf.get("footer", None)
                 self.extensions = sorted(list(set(conf.get("extensions", []) + self.extensions)))
 
         except Exception as e:
@@ -269,8 +271,15 @@ class PyMind:
         """!
         @brief Run the PyMind pre-processor.
         """
+        import shutil
+
         # Create a copy of the input directory into a temporary directory
         self.__copyInputDirectory()
+
+        # Copy the CSS file if it exists
+        logger.debug(f"Copying footer {self.output}")
+        if self.footer:
+            shutil.copyfile(self.config_file.parent / Path(self.footer), self.work_d / Path(self.footer))
 
         # Get the list of files to convert
         self.build_files = self.__getFilesList()                              #!< List of files to be built
