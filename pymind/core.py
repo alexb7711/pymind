@@ -540,7 +540,6 @@ class PyMind:
 
         The working directory is where the actions performed by PyMind or the engine scripts will take place.
         """
-        print(f"====>{self.input}")
         self.work_d = Path(PyMind.CACHE_PATH) / Path(self.input).parts[-1]
         return
 
