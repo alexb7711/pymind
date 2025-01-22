@@ -136,10 +136,10 @@ class TestPyMindCore(unittest.TestCase):
     def test_load_config_file(self):
         import os
 
-        pm = pymind.PyMind(**{"config": "./tests/config/pymind/pymind.yml"})
+        pm = pymind.PyMind(**{"config": "./tests/config/pymind/pymind.toml"})
         pm.run()
 
-        self.assertEqual(pm.config_file, Path("./tests/config/pymind/pymind.yml"))
+        self.assertEqual(pm.config_file, Path("./tests/config/pymind/pymind.toml"))
         self.assertEqual(pm.project_name, "example")
         self.assertEqual(pm.input, Path("./tests/example").absolute())
 
@@ -234,7 +234,7 @@ class TestPyMindCore(unittest.TestCase):
     ##==================================================================================================================
     #
     def test_css_inject(self):
-        pm = pymind.PyMind(**{"force": True, "config": "./tests/config/pymind/pymind.yml"})
+        pm = pymind.PyMind(**{"force": True, "config": "./tests/config/pymind/pymind.toml"})
         pm.run()
 
         # Check that each file had its title changed
@@ -246,7 +246,7 @@ class TestPyMindCore(unittest.TestCase):
     ##==================================================================================================================
     #
     def test_setting_extension(self):
-        pm = pymind.PyMind(**{"config": "./tests/config/pymind/pymind.yml"})
+        pm = pymind.PyMind(**{"config": "./tests/config/pymind/pymind.toml"})
         pm.run()
 
         # Check that each file had its title changed
@@ -256,7 +256,7 @@ class TestPyMindCore(unittest.TestCase):
     ##==================================================================================================================
     #
     def test_loading_custom_html_template(self):
-        pm = pymind.PyMind(**{"config": "./tests/config/pymind/pymind.yml"})
+        pm = pymind.PyMind(**{"config": "./tests/config/pymind/pymind.toml"})
         pm.run()
 
         # Check that each file had its title changed
