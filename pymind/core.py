@@ -3,10 +3,9 @@ import os
 import platform
 import re
 from pathlib import Path
-from typing import Any, List, TypedDict
+from typing import Any
 
 import markdown
-import yaml
 
 from pymind.utility.cache import (
     deleteCacheVar,
@@ -222,18 +221,19 @@ class PyMind:
         """!
         @brief Read in the configuration file
         """
+        import tomllib
 
         # Read in the configuration file
         try:
-            with open(self.config_file, "r") as f:
-                conf = yaml.load(f, Loader=yaml.SafeLoader)
+            with open(self.config_file, "rb") as f:
+                conf = tomllib.load(f)
 
                 ## Read in the configuration file
-                self.input = Path(conf.get("input", None))
-                self.output = Path(conf.get("output", None))
-                self.css = conf.get("css", None)
-                self.footer = conf.get("footer", None)
-                self.extensions = sorted(list(set(conf.get("extensions", []) + self.extensions)))
+                self.input = Path(conf.get("IO").get("input"))
+                self.output = Path(conf.get("IO").get("output"))
+                self.css = conf.get("HTML").get("css")
+                self.footer = conf.get("HTML").get("footer")
+                self.extensions = sorted(list(set(conf.get("Markdown").get("extensions", []) + self.extensions)))
 
         except Exception as e:
             logger.warning(
