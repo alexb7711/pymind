@@ -51,15 +51,8 @@ reinstall: ## Re-install PyMind
 test: setup ## Run unit tests
 	source "$(BIN)/activate"
 	$(PYTHON) -m unittest discover -s $(TST_D) -p "test_*.py"
-	$(PYTHON) -m unittest discover -s $(TST_D) -p "test_*.py"
-
-##==============================================================================
-#
-.ONESHELL:
-test: setup ## Run unit tests
-	source "$(BIN)/activate"
-	$(PYTHON) -m unittest discover -s $(TST_D) -p "test_*.py"
-	$(PYTHON) -m unittest discover -s $(TST_D) -p "test_*.py"
+	coverage run --source=. -m unittest discover -s $(TST_D) -p "test_*.py"
+	coverage report
 
 ##==============================================================================
 #
