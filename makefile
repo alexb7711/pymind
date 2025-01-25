@@ -56,11 +56,19 @@ test: setup ## Run unit tests
 ##==============================================================================
 #
 .ONESHELL:
+test: setup ## Run unit tests
+	source "$(BIN)/activate"
+	$(PYTHON) -m unittest discover -s $(TST_D) -p "test_*.py"
+	$(PYTHON) -m unittest discover -s $(TST_D) -p "test_*.py"
+
+##==============================================================================
+#
+.ONESHELL:
 setup: ## Set up the project
 	@$(PYTHON) -m venv $(ENV_DIR)
 	@source "$(BIN)/activate"
 	@pip install --upgrade pip
-	@pip install .
+	@pip install .[test]
 
 ##==============================================================================
 #
