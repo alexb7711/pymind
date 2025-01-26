@@ -1,6 +1,7 @@
 ![MIT Liscense](https://img.shields.io/badge/license-MIT-blue.svg)
 ![Test runs](https://github.com/alexb7711/pymind/actions/workflows/run_tests.yml/badge.svg)
 ![Coverage Status](https://codecov.io/gh/alexb7711/pymind/branch/master/graph/badge.svg)
+[![CodeQL](https://github.com/alexb7711/pymind/actions/workflows/github-code-scanning/codeql/badge.svg?branch=main)](https://github.com/alexb7711/pymind/actions/workflows/github-code-scanning/codeql)
 
 # PyMind
 This project is another static website generator with the primary goal of being very simple, yet extremely extensible.
