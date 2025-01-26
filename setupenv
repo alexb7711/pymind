@@ -1,3 +1,0 @@
-#!/bin/sh
-
-export PYTHONPATH=~/.local/share/pipx/venvs/pymind/lib/python3.11/site-packages

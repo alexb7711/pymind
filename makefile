@@ -51,7 +51,8 @@ reinstall: ## Re-install PyMind
 test: setup ## Run unit tests
 	source "$(BIN)/activate"
 	$(PYTHON) -m unittest discover -s $(TST_D) -p "test_*.py"
-	$(PYTHON) -m unittest discover -s $(TST_D) -p "test_*.py"
+	coverage run --source=. -m unittest discover -s $(TST_D) -p "test_*.py"
+	coverage report
 
 ##==============================================================================
 #
@@ -60,7 +61,7 @@ setup: ## Set up the project
 	@$(PYTHON) -m venv $(ENV_DIR)
 	@source "$(BIN)/activate"
 	@pip install --upgrade pip
-	@pip install .
+	@pip install .[test]
 
 ##==============================================================================
 #
