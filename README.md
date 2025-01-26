@@ -8,11 +8,11 @@ Pymind uses [Python Markdown](https://github.com/Python-Markdown/markdown), so y
 [configuring Pymind]()). To see what PyMind offers, see the [Features page]().
 
 # Quick Start
-PyMind can be executed as a command line application, or be used as a Python module. But first we need to install it.
-After cloning the repository, run `make install` in the PyMind directory
+PyMind can be executed as a command line application, or be used as a Python module. But first you need to install it.
+After cloning the repository, run `make install` in the PyMind directory.
 
-**Note**: The makefile is a bit rough, if you are getting an error try opening the makefile changing the `pipx` commands
-to `pip`.
+> **Note**: The makefile is a bit rough, if you are getting an error try opening the makefile changing the `pipx` commands
+> to `pip`.
 
 Example of PyMind being used as an application
 ```bash
