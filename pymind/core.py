@@ -104,6 +104,7 @@ class PyMind:
             self.CONFIG_PATH = self.config_file
             self.CONFIG_DIR = self.config_file.parent
             self.__setConfig()
+        # Else if the configuration path exists
         elif self.CONFIG_PATH.exists():
             self.config_file = self.CONFIG_FILE
 
@@ -513,16 +514,11 @@ class PyMind:
                 ### Execute the process
                 process = subprocess.run(
                     [
-                        "python",
-                        file,
-                        "-i",
-                        self.work_d,
-                        "-o",
-                        self.output,
-                        "-n",
-                        self.project_name,
-                        "-v",
-                        cache_p,
+                        "python", file,
+                        "-i", self.work_d,
+                        "-o", self.output,
+                        "-n", self.project_name,
+                        "-v", cache_p,
                     ]
                 )
 
