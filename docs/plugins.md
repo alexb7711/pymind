@@ -7,9 +7,9 @@ disable external and internal plugins individually.
 
 Below are a list of the built-in plugins:
 
-- [footer]()
-- [navigation bar generator]()
-- [title]()
-- [landing page generator]()
-- [referenced in]()
-- [tags page generator]()
+- [footer](footer)
+- [landing page generator](landing-page)
+- [navigation bar generator](navigation-bar)
+- [referenced in](referenced-in)
+- [tags page generator](tags)
+- [title](title)

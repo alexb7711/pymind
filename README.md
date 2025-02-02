@@ -28,6 +28,12 @@ args = {"config": Path("path/to/pymind.toml")}
 
 pymind.pymind(**args)
 
+# TODOs
+- [ ] Add support for external plugins
+- [ ] Create a built-in plugin to generate a page outlining the project structure (based on input directory)
+- [ ] Enable/disable individual/all built-in/external plugins
+- [ ] Scheduled auto update git repository and publication
+
 ## Support
 You may report bugs, ask for help, and discuss various other issues on the [bug
 tracker](https://github.com/alexb7711/pymind/issues).

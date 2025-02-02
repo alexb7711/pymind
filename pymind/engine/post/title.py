@@ -26,13 +26,6 @@ logger = logging.getLogger("PYMIND")
 # CONSTANTS
 
 VERSION = "0.0.1"
-NAV_BAR = """<div id="title">
-<ul>
-%list%
-</ul>
-</div>
-"""
-LIST_ITEM = '<li><a class="%class%" href="%item%">%name%</a></li>'
 
 
 ##======================================================================================================================
