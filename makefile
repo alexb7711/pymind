@@ -32,18 +32,17 @@ all: setup update run ## Default action
 ##==============================================================================
 #
 install: ## Install PyMind locally
-	pipx install .
+	pip install --user --break-system-packages .
 
 ##==============================================================================
 #
 uninstall: ## Uninstall PyMind
-	pipx uninstall pymind
+	pip uninstall --break-system-packages pymind
 
 ##==============================================================================
 #
 reinstall: ## Re-install PyMind
-	pipx uninstall pymind
-	pipx install .
+	pip install --user --upgrade --break-system-packages .
 
 ##==============================================================================
 #
@@ -81,8 +80,10 @@ run: ## Execute the program
 
 ##==============================================================================
 #
-doc: ## Generate SIG documentation
-	doxygen Doxyfile
+.ONESHELL:
+doc: install ## Generate documentation
+	#@doxygen Doxyfile
+	pymind -i ./docs -o ./html
 
 ##==============================================================================
 #
