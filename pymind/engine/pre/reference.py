@@ -1,6 +1,6 @@
 """!
 @file reference.py
-@package Tags Page
+@package Referenced files
 """
 
 import logging
@@ -9,6 +9,7 @@ from pathlib import Path
 
 from pymind import utility
 from pymind.utility.modfile import appendFile
+from pymind.utility.search import recursiveSearch
 
 logger = logging.getLogger("PYMIND")
 
@@ -79,7 +80,7 @@ def __referenced_in(input: Path, refs: dict) -> bool:
 
         ## Append the list to the file
         refs_section = f"# Related Topics\n{md_refs}"
-        fp = input / Path(file)
+        fp = recursiveSearch(Path(input), file, "md")
         appendFile(fp.with_suffix(".md"), refs_section)
     return True
 
