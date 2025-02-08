@@ -83,7 +83,7 @@ run: ## Execute the program
 .ONESHELL:
 doc: install ## Generate documentation
 	#@doxygen Doxyfile
-	pymind -i ./docs -o ./html
+	pymind -f -i ./docs -o ./html
 
 ##==============================================================================
 #

@@ -1,10 +1,5 @@
-[IO]
-input = "./tests/example"
-output = "./tests/example-output"
-
 [HTML]
 css = "style.css"
-footer = "footer.md"
 
 [Markdown]
-extensions = ["toc", "codehilite"]
+extensions = ["toc", "fenced_code", "codehilite"]

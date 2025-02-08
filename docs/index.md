@@ -22,6 +22,7 @@ import pymind
 args = {"config": Path("path/to/pymind.toml")}
 
 pymind.pymind(**args)
+```
 
 # Help
 After installation, one can type `pymind -h` to output a help menu.
