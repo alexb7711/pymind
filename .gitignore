@@ -165,4 +165,3 @@ cython_debug/
 # Custom
 TAGS
 tests/pymind-output/
-html/
