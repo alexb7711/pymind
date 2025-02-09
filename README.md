@@ -27,6 +27,7 @@ import pymind
 args = {"config": Path("path/to/pymind.toml")}
 
 pymind.pymind(**args)
+```
 
 # TODOs
 - [ ] Add support for external plugins
