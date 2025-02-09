@@ -37,20 +37,19 @@ class PyMind:
     ####################################################################################################################
     # CONSTANTS
     ####################################################################################################################
-    # CORE_ENGINE_PATH = Path("pymind/engine/")
     CORE_ENGINE_PATH = Path(os.path.dirname(os.path.abspath(__file__))) / Path(
         "engine/"
     )
 
     # Select cache directory location based on the operating system
     CACHE_DIR = Path(".cache/pymind")
-    CONF_DIR = Path("config/pymind")
+    CONF_DIR = Path(".config/pymind")
 
     if platform.system() == "Windows":
         CACHE_DIR = Path("AppData\Local\Programs\pymind\cache")
         CONF_DIR = Path("AppData\Local\Programs\pymind")
 
-    CONFIG_FILE = "pymind.yaml"
+    CONFIG_FILE = "pymind.toml"
     CONFIG_DIR = Path(f"{Path.home()}/{CONF_DIR}")
     CONFIG_PATH = Path(f"{Path.home()}/{CONF_DIR}/{CONFIG_FILE}")
     CACHE_PATH = Path(f"{Path.home()}/{CACHE_DIR}")
@@ -99,14 +98,16 @@ class PyMind:
 
         # Read in the configuration if provided
         self.config_file = kwargs.get("config", None) #!< Path to configuration file
-        if self.config_file:
+        if bool(self.config_file):
             self.config_file = Path(self.config_file)
             self.CONFIG_PATH = self.config_file
             self.CONFIG_DIR = self.config_file.parent
             self.__setConfig()
         # Else if the configuration path exists
         elif self.CONFIG_PATH.exists():
-            self.config_file = self.CONFIG_FILE
+            self.config_file = self.CONFIG_PATH
+            self.__setConfig()
+        logger.warning(f"Reading configuration file from {self.config_file}")
 
         # Read in the parameters
         self.input = kwargs.get("input", self.input)
@@ -230,13 +231,20 @@ class PyMind:
                 conf = tomllib.load(f)
 
                 ## Read in the configuration file
-                self.input = Path(conf.get("IO").get("input"))
-                self.output = Path(conf.get("IO").get("output"))
-                self.css = conf.get("HTML").get("css")
-                self.footer = conf.get("HTML").get("footer")
-                self.extensions = sorted(list(set(conf.get("Markdown").get("extensions", []) + self.extensions)))
+                if conf.get("IO"):
+                    self.input = Path(conf.get("IO").get("input"))
+                    self.output = Path(conf.get("IO").get("output"))
+
+                if conf.get("HTML"):
+                    self.css = conf.get("HTML").get("css")
+                    self.footer = conf.get("HTML").get("footer")
+                    self.css = conf.get("HTML").get("css")
+
+                if conf.get("Markdown"):
+                    self.extensions = sorted(list(set(conf.get("Markdown").get("extensions", []) + self.extensions)))
 
         except Exception as e:
+            print("-----> ", e)
             logger.warning(
                 f"WARNING: COULD NOT FIND THE CONFIGURATION FILE: {self.config_file}"
             )
@@ -348,7 +356,7 @@ class PyMind:
 
         # If `force_build` not active
         build_files = []
-        if self.force_build:
+        if self.force_build or loadCacheJSON(self.getCachePaths("database")) == None:
             ## Use the found files as the build list
             logger.debug("Executing a force build.")
             build_files = [str(f) for f in self.files_found.keys()]
