@@ -10,7 +10,10 @@ ENV_DIR   = .venv
 
 ##==============================================================================
 # File Paths
-ifeq ($(shell uname -s), "Windows_NT")
+OS=$(shell uname -s)
+FLAV=$(shell lsb_release -si)
+
+ifeq ("$(OS)", "Windows_NT")
 BIN     = $(ENV_DIR)/Scripts
 else
 BIN     = $(ENV_DIR)/bin
@@ -32,17 +35,29 @@ all: setup update run ## Default action
 ##==============================================================================
 #
 install: ## Install PyMind locally
+ifeq ("$(FLAV)", "openSUSE")
+	pipx install .
+else
 	pip install --user --break-system-packages .
+endif
 
 ##==============================================================================
 #
 uninstall: ## Uninstall PyMind
+ifeq ("$(FLAV)", "openSUSE")
+	pipx uninstall pymind
+else
 	pip uninstall --break-system-packages pymind
+endif
 
 ##==============================================================================
 #
-reinstall: ## Re-install PyMind
+update: ## Re-install PyMind
+ifeq ("$(FLAV)", "openSUSE")
+	pipx upgrade pymind
+else
 	pip install --user --upgrade --break-system-packages .
+endif
 
 ##==============================================================================
 #
@@ -65,7 +80,7 @@ setup: ## Set up the project
 ##==============================================================================
 #
 .ONESHELL:
-update: ## Update the virtual environment packages
+update-venv: ## Update the virtual environment packages
 	@source "$(BIN)/activate"
 	@pip install --upgrade pip
 	@pip install .

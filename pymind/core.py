@@ -244,6 +244,7 @@ class PyMind:
                     self.extensions = sorted(list(set(conf.get("Markdown").get("extensions", []) + self.extensions)))
 
         except Exception as e:
+            print("-----> ", e)
             logger.warning(
                 f"WARNING: COULD NOT FIND THE CONFIGURATION FILE: {self.config_file}"
             )
