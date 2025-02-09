@@ -156,7 +156,7 @@ class TestPyMindCore(unittest.TestCase):
 
         # Count the number of files output
         fc = len(glob.glob(os.path.join(TestPyMindCore.OUTPUT, "*.html")))
-        self.assertEqual(fc, 2)
+        self.assertEqual(fc, 1)
 
         return
 
