@@ -26,16 +26,16 @@ After cloning the repository, run <code>make install</code> in the PyMind direct
 to <code>pip</code>.</p>
 </blockquote>
 <p>Example of PyMind being used as an application</p>
-<pre class="codehilite"><code class="language-bash">pymind -i [DIRECTORY TO SEARCH] -o [DIRECTORY TO OUTPUT HTML]
-</code></pre>
+<div class="codehilite"><pre><span></span><code>pymind<span class="w"> </span>-i<span class="w"> </span><span class="o">[</span>DIRECTORY<span class="w"> </span>TO<span class="w"> </span>SEARCH<span class="o">]</span><span class="w"> </span>-o<span class="w"> </span><span class="o">[</span>DIRECTORY<span class="w"> </span>TO<span class="w"> </span>OUTPUT<span class="w"> </span>HTML<span class="o">]</span>
+</code></pre></div>
 
 <p>Example of PyMind being used as a module:</p>
-<pre class="codehilite"><code class="language-python">import pymind
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">pymind</span>
 
-args = {&quot;config&quot;: Path(&quot;path/to/pymind.toml&quot;)}
+<span class="n">args</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;config&quot;</span><span class="p">:</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;path/to/pymind.toml&quot;</span><span class="p">)}</span>
 
-pymind.pymind(**args)
-</code></pre>
+<span class="n">pymind</span><span class="o">.</span><span class="n">pymind</span><span class="p">(</span><span class="o">**</span><span class="n">args</span><span class="p">)</span>
+</code></pre></div>
 
 <h1 id="help">Help</h1>
 <p>After installation, one can type <code>pymind -h</code> to output a help menu.</p>

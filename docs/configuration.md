@@ -10,7 +10,7 @@ following directories for the configuration file:
 ## Configuration File Structure
 Below is an example configuration file which is also used for the unit tests. Each table will be described in turn
 
-```toml
+``` toml
 [IO]
 input = "./tests/example" # In
 output = "./tests/example-output"

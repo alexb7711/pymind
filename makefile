@@ -36,27 +36,27 @@ all: setup update run ## Default action
 #
 install: ## Install PyMind locally
 ifeq ("$(FLAV)", "openSUSE")
-	pipx install .
-else
 	pip install --user --break-system-packages .
+else
+	pip install --user .
 endif
 
 ##==============================================================================
 #
 uninstall: ## Uninstall PyMind
 ifeq ("$(FLAV)", "openSUSE")
-	pipx uninstall pymind
-else
 	pip uninstall --break-system-packages pymind
+else
+	pip uninstall .
 endif
 
 ##==============================================================================
 #
 update: ## Re-install PyMind
 ifeq ("$(FLAV)", "openSUSE")
-	pipx upgrade pymind
-else
 	pip install --user --upgrade --break-system-packages .
+else
+	pip install --user --upgrade .
 endif
 
 ##==============================================================================
@@ -96,7 +96,7 @@ run: ## Execute the program
 ##==============================================================================
 #
 .ONESHELL:
-doc: install ## Generate documentation
+doc: upgrade ## Generate documentation
 	#@doxygen Doxyfile
 	pymind -f -i ./docs -o ./html
 

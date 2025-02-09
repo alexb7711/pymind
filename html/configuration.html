@@ -23,17 +23,17 @@ following directories for the configuration file:</p>
 </ul>
 <h2 id="configuration-file-structure">Configuration File Structure</h2>
 <p>Below is an example configuration file which is also used for the unit tests. Each table will be described in turn</p>
-<pre class="codehilite"><code class="language-toml">[IO]
-input = &quot;./tests/example&quot; # In
-output = &quot;./tests/example-output&quot;
+<div class="codehilite"><pre><span></span><code><span class="k">[IO]</span>
+<span class="n">input</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;./tests/example&quot;</span><span class="w"> </span><span class="c1"># In</span>
+<span class="n">output</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;./tests/example-output&quot;</span>
 
-[HTML]
-css = &quot;style.css&quot;
-footer = &quot;footer.md&quot;
+<span class="k">[HTML]</span>
+<span class="n">css</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;style.css&quot;</span>
+<span class="n">footer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;footer.md&quot;</span>
 
-[Markdown]
-extensions = [&quot;toc&quot;, &quot;codehilite&quot;]
-</code></pre>
+<span class="k">[Markdown]</span>
+<span class="n">extensions</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;toc&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;codehilite&quot;</span><span class="p">]</span>
+</code></pre></div>
 
 <h2 id="io">IO</h2>
 <p>This table contains the input and output directories to search for markdown files and to output HTML files, respectively.</p>
