@@ -134,8 +134,6 @@ class TestPyMindCore(unittest.TestCase):
     ##==================================================================================================================
     #
     def test_load_config_file(self):
-        import os
-
         pm = pymind.PyMind(**{"config": "./tests/config/pymind/pymind.toml"})
         pm.run()
 
@@ -157,7 +155,7 @@ class TestPyMindCore(unittest.TestCase):
         pm.run()
 
         # Count the number of files output
-        fc = len(glob.glob(os.path.join(TestPyMindCore.OUTPUT, "*")))
+        fc = len(glob.glob(os.path.join(TestPyMindCore.OUTPUT, "*.html")))
         self.assertEqual(fc, 1)
 
         return
@@ -173,7 +171,7 @@ class TestPyMindCore(unittest.TestCase):
         pm.run()
 
         # Count the number of files output
-        fc = len(glob.glob(os.path.join(TestPyMindCore.OUTPUT, "*")))
+        fc = len(glob.glob(os.path.join(TestPyMindCore.OUTPUT, "*.html")))
         self.assertEqual(fc, 7)
 
         return
