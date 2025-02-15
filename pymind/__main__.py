@@ -1,9 +1,10 @@
 import logging
 import optparse
 from logging import CRITICAL, DEBUG, WARNING
+from pathlib import Path
 
 import warnings
-from yaml import load as yaml_load
+import tomllib
 
 import pymind
 
@@ -33,7 +34,6 @@ def parse_options(args=None, values=None):
         "-i",
         "--input",
         dest="input",
-        default="notes",
         metavar="INPUT_DIR",
         help="Relative path to a directory to recursively scan.",
     )
@@ -41,7 +41,6 @@ def parse_options(args=None, values=None):
         "-o",
         "--output",
         dest="output",
-        default="doc",
         metavar="OUTPUT_DIR",
         help="Use to specify output directory, default is `doc`.",
     )
@@ -109,19 +108,6 @@ def parse_options(args=None, values=None):
     # Parse the input arguments
     (options, args) = parser.parse_args(args, values)
 
-    # Read configuration file
-    config = {}
-    if options.configfile:
-        with codecs.open(options.configfile, mode="r", encoding=options.encoding) as fp:
-            try:
-                config = yaml_load(fp)
-            except Exception as e:
-                message = (
-                    "Failed parsing extension config file: %s" % options.configfile
-                )
-                e.args = (message,) + e.args[1:]
-                raise
-
     # Save the options
     opts = {
         "input": options.input,
@@ -129,7 +115,7 @@ def parse_options(args=None, values=None):
         "dry_run": options.dry_run,
         "force": options.force,
         "engine": options.engine,
-        "config": config,
+        "config": options.configfile,
     }
 
     return opts, options.verbose
@@ -139,6 +125,7 @@ def parse_options(args=None, values=None):
 #
 def run():
     """Run PyMind from the command line."""
+    import sys
 
     # Parse options and adjust logging level if necessary
     options, logging_level = parse_options()
