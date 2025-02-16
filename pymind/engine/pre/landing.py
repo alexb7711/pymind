@@ -48,6 +48,10 @@ def main(**kwargs) -> bool:
         var["build_files"], options["input"], options["output"]
     )
 
+    # Update `var` cached variable with newly created file
+    var["build_files"].append(Path(options["input"]) / "index.md")
+    utility.cache.pickleVar(var, Path(options["var_p"]), options["name"])
+
     sys.exit(not success)
 
 
@@ -110,7 +114,7 @@ def __createLandingPage(bf: list, input: str, output: str) -> bool:
     for f in bf:
         new_link = NEW_LINK
         new_link = new_link.replace("%file%", str(Path(f).stem))
-        new_link = new_link.replace("%path%", str((Path(f).with_suffix('.html').name)))
+        new_link = new_link.replace("%path%", str((Path(f).with_suffix(".html").name)))
 
         recent.append(new_link)
 

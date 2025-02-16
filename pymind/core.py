@@ -306,7 +306,7 @@ class PyMind:
         self.build_files = self.__getFilesList()  #!< List of files to be built
 
         # Get the list of tags from the files
-        self.tags = getTags(self.build_files)  #!< Dictionary of tags found
+        self.tags = getTags(self.files_found)  #!< Dictionary of tags found
 
         # Convert file references to links
         self.__refToLink()

@@ -72,6 +72,7 @@ class TestLandingPage(unittest.TestCase):
                 t = f.read()
                 regex = re.compile("<footer>.*</footer>", flags=re.DOTALL)
                 match = regex.search(t)
+                print(f"--> {file}: {match}")
                 self.assertNotEqual(match, None)
 
         return

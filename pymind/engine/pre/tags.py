@@ -63,6 +63,10 @@ def main(**kwargs) -> int:
     # Write the string to disk
     success = __createTagsPage(options["input"], tags)
 
+    # Update `var` cached variable with newly created file
+    var["build_files"].append(Path(options["input"]) / "tags_page.md")
+    utility.cache.pickleVar(var, Path(options["var_p"]), options["name"])
+
     sys.exit(not success)
 
 

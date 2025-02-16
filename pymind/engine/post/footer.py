@@ -49,16 +49,21 @@ def main(**kwargs) -> int:
     ):
         ## Fail the file creation
         return False
+    # Retrieve the list of files and tags
+    var = utility.cache.unPickleVar(options["var_p"], options["name"])
+
+    # Ensure the cached variables were loaded
+    bf = var["build_files"]
 
     # Write the string to disk
-    success = __injectFooter(options["input"], options["output"])
+    success = __injectFooter(options["input"], options["output"], bf)
 
     sys.exit(not success)
 
 
 ##======================================================================================================================
 #
-def __injectFooter(input: str, output: str) -> bool:
+def __injectFooter(input: str, output: str, bf: list) -> bool:
     """!
     @brief Inject custom footer into each file
 
@@ -85,15 +90,18 @@ def __injectFooter(input: str, output: str) -> bool:
     today = date.today().strftime("%Y-%m-%d")
 
     # Update the footer
-    __replaceFooter(output, footer_html, today)
+    __replaceFooter(output, footer_html, bf, today)
 
     return True
 
+
 ##======================================================================================================================
 #
-def __replaceFooter(output: str, text: str, today: str = None) -> str:
-    logger.debug(f"FOOTER: Looping though each converted file.")
-    for file in Path(output).glob("*.html"):
+def __replaceFooter(output: str, text: str, bf: list, today: str = None) -> str:
+    logger.debug("FOOTER: Looping though each converted file.")
+    # for file in Path(output).glob("*.html"):
+    for file in bf:
+        file = Path(output).absolute() / Path(Path(file).name).with_suffix(".html")
         logger.debug(f"FOOTER: Updating footer in: {file}.")
         replaceText(file, "{{footer}}", text)
 
@@ -103,7 +111,6 @@ def __replaceFooter(output: str, text: str, today: str = None) -> str:
             replaceText(file, "%date%", today)
 
     return
-
 
 
 ########################################################################################################################
