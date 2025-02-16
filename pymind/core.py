@@ -13,7 +13,7 @@ from pymind.utility.cache import (
     pickleVar,
     writeCacheJSON,
 )
-from pymind.utility.misc import recursiveDelete, addOrAppend
+from pymind.utility.misc import addOrAppend
 from pymind.utility.search import findFiles
 from pymind.utility.tags import getTags
 from pymind.utility.modfile import multipleStrReplace
@@ -159,9 +159,6 @@ class PyMind:
         except Exception as e:
             logger.error(e)
 
-        # Remove the copied working tree
-        recursiveDelete(Path(self.work_d))
-
         return
 
     ##==================================================================================================================
@@ -291,9 +288,6 @@ class PyMind:
         """
         import shutil
 
-        # Create a copy of the input directory into a temporary directory
-        self.__copyInputDirectory()
-
         # Copy the CSS file if it exists
         logger.debug(f"Copying footer {self.output}")
         if self.footer:
@@ -304,6 +298,9 @@ class PyMind:
 
         # Get the list of files to convert
         self.build_files = self.__getFilesList()  #!< List of files to be built
+
+        # Create a copy of the input directory into a temporary directory
+        self.__copyBuildFiles()
 
         # Get the list of tags from the files
         self.tags = getTags(self.files_found)  #!< Dictionary of tags found
@@ -341,7 +338,7 @@ class PyMind:
 
     ##==================================================================================================================
     #
-    def __copyInputDirectory(self):
+    def __copyBuildFiles(self):
         """!
         @brief Copy `input` directory into `cache` directory
         """
@@ -354,7 +351,12 @@ class PyMind:
 
         logger.debug(f"Coping input directory to {out_d}")
 
-        shutil.copytree(self.input, out_d, dirs_exist_ok=True)
+        # shutil.copytree(self.input, out_d, dirs_exist_ok=True)
+        for f in self.build_files:
+            f = Path(f)
+            outf = self.work_d / f.name
+            print(outf)
+            shutil.copy2(f, outf)
 
         return
 
@@ -366,7 +368,7 @@ class PyMind:
         """
         # Create database of files
         logger.debug("Searching for files.")
-        self.files_found = findFiles(self.work_d)
+        self.files_found = findFiles(self.input)
 
         # If `force_build` not active
         build_files = []
@@ -564,6 +566,7 @@ class PyMind:
         The working directory is where the actions performed by PyMind or the engine scripts will take place.
         """
         self.work_d = Path(PyMind.CACHE_PATH) / Path(self.input).parts[-1]
+        self.work_d.mkdir(parents=True, exist_ok=True)
         return
 
     ##==================================================================================================================
