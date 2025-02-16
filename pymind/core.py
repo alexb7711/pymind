@@ -84,22 +84,22 @@ class PyMind:
         """
 
         # Member variables
-        self.css: Path = None                       #!< CSS file location
-        self.dry_run = False                        #!< Do everything except output files
-        self.engine = True                          #!< Path to engine directory
-        self.extensions: list = ["toc"]             #!< Markdown extensions list
-        self.files_found = []                       #!< List of files found
-        self.footer: Path = None                    #!< Footer file location
-        self.force_build = False                    #!< Flag to rebuild entire project
-        self.input = None                           #!< Input directory
-        self.output = None                          #!< Output directory
-        self.project_name: str = ""                 #!< Name of the project
-        self.refs: dict = {}                        #!< Dictionary of file references
+        self.css: Path = None  #!< CSS file location
+        self.dry_run = False  #!< Do everything except output files
+        self.engine = True  #!< Path to engine directory
+        self.extensions: list = ["toc"]  #!< Markdown extensions list
+        self.files_found = []  #!< List of files found
+        self.footer: Path = None  #!< Footer file location
+        self.force_build = False  #!< Flag to rebuild entire project
+        self.input = None  #!< Input directory
+        self.output = None  #!< Output directory
+        self.project_name: str = ""  #!< Name of the project
+        self.refs: dict = {}  #!< Dictionary of file references
 
         # Read in the configuration if provided
-        self.config_file = kwargs.get("config", None) #!< Path to configuration file
+        self.config_file = kwargs.get("config", None)  #!< Path to configuration file
         if bool(self.config_file):
-            self.config_file = Path(self.config_file)
+            self.config_file = Path(self.config_file).absolute()
             self.CONFIG_PATH = self.config_file
             self.CONFIG_DIR = self.config_file.parent
             self.__setConfig()
@@ -110,8 +110,10 @@ class PyMind:
         logger.warning(f"Reading configuration file from {self.config_file}")
 
         # Read in the parameters
-        self.input = kwargs.get("input", self.input)
-        self.output = kwargs.get("output", self.output)
+        if kwargs.get("input", self.input):
+            self.input = kwargs.get("input", self.input)
+        if kwargs.get("output", self.input):
+            self.output = kwargs.get("output", self.output)
 
         self.force_build = kwargs.get("force", self.force_build)
         self.dry_run = kwargs.get("dry_run", self.dry_run)
@@ -122,7 +124,7 @@ class PyMind:
         tmplt_path = self.CONFIG_DIR / Path("template.html")
         if tmplt_path.exists():
             logger.debug("Reading in template html file.")
-            with open(tmplt_path, 'r') as f:
+            with open(tmplt_path, "r") as f:
                 self.template = f.read()
         else:
             self.template = self.TEMPLATE
@@ -232,8 +234,8 @@ class PyMind:
 
                 ## Read in the configuration file
                 if conf.get("IO"):
-                    self.input = Path(conf.get("IO").get("input"))
-                    self.output = Path(conf.get("IO").get("output"))
+                    self.input = Path(conf.get("IO").get("input")).absolute()
+                    self.output = Path(conf.get("IO").get("output")).absolute()
 
                 if conf.get("HTML"):
                     self.css = conf.get("HTML").get("css")
@@ -241,7 +243,14 @@ class PyMind:
                     self.css = conf.get("HTML").get("css")
 
                 if conf.get("Markdown"):
-                    self.extensions = sorted(list(set(conf.get("Markdown").get("extensions", []) + self.extensions)))
+                    self.extensions = sorted(
+                        list(
+                            set(
+                                conf.get("Markdown").get("extensions", [])
+                                + self.extensions
+                            )
+                        )
+                    )
 
         except Exception as e:
             print("-----> ", e)
@@ -288,13 +297,16 @@ class PyMind:
         # Copy the CSS file if it exists
         logger.debug(f"Copying footer {self.output}")
         if self.footer:
-            shutil.copyfile(self.config_file.parent / Path(self.footer), self.work_d / Path(self.footer))
+            shutil.copyfile(
+                self.config_file.parent / Path(self.footer),
+                self.work_d / Path(self.footer),
+            )
 
         # Get the list of files to convert
-        self.build_files = self.__getFilesList()                              #!< List of files to be built
+        self.build_files = self.__getFilesList()  #!< List of files to be built
 
         # Get the list of tags from the files
-        self.tags = getTags(self.build_files)                                 #!< Dictionary of tags found
+        self.tags = getTags(self.build_files)  #!< Dictionary of tags found
 
         # Convert file references to links
         self.__refToLink()
@@ -321,7 +333,9 @@ class PyMind:
         # Copy the CSS file if it exists
         logger.debug(f"Copying configuration file to {self.output}")
         if self.css:
-            shutil.copyfile(self.config_file.parent / Path(self.css), self.output / Path(self.css))
+            shutil.copyfile(
+                self.config_file.parent / Path(self.css), self.output / Path(self.css)
+            )
 
         return
 
@@ -522,11 +536,16 @@ class PyMind:
                 ### Execute the process
                 process = subprocess.run(
                     [
-                        "python", file,
-                        "-i", self.work_d,
-                        "-o", self.output,
-                        "-n", self.project_name,
-                        "-v", cache_p,
+                        "python",
+                        file,
+                        "-i",
+                        self.work_d,
+                        "-o",
+                        self.output,
+                        "-n",
+                        self.project_name,
+                        "-v",
+                        cache_p,
                     ]
                 )
 
@@ -563,7 +582,7 @@ class PyMind:
                 ## Search text for file reference syntax
                 name_regex = "[^]]+"
                 url_regex = "[^)]+"
-                markup_regex = '\[({0})]\(\s*({1})\s*\)'.format(name_regex, url_regex)
+                markup_regex = "\[({0})]\(\s*({1})\s*\)".format(name_regex, url_regex)
 
                 ## Search for the links
                 rx_match = re.findall(markup_regex, file_content)

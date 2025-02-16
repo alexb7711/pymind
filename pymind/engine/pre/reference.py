@@ -81,7 +81,8 @@ def __referenced_in(input: Path, refs: dict) -> bool:
         ## Append the list to the file
         refs_section = f"# Related Topics\n{md_refs}"
         fp = recursiveSearch(Path(input), file, "md")
-        appendFile(fp.with_suffix(".md"), refs_section)
+        if fp:
+            appendFile(fp.with_suffix(".md"), refs_section)
     return True
 
 

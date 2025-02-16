@@ -137,7 +137,9 @@ class TestPyMindCore(unittest.TestCase):
         pm = pymind.PyMind(**{"config": "./tests/config/pymind/pymind.toml"})
         pm.run()
 
-        self.assertEqual(pm.config_file, Path("./tests/config/pymind/pymind.toml"))
+        self.assertEqual(
+            pm.config_file, Path("./tests/config/pymind/pymind.toml").absolute()
+        )
         self.assertEqual(pm.project_name, "example")
         self.assertEqual(pm.input, Path("./tests/example").absolute())
 
@@ -189,9 +191,12 @@ class TestPyMindCore(unittest.TestCase):
         v = pm.tags.values()
         v = [Path(x[0]).name for x in v]
 
-        self.assertEqual(k.sort(), ["nav", "tag1", "tag2", "tag3", "tag4", "tag5"].sort())
         self.assertEqual(
-            v.sort(), ["file1.md", "tags.md", "tags.md", "tags.md", "tags.md", "tags.md"].sort()
+            k.sort(), ["nav", "tag1", "tag2", "tag3", "tag4", "tag5"].sort()
+        )
+        self.assertEqual(
+            v.sort(),
+            ["file1.md", "tags.md", "tags.md", "tags.md", "tags.md", "tags.md"].sort(),
         )
 
         return
@@ -232,7 +237,9 @@ class TestPyMindCore(unittest.TestCase):
     ##==================================================================================================================
     #
     def test_css_inject(self):
-        pm = pymind.PyMind(**{"force": True, "config": "./tests/config/pymind/pymind.toml"})
+        pm = pymind.PyMind(
+            **{"force": True, "config": "./tests/config/pymind/pymind.toml"}
+        )
         pm.run()
 
         # Check that each file had its title changed
@@ -269,7 +276,7 @@ class TestPyMindCore(unittest.TestCase):
         pm.run()
 
         # Check that each file had its title changed
-        with open(Path(TestPyMindCore.OUTPUT) / Path("file1.html"), 'r') as f:
+        with open(Path(TestPyMindCore.OUTPUT) / Path("file1.html"), "r") as f:
             content = f.read()
             self.assertTrue(content.find("file2.html") > 0)
             self.assertTrue(content.find("file3.html") > 0)
