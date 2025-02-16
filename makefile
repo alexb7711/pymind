@@ -10,8 +10,6 @@ ENV_DIR   = .venv
 
 ##==============================================================================
 # File Paths
-OS=$(shell uname -s)
-FLAV=$(shell lsb_release -si)
 
 ifeq ("$(OS)", "Windows_NT")
 BIN     = $(ENV_DIR)/Scripts
@@ -35,29 +33,17 @@ all: setup update run ## Default action
 ##==============================================================================
 #
 install: ## Install PyMind locally
-ifeq ("$(FLAV)", "openSUSE")
 	pip install --user --break-system-packages .
-else
-	pip install --user .
-endif
 
 ##==============================================================================
 #
 uninstall: ## Uninstall PyMind
-ifeq ("$(FLAV)", "openSUSE")
 	pip uninstall --break-system-packages pymind
-else
-	pip uninstall .
-endif
 
 ##==============================================================================
 #
 update: ## Re-install PyMind
-ifeq ("$(FLAV)", "openSUSE")
 	pip install --user --upgrade --break-system-packages .
-else
-	pip install --user --upgrade .
-endif
 
 ##==============================================================================
 #

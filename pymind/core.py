@@ -95,6 +95,8 @@ class PyMind:
         self.output = None  #!< Output directory
         self.project_name: str = ""  #!< Name of the project
         self.refs: dict = {}  #!< Dictionary of file references
+        self.build_files = [] #!< List of files that need to be built from the input directory
+        self.working_files = [] #!< List of files that need to be built from the working directory
 
         # Read in the configuration if provided
         self.config_file = kwargs.get("config", None)  #!< Path to configuration file
@@ -288,6 +290,7 @@ class PyMind:
         """
         import shutil
 
+        # FIXME: The code is not doing what the comment says
         # Copy the CSS file if it exists
         logger.debug(f"Copying footer {self.output}")
         if self.footer:
@@ -297,7 +300,7 @@ class PyMind:
             )
 
         # Get the list of files to convert
-        self.build_files = self.__getFilesList()  #!< List of files to be built
+        self.build_files, self.working_files = self.__getFilesList()  #!< List of files to be built
 
         # Create a copy of the input directory into a temporary directory
         self.__copyBuildFiles()
@@ -306,7 +309,7 @@ class PyMind:
         self.tags = getTags(self.files_found)  #!< Dictionary of tags found
 
         # Convert file references to links
-        self.__refToLink()
+        self.__refToLink(self.working_files)
 
         # Cache variables
         self.__cacheVar()
@@ -351,11 +354,9 @@ class PyMind:
 
         logger.debug(f"Coping input directory to {out_d}")
 
-        # shutil.copytree(self.input, out_d, dirs_exist_ok=True)
         for f in self.build_files:
             f = Path(f)
             outf = self.work_d / f.name
-            print(outf)
             shutil.copy2(f, outf)
 
         return
@@ -381,10 +382,13 @@ class PyMind:
             logger.debug("Filtering found files to only the update files.")
             build_files = self.__getBuildFiles()
 
+        # Update the files in the working directory
+        working_files = [self.work_d / Path(f).name for f in build_files]
+
         # Update the cached database
         writeCacheJSON(self.getCachePaths("database"), self.files_found)
 
-        return build_files
+        return (build_files, working_files)
 
     ##==================================================================================================================
     #
@@ -427,6 +431,7 @@ class PyMind:
 
             ## Check if the file has been updated
             if mod > prev_data.get(f):
+                print(f"{Path(f).name}: {mod} > {prev_data.get(f)}")
                 p_files.append(Path(f))
                 continue
 
@@ -448,7 +453,7 @@ class PyMind:
         self.output.mkdir(parents=True, exist_ok=True)
 
         # Convert each markdown file
-        for bf in self.build_files:
+        for bf in self.working_files:
             ## Create the output file path
             output_file = self.output / Path(bf).stem
             output_file = output_file.with_suffix(".html")
@@ -571,13 +576,16 @@ class PyMind:
 
     ##==================================================================================================================
     #
-    def __refToLink(self):
+    def __refToLink(self, files: list):
         """!
         @brief Convert file references to markdown styled links.
+
+        @param files List of files to loop through
         """
 
         # For each file to be built
-        for file in self.build_files:
+        for file in files:
+            ## Update the hyperlinks
             with open(file, "r+") as f:
                 ## Read in the file
                 file_content = f.read()

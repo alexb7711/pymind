@@ -112,7 +112,7 @@ def __createLandingPage(bf: list, input: str, output: str) -> bool:
     logger.debug("LANDING: Recently updated")
     recent = []
     # for f in bf:
-    for f in Path(input).glob("*.md")
+    for f in Path(input).glob("*.md"):
         new_link = NEW_LINK
         new_link = new_link.replace("%file%", str(Path(f).stem))
         new_link = new_link.replace("%path%", str((Path(f).with_suffix(".html").name)))
