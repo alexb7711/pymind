@@ -382,6 +382,11 @@ class PyMind:
             logger.debug("Filtering found files to only the update files.")
             build_files = self.__getBuildFiles()
 
+        # If `index.md` is not in the list, then add it
+        index_p = self.input / Path("index.md")
+        if not index_p in build_files:
+            build_files.append(index_p)
+
         # Update the files in the working directory
         working_files = [self.work_d / Path(f).name for f in build_files]
 
@@ -515,7 +520,7 @@ class PyMind:
         # If the engine being ran is the pre-processor
         if process_type == "PRE":
             # Update the build files
-            self.build_files = self.__getFilesList()
+            self.build_files, self.working_files = self.__getFilesList()  #!< List of files to be built
 
         return
 
@@ -636,7 +641,7 @@ class PyMind:
         # Variables
         var = {
             "files": self.files_found,
-            "build_files": self.build_files,
+            "build_files": self.working_files,
             "tags": self.tags,
             "refs": self.refs,
         }
