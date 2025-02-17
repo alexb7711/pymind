@@ -109,7 +109,7 @@ class PyMind:
         elif self.CONFIG_PATH.exists():
             self.config_file = self.CONFIG_PATH
             self.__setConfig()
-        logger.warning(f"Reading configuration file from {self.config_file}")
+        logger.debug(f"Reading configuration file from {self.config_file}")
 
         # Read in the parameters
         if kwargs.get("input", self.input):
@@ -290,15 +290,6 @@ class PyMind:
         """
         import shutil
 
-        # FIXME: The code is not doing what the comment says
-        # Copy the CSS file if it exists
-        logger.debug(f"Copying footer {self.output}")
-        if self.footer:
-            shutil.copyfile(
-                self.config_file.parent / Path(self.footer),
-                self.work_d / Path(self.footer),
-            )
-
         # Get the list of files to convert
         self.build_files, self.working_files = self.__getFilesList()  #!< List of files to be built
 
@@ -458,7 +449,7 @@ class PyMind:
         self.output.mkdir(parents=True, exist_ok=True)
 
         # Convert each markdown file
-        for bf in self.working_files:
+        for bf in self.work_d.glob("*.md"):
             ## Create the output file path
             output_file = self.output / Path(bf).stem
             output_file = output_file.with_suffix(".html")
@@ -644,6 +635,7 @@ class PyMind:
             "build_files": self.working_files,
             "tags": self.tags,
             "refs": self.refs,
+            "cache_p": self.CACHE_PATH,
         }
         cache_dir = self.getCachePaths("var")
 

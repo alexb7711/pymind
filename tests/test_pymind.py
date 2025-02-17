@@ -116,17 +116,20 @@ class TestPyMindCore(unittest.TestCase):
     ##==================================================================================================================
     #
     def test_modified_files(self):
+        cache_example = Path(TestPyMindCore.CACHE_PATH) / Path("example/")
+        self.recursive_delete(cache_example)
+
         pm = self.getPM()
         pm.run()  # Run one extra time to make sure the cache file exists
         pm.run()
 
         # Unmodified project
-        self.assertEqual(len(pm.build_files), 0)
+        self.assertEqual(len(pm.build_files), 1)
 
         # Modify a file
         Path("./tests/example/file1.md").touch()
         pm.run()
-        self.assertEqual(len(pm.build_files), 1)
+        self.assertEqual(len(pm.build_files), 2)
         self.assertEqual(pm.build_files[0].name, "file1.md")
 
         return
@@ -150,6 +153,7 @@ class TestPyMindCore(unittest.TestCase):
     def test_html_output_cnt(self):
         # Delete the OUTPUT directory if it exists
         self.recursive_delete(Path(TestPyMindCore.OUTPUT))
+        self.recursive_delete(Path(TestPyMindCore.CACHE_PATH) / Path("example/"))
 
         # Run PyMind with `force = false` to generate all the files
         pm = self.getPM()
@@ -158,7 +162,7 @@ class TestPyMindCore(unittest.TestCase):
 
         # Count the number of files output
         fc = len(glob.glob(os.path.join(TestPyMindCore.OUTPUT, "*.html")))
-        self.assertEqual(fc, 1)
+        self.assertEqual(fc, 2)
 
         return
 
@@ -174,7 +178,7 @@ class TestPyMindCore(unittest.TestCase):
 
         # Count the number of files output
         fc = len(glob.glob(os.path.join(TestPyMindCore.OUTPUT, "*.html")))
-        self.assertEqual(fc, 7)
+        self.assertEqual(fc, 8)
 
         return
 
