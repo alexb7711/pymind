@@ -13,7 +13,7 @@ from pymind.utility.cache import (
     pickleVar,
     writeCacheJSON,
 )
-from pymind.utility.misc import recursiveDelete, addOrAppend
+from pymind.utility.misc import addOrAppend
 from pymind.utility.search import findFiles
 from pymind.utility.tags import getTags
 from pymind.utility.modfile import multipleStrReplace
@@ -95,6 +95,8 @@ class PyMind:
         self.output = None  #!< Output directory
         self.project_name: str = ""  #!< Name of the project
         self.refs: dict = {}  #!< Dictionary of file references
+        self.build_files = [] #!< List of files that need to be built from the input directory
+        self.working_files = [] #!< List of files that need to be built from the working directory
 
         # Read in the configuration if provided
         self.config_file = kwargs.get("config", None)  #!< Path to configuration file
@@ -107,7 +109,7 @@ class PyMind:
         elif self.CONFIG_PATH.exists():
             self.config_file = self.CONFIG_PATH
             self.__setConfig()
-        logger.warning(f"Reading configuration file from {self.config_file}")
+        logger.debug(f"Reading configuration file from {self.config_file}")
 
         # Read in the parameters
         if kwargs.get("input", self.input):
@@ -158,9 +160,6 @@ class PyMind:
 
         except Exception as e:
             logger.error(e)
-
-        # Remove the copied working tree
-        recursiveDelete(Path(self.work_d))
 
         return
 
@@ -291,25 +290,17 @@ class PyMind:
         """
         import shutil
 
-        # Create a copy of the input directory into a temporary directory
-        self.__copyInputDirectory()
-
-        # Copy the CSS file if it exists
-        logger.debug(f"Copying footer {self.output}")
-        if self.footer:
-            shutil.copyfile(
-                self.config_file.parent / Path(self.footer),
-                self.work_d / Path(self.footer),
-            )
-
         # Get the list of files to convert
-        self.build_files = self.__getFilesList()  #!< List of files to be built
+        self.build_files, self.working_files = self.__getFilesList()  #!< List of files to be built
+
+        # Create a copy of the input directory into a temporary directory
+        self.__copyBuildFiles()
 
         # Get the list of tags from the files
         self.tags = getTags(self.files_found)  #!< Dictionary of tags found
 
         # Convert file references to links
-        self.__refToLink()
+        self.__refToLink(self.working_files)
 
         # Cache variables
         self.__cacheVar()
@@ -341,7 +332,7 @@ class PyMind:
 
     ##==================================================================================================================
     #
-    def __copyInputDirectory(self):
+    def __copyBuildFiles(self):
         """!
         @brief Copy `input` directory into `cache` directory
         """
@@ -354,7 +345,10 @@ class PyMind:
 
         logger.debug(f"Coping input directory to {out_d}")
 
-        shutil.copytree(self.input, out_d, dirs_exist_ok=True)
+        for f in self.build_files:
+            f = Path(f)
+            outf = self.work_d / f.name
+            shutil.copy2(f, outf)
 
         return
 
@@ -366,7 +360,7 @@ class PyMind:
         """
         # Create database of files
         logger.debug("Searching for files.")
-        self.files_found = findFiles(self.work_d)
+        self.files_found = findFiles(self.input)
 
         # If `force_build` not active
         build_files = []
@@ -379,10 +373,18 @@ class PyMind:
             logger.debug("Filtering found files to only the update files.")
             build_files = self.__getBuildFiles()
 
+        # If `index.md` is not in the list, then add it
+        index_p = self.input / Path("index.md")
+        if not index_p in build_files:
+            build_files.append(index_p)
+
+        # Update the files in the working directory
+        working_files = [self.work_d / Path(f).name for f in build_files]
+
         # Update the cached database
         writeCacheJSON(self.getCachePaths("database"), self.files_found)
 
-        return build_files
+        return (build_files, working_files)
 
     ##==================================================================================================================
     #
@@ -425,6 +427,7 @@ class PyMind:
 
             ## Check if the file has been updated
             if mod > prev_data.get(f):
+                print(f"{Path(f).name}: {mod} > {prev_data.get(f)}")
                 p_files.append(Path(f))
                 continue
 
@@ -446,7 +449,7 @@ class PyMind:
         self.output.mkdir(parents=True, exist_ok=True)
 
         # Convert each markdown file
-        for bf in self.build_files:
+        for bf in self.work_d.glob("*.md"):
             ## Create the output file path
             output_file = self.output / Path(bf).stem
             output_file = output_file.with_suffix(".html")
@@ -508,7 +511,7 @@ class PyMind:
         # If the engine being ran is the pre-processor
         if process_type == "PRE":
             # Update the build files
-            self.build_files = self.__getFilesList()
+            self.build_files, self.working_files = self.__getFilesList()  #!< List of files to be built
 
         return
 
@@ -564,17 +567,21 @@ class PyMind:
         The working directory is where the actions performed by PyMind or the engine scripts will take place.
         """
         self.work_d = Path(PyMind.CACHE_PATH) / Path(self.input).parts[-1]
+        self.work_d.mkdir(parents=True, exist_ok=True)
         return
 
     ##==================================================================================================================
     #
-    def __refToLink(self):
+    def __refToLink(self, files: list):
         """!
         @brief Convert file references to markdown styled links.
+
+        @param files List of files to loop through
         """
 
         # For each file to be built
-        for file in self.build_files:
+        for file in files:
+            ## Update the hyperlinks
             with open(file, "r+") as f:
                 ## Read in the file
                 file_content = f.read()
@@ -625,9 +632,10 @@ class PyMind:
         # Variables
         var = {
             "files": self.files_found,
-            "build_files": self.build_files,
+            "build_files": self.working_files,
             "tags": self.tags,
             "refs": self.refs,
+            "cache_p": self.CACHE_PATH,
         }
         cache_dir = self.getCachePaths("var")
 
