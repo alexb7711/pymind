@@ -8,9 +8,6 @@ This module generates the default landing page for PyMind.
 import logging
 import sys
 from pathlib import Path
-from typing import TypedDict
-
-import pymind
 from pymind import utility
 
 logger = logging.getLogger("PYMIND")
