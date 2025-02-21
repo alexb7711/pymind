@@ -300,8 +300,6 @@ class PyMind:
             self.__getFilesList()
         )  #!< List of files to be built
 
-        print("--->", self.build_files)
-
         # Create a copy of the input directory into a temporary directory
         self.__copyBuildFiles()
 
@@ -427,7 +425,6 @@ class PyMind:
 
         # For each file that has been found in the input directory
         for f, mod in self.files_found.items():
-            print("-", f)
             ## Check if the file is new
             if not prev_data.get(f, False):
                 p_files.append(Path(f))
@@ -435,7 +432,6 @@ class PyMind:
 
             ## Check if the file has been updated
             if mod > prev_data.get(f):
-                print(f"{Path(f).name}: {mod} > {prev_data.get(f)}")
                 p_files.append(Path(f))
                 continue
 
@@ -458,7 +454,6 @@ class PyMind:
 
         # Convert each markdown file
         # for bf in self.work_d.glob("*.md"):
-        print("````>", self.build_files)
         for bf in self.working_files:
             ## Create the output file path
             output_file = self.output / Path(bf).stem
