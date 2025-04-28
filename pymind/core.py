@@ -11,6 +11,7 @@ from pymind.utility.cache import (
     deleteCacheVar,
     loadCacheJSON,
     pickleVar,
+    unPickleVar,
     writeCacheJSON,
 )
 from pymind.utility.misc import addOrAppend
@@ -256,7 +257,6 @@ class PyMind:
                     )
 
         except Exception as e:
-            print("-----> ", e)
             logger.warning(
                 f"WARNING: COULD NOT FIND THE CONFIGURATION FILE: {self.config_file}"
             )
@@ -270,18 +270,13 @@ class PyMind:
         """!
         @brief Entry function to start creating the PyMind second brain.
         """
-        ##--------------------------------------------------------------------------------------------------------------
-        # PRE-PROCESS
+        # Pre-Process
         self.__preProcess()
-
-        ##--------------------------------------------------------------------------------------------------------------
-        # EXECUTE CONVERSION PROCESS
 
         # Convert the files
         self.__convertFiles()
 
-        ##--------------------------------------------------------------------------------------------------------------
-        # POST-PROCESS
+        # Post-Process
         self.__postProcess()
 
         return
@@ -314,6 +309,9 @@ class PyMind:
 
         # Run pre-processing engine
         self.__runEngine("PRE")
+
+        # Reload cached variables
+        self.__deCacheVar()
 
         return
 
@@ -452,8 +450,10 @@ class PyMind:
         # Ensure the output directory exists
         self.output.mkdir(parents=True, exist_ok=True)
 
+        #
+
         # Convert each markdown file
-        # for bf in self.work_d.glob("*.md"):
+        # for bf in self.work_d.glob("*.md"):O
         for bf in self.working_files:
             ## Create the output file path
             output_file = self.output / Path(bf).stem
@@ -642,6 +642,21 @@ class PyMind:
         # Cache the variable
         pickleVar(var, cache_dir, self.project_name)
 
+        return
+
+    ##==================================================================================================================
+    #
+    def __deCacheVar(self):
+        """!
+        @brief Load cached variables
+        """
+        logger.debug("Loading cached variables after pre-process.")
+
+        # Retrieve cache directory
+        cache_dir = self.getCachePaths("var")
+
+        # Update working files
+        self.working_files = unPickleVar(cache_dir, self.project_name)['build_files']
         return
 
 
