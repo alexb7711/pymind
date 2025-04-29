@@ -38,14 +38,6 @@ class PyMind:
     ####################################################################################################################
     # CONSTANTS
     ####################################################################################################################
-    _CACHE_VAR = {
-        "files": "self.files_found",
-        "build_files": "self.working_files",
-        "tags": "self.tags",
-        "refs": "self.refs",
-        "cache_p": self.CACHE_PATH,
-    }
-    
     CORE_ENGINE_PATH = Path(os.path.dirname(os.path.abspath(__file__))) / Path(
         "engine/"
     )
@@ -78,7 +70,15 @@ class PyMind:
 </body>
 </html>
 """
-
+    
+    _CACHE_VAR = {
+        "files": "self.files_found",
+        "build_files": "self.working_files",
+        "tags": "self.tags",
+        "refs": "self.refs",
+        "cache_p": CACHE_PATH,
+    }
+    
     ####################################################################################################################
     # PUBLIC
     ####################################################################################################################
