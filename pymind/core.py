@@ -38,6 +38,14 @@ class PyMind:
     ####################################################################################################################
     # CONSTANTS
     ####################################################################################################################
+    _CACHE_VAR = {
+        "files": "self.files_found",
+        "build_files": "self.working_files",
+        "tags": "self.tags",
+        "refs": "self.refs",
+        "cache_p": self.CACHE_PATH,
+    }
+    
     CORE_ENGINE_PATH = Path(os.path.dirname(os.path.abspath(__file__))) / Path(
         "engine/"
     )
@@ -627,13 +635,7 @@ class PyMind:
         logger.debug("Caching the environment variables.")
 
         # Variables
-        var = {
-            "files": self.files_found,
-            "build_files": self.working_files,
-            "tags": self.tags,
-            "refs": self.refs,
-            "cache_p": self.CACHE_PATH,
-        }
+        var = {k: eval(v) for k,v in self._CACHE_VAR.items()}
         cache_dir = self.getCachePaths("var")
 
         # Cache the variable
@@ -652,8 +654,12 @@ class PyMind:
         # Retrieve cache directory
         cache_dir = self.getCachePaths("var")
 
-        # Update working files
-        self.working_files = unPickleVar(cache_dir, self.project_name)['build_files']
+        # For each cached variable
+        for k,v in self._CACHE_VAR.items() 
+            ## If the variable ha changed
+            if eval(v) != unPickleVar(cache_dir, self.project_name)[k]:
+                ### Update the member variable with the cached variable
+                exec(f"{v} = {unPickleVar(cache_dir, self.project_name)[k]}")
         return
 
 
