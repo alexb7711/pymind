@@ -635,7 +635,7 @@ class PyMind:
         logger.debug("Caching the environment variables.")
 
         # Variables
-        var = {k: eval(v, {}, "self."+v) for k,v in self._CACHE_VAR.items()}
+        var = {k: eval(v, {}, {v: "self."+v}) for k,v in self._CACHE_VAR.items()}
         cache_dir = self.getCachePaths("var")
 
         # Cache the variable
