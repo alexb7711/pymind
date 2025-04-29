@@ -660,6 +660,7 @@ class PyMind:
             if eval("self."+v) != unPickleVar(cache_dir, self.project_name)[k]:
                 ### Update the member variable with the cached variable
                 exec(f"{"self."+v} = {unPickleVar(cache_dir, self.project_name)[k]}")
+                print("====> self.",v)
         return
 
 
