@@ -72,11 +72,11 @@ class PyMind:
 """
     
     _CACHE_VAR = {
-        "files": "self.files_found",
-        "build_files": "self.working_files",
-        "tags": "self.tags",
-        "refs": "self.refs",
-        "cache_p": CACHE_PATH,
+        "files": "files_found",
+        "build_files": "working_files",
+        "tags": "tags",
+        "refs": "refs",
+        "cache_p": "CACHE_PATH",
     }
     
     ####################################################################################################################
@@ -635,7 +635,7 @@ class PyMind:
         logger.debug("Caching the environment variables.")
 
         # Variables
-        var = {k: eval(v) for k,v in self._CACHE_VAR.items()}
+        var = {k: eval(v, {}, "self."+v) for k,v in self._CACHE_VAR.items()}
         cache_dir = self.getCachePaths("var")
 
         # Cache the variable
