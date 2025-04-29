@@ -450,10 +450,7 @@ class PyMind:
         # Ensure the output directory exists
         self.output.mkdir(parents=True, exist_ok=True)
 
-        #
-
         # Convert each markdown file
-        # for bf in self.work_d.glob("*.md"):O
         for bf in self.working_files:
             ## Create the output file path
             output_file = self.output / Path(bf).stem
