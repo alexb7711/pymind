@@ -657,9 +657,9 @@ class PyMind:
         # For each cached variable
         for k,v in self._CACHE_VAR.items(): 
             ## If the variable ha changed
-            if eval(v) != unPickleVar(cache_dir, self.project_name)[k]:
+            if eval("self."+v) != unPickleVar(cache_dir, self.project_name)[k]:
                 ### Update the member variable with the cached variable
-                exec(f"{v} = {unPickleVar(cache_dir, self.project_name)[k]}")
+                exec(f"{"self."+v} = {unPickleVar(cache_dir, self.project_name)[k]}")
         return
 
 
