@@ -98,10 +98,10 @@ class PyMind:
         self.refs: dict = {}  #!< Dictionary of file references
         self.build_files = (
             []
-        )  #!< List of files that need to be built from the input directory
+        )  #!< List of files that have been updated and need to be built (path to original files)
         self.working_files = (
             []
-        )  #!< List of files that need to be built from the working directory
+        )  #!< Copy of `build_files` with the path changed to the cached directory (working directory)
 
         # Read in the configuration if provided
         self.config_file = kwargs.get("config", None)  #!< Path to configuration file
