@@ -70,15 +70,7 @@ class PyMind:
 </body>
 </html>
 """
-    
-    _CACHE_VAR = {
-        "files": "files_found",
-        "build_files": "working_files",
-        "tags": "tags",
-        "refs": "refs",
-        "cache_p": "CACHE_PATH",
-    }
-    
+
     ####################################################################################################################
     # PUBLIC
     ####################################################################################################################
@@ -635,14 +627,18 @@ class PyMind:
         logger.debug("Caching the environment variables.")
 
         # Variables
-        var = {k: eval(v, {}, {v: "self."+v}) for k,v in self._CACHE_VAR.items()}
-        print("=====")
-        print(var)
-        print("=====")
+        self.var = {
+                "files": self.files_found,
+                "build_files": self.working_files,
+                "tags": self.tags,
+                "refs": self.refs,
+                "cache_p": self.CACHE_PATH,
+                }
+
         cache_dir = self.getCachePaths("var")
 
         # Cache the variable
-        pickleVar(var, cache_dir, self.project_name)
+        pickleVar(self.var, cache_dir, self.project_name)
 
         return
 
@@ -657,13 +653,19 @@ class PyMind:
         # Retrieve cache directory
         cache_dir = self.getCachePaths("var")
 
-        # For each cached variable
-        for k,v in self._CACHE_VAR.items(): 
-            ## If the variable ha changed
-            if eval(v, {}, {v: "self."+v}) != unPickleVar(cache_dir, self.project_name)[k]:
-                ### Update the member variable with the cached variable
-                exec(f"{v} = {unPickleVar(cache_dir, self.project_name)[k]}", {}, {v: "self."+v})
-                print("====> self.",v)
+        # Update working files
+        for k,v in self.var.items():
+            match k:
+                case "files":
+                    self.files_found = unPickleVar(cache_dir, self.project_name)['files']
+                case "build_files":
+                    self.working_files = unPickleVar(cache_dir, self.project_name)['build_files']
+                case "tags":
+                    self.tags = unPickleVar(cache_dir, self.project_name)['tags']
+                case "refs":
+                    self.refs = unPickleVar(cache_dir, self.project_name)['refs']
+                case _:
+                        continue
         return
 
 
