@@ -665,7 +665,7 @@ class PyMind:
                 case "refs":
                     self.refs = unPickleVar(cache_dir, self.project_name)['refs']
                 case _:
-                        continue
+                    continue
         return
 
 
