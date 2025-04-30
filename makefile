@@ -33,7 +33,7 @@ all: setup update run ## Default action
 ##==============================================================================
 #
 install: ## Install PyMind locally
-	pip install --user --break-system-packages .
+	pip install --break-system-packages -e .
 
 ##==============================================================================
 #
@@ -43,14 +43,14 @@ uninstall: ## Uninstall PyMind
 ##==============================================================================
 #
 update: ## Re-install PyMind
-	pip install --user --upgrade --break-system-packages .
+	pip install --upgrade --break-system-packages .
 
 ##==============================================================================
 #
 .ONESHELL:
 test: setup ## Run unit tests
 	source "$(BIN)/activate"
-	$(PYTHON) -m unittest discover -s $(TST_D) -p "test_*.py"
+	$(PYTHON) -m unittest discover -s $(TST_D) -p "test_*.py" -f
 	coverage run --source=. -m unittest discover -s $(TST_D) -p "test_*.py"
 	coverage report
 

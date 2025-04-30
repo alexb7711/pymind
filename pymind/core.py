@@ -11,6 +11,7 @@ from pymind.utility.cache import (
     deleteCacheVar,
     loadCacheJSON,
     pickleVar,
+    unPickleVar,
     writeCacheJSON,
 )
 from pymind.utility.misc import addOrAppend
@@ -95,8 +96,12 @@ class PyMind:
         self.output = None  #!< Output directory
         self.project_name: str = ""  #!< Name of the project
         self.refs: dict = {}  #!< Dictionary of file references
-        self.build_files = [] #!< List of files that need to be built from the input directory
-        self.working_files = [] #!< List of files that need to be built from the working directory
+        self.build_files = (
+            []
+        )  #!< List of files that have been updated and need to be built (path to original files)
+        self.working_files = (
+            []
+        )  #!< Copy of `build_files` with the path changed to the cached directory (working directory)
 
         # Read in the configuration if provided
         self.config_file = kwargs.get("config", None)  #!< Path to configuration file
@@ -252,7 +257,6 @@ class PyMind:
                     )
 
         except Exception as e:
-            print("-----> ", e)
             logger.warning(
                 f"WARNING: COULD NOT FIND THE CONFIGURATION FILE: {self.config_file}"
             )
@@ -266,18 +270,13 @@ class PyMind:
         """!
         @brief Entry function to start creating the PyMind second brain.
         """
-        ##--------------------------------------------------------------------------------------------------------------
-        # PRE-PROCESS
+        # Pre-Process
         self.__preProcess()
-
-        ##--------------------------------------------------------------------------------------------------------------
-        # EXECUTE CONVERSION PROCESS
 
         # Convert the files
         self.__convertFiles()
 
-        ##--------------------------------------------------------------------------------------------------------------
-        # POST-PROCESS
+        # Post-Process
         self.__postProcess()
 
         return
@@ -288,10 +287,13 @@ class PyMind:
         """!
         @brief Run the PyMind pre-processor.
         """
-        import shutil
+        # Get the project name
+        self.project_name = self.__getProjectName()
 
         # Get the list of files to convert
-        self.build_files, self.working_files = self.__getFilesList()  #!< List of files to be built
+        self.build_files, self.working_files = (
+            self.__getFilesList()
+        )  #!< List of files to be built
 
         # Create a copy of the input directory into a temporary directory
         self.__copyBuildFiles()
@@ -307,6 +309,9 @@ class PyMind:
 
         # Run pre-processing engine
         self.__runEngine("PRE")
+
+        # Reload cached variables
+        self.__deCacheVar()
 
         return
 
@@ -338,8 +343,6 @@ class PyMind:
         """
         import shutil
 
-        # Extract the project name based on the base directory name
-        self.project_name = self.__getProjectName()
         cache_dir = self.getCachePaths("base")
         out_d = cache_dir / Path(self.project_name)
 
@@ -427,7 +430,6 @@ class PyMind:
 
             ## Check if the file has been updated
             if mod > prev_data.get(f):
-                print(f"{Path(f).name}: {mod} > {prev_data.get(f)}")
                 p_files.append(Path(f))
                 continue
 
@@ -449,7 +451,7 @@ class PyMind:
         self.output.mkdir(parents=True, exist_ok=True)
 
         # Convert each markdown file
-        for bf in self.work_d.glob("*.md"):
+        for bf in self.working_files:
             ## Create the output file path
             output_file = self.output / Path(bf).stem
             output_file = output_file.with_suffix(".html")
@@ -463,7 +465,7 @@ class PyMind:
             content = markdown.markdown(md, extensions=self.extensions)
 
             ## Inject content into html file
-            html = PyMind.TEMPLATE.replace("%content%", content)
+            html = self.template.replace("%content%", content)
 
             if self.css:
                 html = html.replace("%css%", str(self.css))
@@ -507,11 +509,6 @@ class PyMind:
         # For each file in the engine directories
         logger.debug(f"Beginning {process_type}-engine...")
         self.__executeSubprocess(path)
-
-        # If the engine being ran is the pre-processor
-        if process_type == "PRE":
-            # Update the build files
-            self.build_files, self.working_files = self.__getFilesList()  #!< List of files to be built
 
         return
 
@@ -630,18 +627,45 @@ class PyMind:
         logger.debug("Caching the environment variables.")
 
         # Variables
-        var = {
-            "files": self.files_found,
-            "build_files": self.working_files,
-            "tags": self.tags,
-            "refs": self.refs,
-            "cache_p": self.CACHE_PATH,
-        }
+        self.var = {
+                "files": self.files_found,
+                "build_files": self.working_files,
+                "tags": self.tags,
+                "refs": self.refs,
+                "cache_p": self.CACHE_PATH,
+                }
+
         cache_dir = self.getCachePaths("var")
 
         # Cache the variable
-        pickleVar(var, cache_dir, self.project_name)
+        pickleVar(self.var, cache_dir, self.project_name)
 
+        return
+
+    ##==================================================================================================================
+    #
+    def __deCacheVar(self):
+        """!
+        @brief Load cached variables
+        """
+        logger.debug("Loading cached variables after pre-process.")
+
+        # Retrieve cache directory
+        cache_dir = self.getCachePaths("var")
+
+        # Update working files
+        for k,v in self.var.items():
+            match k:
+                case "files":
+                    self.files_found = unPickleVar(cache_dir, self.project_name)['files']
+                case "build_files":
+                    self.working_files = unPickleVar(cache_dir, self.project_name)['build_files']
+                case "tags":
+                    self.tags = unPickleVar(cache_dir, self.project_name)['tags']
+                case "refs":
+                    self.refs = unPickleVar(cache_dir, self.project_name)['refs']
+                case _:
+                    continue
         return
 
 
