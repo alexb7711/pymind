@@ -452,6 +452,7 @@ class PyMind:
 
         # Convert each markdown file
         for bf in self.working_files:
+            print(bf)
             ## Create the output file path
             output_file = self.output / Path(bf).stem
             output_file = output_file.with_suffix(".html")

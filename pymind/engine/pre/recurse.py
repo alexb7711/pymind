@@ -50,61 +50,71 @@ def main(**kwargs) -> int:
     var = utility.cache.unPickleVar(options["var_p"], options["name"])
 
     # Write the string to disk
-    success = __search_for_sub_wiki(Path(options["input"]))
+    success = __search_for_sub_wiki(Path(options["input"]), Path(options["output"]))
+
     sys.exit(not success)
+
     return
 
 
 ##======================================================================================================================
 #
-def __search_for_sub_wiki(input: Path) -> bool:
+def __search_for_sub_wiki(input: Path, output: Path) -> bool:
     """!
     @brief List all the files in a directory
+
+    @param input
+    @param output
 
     @return True if successful, False otherwise
     """
     # Create a list of files and directories with the same name in the
     # cache directory
-    # for x in input.iterdir(): print(x.with_suffix(''))
-    return True
-
     sub_wikis = [
-        x.name
+        x.with_suffix("")
         for x in input.iterdir()
-        if x.is_file()
-        and x.with_suffex("").stem.is_dir()
-        and file.name == directory_path.name
+        if x.is_file() and x.with_suffix("").is_dir()
     ]
-
-    print(sub_wikis)
-    return True
 
     # For each sub wiki found
     for sw in sub_wikis:
         ## Create a list of files for each match
-        content = recurse(sw)
+        sw_files = [x for x in sw.rglob("*") if x.is_file()]
 
         ## Populate the top level file with the wiki information
-        __populate_file()
-    return True
+        success = __populate_file(sw, sw_files, input, output)
+
+    return success
 
 
 ##======================================================================================================================
 #
-def __recurse(input: Path) -> list:
+def __populate_file(sw: Path, sw_files: list, input: Path, output: Path) -> str:
     """!
-    @brief List all the files in a directory
+    @brief Populate the top-level file with the content of the sub-wiki.
 
-    @return List of file names
+    @param sw Path to the top-level sub-wiki
+    @param sw_files Files found in the sub-wiki
+    @param input
+    @param output
+
+    @return
     """
-    return []
+    from string import Template
 
+    # Variables
+    success = True
+    out_files = [output / Path(x.stem).with_suffix(".html") for x in sw_files]
+    content = "\n".join([f"- [{x.stem}]({x})" for x in out_files])
 
-##======================================================================================================================
-#
-def __populate_file() -> bool:
-    """!"""
-    return
+    try:
+        ## Append the content to the top-level sub-wiki file
+        appendFile(sw.with_suffix(".md"), content)
+    except Exception as e:
+        logger.error(f"Exception thrown! {e}")
+        success = False
+
+    return success
 
 
 ########################################################################################################################
