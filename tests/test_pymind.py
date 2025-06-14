@@ -21,8 +21,8 @@ class TestPyMindCore(unittest.TestCase):
     CONF_DIR = ".config/pymind"
 
     if platform.system() == "Windows":
-        CACHE_DIR = Path("AppData\Local\Programs\pymind\cache")
-        CONF_DIR = Path("AppData\Local\Programs\pymind")
+        CACHE_DIR = Path("AppData/Local/Programs/pymind/cache")
+        CONF_DIR = Path("AppData/Local/Programs/pymind")
 
     CONFIG_FILE = "pymind.yaml"
     CONFIG_PATH = f"{Path.home()}/{CONF_DIR}/{CONFIG_FILE}"
@@ -72,7 +72,7 @@ class TestPyMindCore(unittest.TestCase):
             if path.is_file():
                 path.unlink()
             elif path.is_dir():
-                recursive_delete(path)
+                self.recursive_delete(path)
                 path.rmdir()
 
         return
@@ -108,8 +108,11 @@ class TestPyMindCore(unittest.TestCase):
         # Check the input file
         self.assertEqual(pm.input, Path(TestPyMindCore.INPUT).absolute())
 
+        # Count the number of files in the output directory
+        file_count = sum(1 for file in pm.input.rglob("*") if file.is_file())
+
         # Check the number of elements
-        self.assertEqual(len(pm.files_found), 7)
+        self.assertEqual(len(pm.files_found), file_count)
 
         return
 
@@ -178,7 +181,12 @@ class TestPyMindCore(unittest.TestCase):
 
         # Count the number of files output
         fc = len(glob.glob(os.path.join(TestPyMindCore.OUTPUT, "*.html")))
-        self.assertEqual(fc, 7)
+
+        # Count the number of files in the output directory
+        file_count = sum(1 for file in pm.input.rglob("*") if file.is_file())
+
+        # Ensure there are the same number of files
+        self.assertEqual(fc, file_count)
 
         return
 

@@ -47,8 +47,8 @@ class PyMind:
     CONF_DIR = Path(".config/pymind")
 
     if platform.system() == "Windows":
-        CACHE_DIR = Path("AppData\Local\Programs\pymind\cache")
-        CONF_DIR = Path("AppData\Local\Programs\pymind")
+        CACHE_DIR = Path("AppData/Local/Programs/pymind/cache")
+        CONF_DIR = Path("AppData/Local/Programs/pymind")
 
     CONFIG_FILE = "pymind.toml"
     CONFIG_DIR = Path(f"{Path.home()}/{CONF_DIR}")
@@ -346,12 +346,10 @@ class PyMind:
         cache_dir = self.getCachePaths("base")
         out_d = cache_dir / Path(self.project_name)
 
-        logger.debug(f"Coping input directory to {out_d}")
-
-        for f in self.build_files:
-            f = Path(f)
-            outf = self.work_d / f.name
-            shutil.copy2(f, outf)
+        logger.debug(f"Coping {self.input} to {out_d}")
+        shutil.copytree(
+            self.input, out_d, copy_function=shutil.copy2, dirs_exist_ok=True
+        )
 
         return
 
@@ -382,7 +380,9 @@ class PyMind:
             build_files.append(index_p)
 
         # Update the files in the working directory
-        working_files = [self.work_d / Path(f).name for f in build_files]
+        working_files = [
+            Path(str(f).replace(str(self.input), str(self.work_d))) for f in build_files
+        ]
 
         # Update the cached database
         writeCacheJSON(self.getCachePaths("database"), self.files_found)
@@ -586,7 +586,9 @@ class PyMind:
                 ## Search text for file reference syntax
                 name_regex = "[^]]+"
                 url_regex = "[^)]+"
-                markup_regex = "\[({0})]\(\s*({1})\s*\)".format(name_regex, url_regex)
+                markup_regex = "\\[({0})\\]\\(\\s*({1})\\s*\\)".format(
+                    name_regex, url_regex
+                )
 
                 ## Search for the links
                 rx_match = re.findall(markup_regex, file_content)
@@ -628,12 +630,12 @@ class PyMind:
 
         # Variables
         self.var = {
-                "files": self.files_found,
-                "build_files": self.working_files,
-                "tags": self.tags,
-                "refs": self.refs,
-                "cache_p": self.CACHE_PATH,
-                }
+            "files": self.files_found,
+            "build_files": self.working_files,
+            "tags": self.tags,
+            "refs": self.refs,
+            "cache_p": self.CACHE_PATH,
+        }
 
         cache_dir = self.getCachePaths("var")
 
@@ -654,16 +656,20 @@ class PyMind:
         cache_dir = self.getCachePaths("var")
 
         # Update working files
-        for k,v in self.var.items():
+        for k, v in self.var.items():
             match k:
                 case "files":
-                    self.files_found = unPickleVar(cache_dir, self.project_name)['files']
+                    self.files_found = unPickleVar(cache_dir, self.project_name)[
+                        "files"
+                    ]
                 case "build_files":
-                    self.working_files = unPickleVar(cache_dir, self.project_name)['build_files']
+                    self.working_files = unPickleVar(cache_dir, self.project_name)[
+                        "build_files"
+                    ]
                 case "tags":
-                    self.tags = unPickleVar(cache_dir, self.project_name)['tags']
+                    self.tags = unPickleVar(cache_dir, self.project_name)["tags"]
                 case "refs":
-                    self.refs = unPickleVar(cache_dir, self.project_name)['refs']
+                    self.refs = unPickleVar(cache_dir, self.project_name)["refs"]
                 case _:
                     continue
         return
