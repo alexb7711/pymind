@@ -100,12 +100,29 @@ def __populate_file(sw: Path, sw_files: list, input: Path, output: Path) -> str:
 
     @return
     """
+    import os
     from string import Template
+    from itertools import islice
 
     # Variables
     success = True
-    out_files = [output / Path(x.stem).with_suffix(".html") for x in sw_files]
-    content = "\n".join([f"- [{x.stem}]({x})" for x in out_files])
+    out_files = [
+        output / Path(x.stem).with_suffix(".html")
+        for x in sorted(sw_files, key=lambda x: x.stat().st_ctime)
+    ]
+
+    # Get the first N lines from each file
+    context = []
+    for sf in sw_files:
+        with open(sf) as f:
+            context.append(list(islice(f, 20)))
+
+    context = [[">  " + s for s in sublist] for sublist in context]
+
+    # Append the content to the file
+    content = "\n".join(
+        [f"## [{x.stem}]({x})\n{''.join(context[y])}" for y, x in enumerate(out_files)]
+    )
 
     try:
         ## Append the content to the top-level sub-wiki file
