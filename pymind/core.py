@@ -291,9 +291,10 @@ class PyMind:
         self.project_name = self.__getProjectName()
 
         # Get the list of files to convert
-        self.build_files, self.working_files = (
-            self.__getFilesList()
-        )  #!< List of files to be built
+        (
+            self.build_files,
+            self.working_files,
+        ) = self.__getFilesList()  #!< List of files to be built
 
         # Create a copy of the input directory into a temporary directory
         self.__copyBuildFiles()
@@ -452,7 +453,6 @@ class PyMind:
 
         # Convert each markdown file
         for bf in self.working_files:
-            print(bf)
             ## Create the output file path
             output_file = self.output / Path(bf).stem
             output_file = output_file.with_suffix(".html")
