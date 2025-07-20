@@ -9,7 +9,7 @@ import pymind
 ########################################################################################################################
 
 
-class TestLandingPage(unittest.TestCase):
+class TestRecurse(unittest.TestCase):
     ####################################################################################################################
     # CONSTANTS
     ####################################################################################################################
@@ -35,8 +35,8 @@ class TestLandingPage(unittest.TestCase):
     def getPM(self, force: bool = False, dry_run: bool = False):
         pm = pymind.PyMind(
             **{
-                "input": str(TestLandingPage.INPUT),
-                "output": str(TestLandingPage.OUTPUT),
+                "input": str(TestRecurse.INPUT),
+                "output": str(TestRecurse.OUTPUT),
                 "force": force,
                 "dry_run ": dry_run,
             }
@@ -54,13 +54,13 @@ class TestLandingPage(unittest.TestCase):
         @return Returns tuple of strings (cache_dir, cache_file)
         """
 
-        cache_dir = Path(f"{TestLandingPage.CACHE_PATH}/")
+        cache_dir = Path(f"{TestRecurse.CACHE_PATH}/")
 
         return cache_dir
 
     ##==================================================================================================================
     #
-    def test_referenced_in(self):
+    def test_recurse(self):
         import re
 
         pm = self.getPM(force=True)
@@ -68,11 +68,41 @@ class TestLandingPage(unittest.TestCase):
 
         # Check that each file has a footer
         for file in Path(pm.output).glob("*.html"):
-            ## If the file is one of the 'testable' files
-            if file.name in ["file2.html", "file3.html"]:
-                with open(file, "r") as f:
-                    t = f.read()
-                    match = t.find("# Related Topics")
-                    self.assertNotEqual(match, None)
+            if file.name != "subwiki.html":
+                continue
 
+            with open(file, "r") as f:
+                t = f.read()
+                regex = re.compile("This is s1!", flags=re.DOTALL)
+                match = regex.search(t)
+                self.assertNotEqual(match, None)
+
+                regex = re.compile(
+                    '<a href=".*/s1.html">s1</a>',
+                    flags=re.DOTALL,
+                )
+                match = regex.search(t)
+                self.assertNotEqual(match, None)
+
+                regex = re.compile("This is s2!", flags=re.DOTALL)
+                match = regex.search(t)
+                self.assertNotEqual(match, None)
+
+                regex = re.compile(
+                    '<a href=".*/s2.html">s2</a>',
+                    flags=re.DOTALL,
+                )
+                match = regex.search(t)
+                self.assertNotEqual(match, None)
+
+                regex = re.compile("This is s3!", flags=re.DOTALL)
+                match = regex.search(t)
+                self.assertNotEqual(match, None)
+
+                regex = re.compile(
+                    '<a href=".*/s3.html">s3</a>',
+                    flags=re.DOTALL,
+                )
+                match = regex.search(t)
+                self.assertNotEqual(match, None)
         return

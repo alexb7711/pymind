@@ -18,7 +18,3 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - run: make clean
     - run: make test
-    - name: Upload Coverage to Codecov
-      uses: codecov/codecov-action@v5
-      with:
-        token: ${{ secrets.CODECOV_TOKEN }}

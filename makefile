@@ -4,6 +4,7 @@
 
 ##==============================================================================
 # Directories
+TARGET    = pymind
 SRC_D     = pymind
 TST_D     = tests
 ENV_DIR   = .venv
@@ -16,10 +17,11 @@ BIN     = $(ENV_DIR)/Scripts
 else
 BIN     = $(ENV_DIR)/bin
 endif
-PYTHON  = python
+PYTHON  = python3
 
 ##==============================================================================
 # Makefile configuration
+SHELL = /bin/bash
 .PHONY: all setup install update run debug clean test help doc
 
 ################################################################################
@@ -33,26 +35,26 @@ all: setup update run ## Default action
 ##==============================================================================
 #
 install: ## Install PyMind locally
-	pip install --break-system-packages -e .
+	pipx install -e .
 
 ##==============================================================================
 #
 uninstall: ## Uninstall PyMind
-	pip uninstall --break-system-packages pymind
+	pipx uninstall $(TARGET)
 
 ##==============================================================================
 #
 update: ## Re-install PyMind
-	pip install --upgrade --break-system-packages .
+	pipx install --upgrade .
 
 ##==============================================================================
 #
 .ONESHELL:
 test: setup ## Run unit tests
-	source "$(BIN)/activate"
-	$(PYTHON) -m unittest discover -s $(TST_D) -p "test_*.py" -f
-	coverage run --source=. -m unittest discover -s $(TST_D) -p "test_*.py"
-	coverage report
+	@source "$(BIN)/activate"
+	@$(PYTHON) -m unittest discover -s $(TST_D) -p "test_*.py" -f
+	@coverage run --source=. -m unittest discover -s $(TST_D) -p "test_*.py"
+	@coverage report
 
 ##==============================================================================
 #
