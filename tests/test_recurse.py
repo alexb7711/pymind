@@ -78,7 +78,7 @@ class TestRecurse(unittest.TestCase):
                 self.assertNotEqual(match, None)
 
                 regex = re.compile(
-                    '<a href="/home/alex/code/opensource/pymind/tests/example-output/s1.html">s1</a>',
+                    '<a href=".*/s1.html">s1</a>',
                     flags=re.DOTALL,
                 )
                 match = regex.search(t)
@@ -89,7 +89,7 @@ class TestRecurse(unittest.TestCase):
                 self.assertNotEqual(match, None)
 
                 regex = re.compile(
-                    '<a href="/home/alex/code/opensource/pymind/tests/example-output/s2.html">s2</a>',
+                    '<a href=".*/s2.html">s2</a>',
                     flags=re.DOTALL,
                 )
                 match = regex.search(t)
@@ -100,7 +100,7 @@ class TestRecurse(unittest.TestCase):
                 self.assertNotEqual(match, None)
 
                 regex = re.compile(
-                    '<a href="/home/alex/code/opensource/pymind/tests/example-output/s3.html">s3</a>',
+                    '<a href=".*/s3.html">s3</a>',
                     flags=re.DOTALL,
                 )
                 match = regex.search(t)
