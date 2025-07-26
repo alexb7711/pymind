@@ -7,4 +7,4 @@ css = "style.css"
 footer = "footer.md"
 
 [Markdown]
-extensions = ["toc", "codehilite"]
+extensions = ["toc", "codehilite", "mdx_math"]
