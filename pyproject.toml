@@ -21,6 +21,7 @@ dependencies = [
   "importlib-metadata>=4.4",
   "markdown == 3.7",
   "pyyaml == 6.0.1",
+  "Pygments == 2.19.2",
   "python-markdown-math == 0.9",
 ]
 
