@@ -2,6 +2,7 @@ import logging
 import os
 import platform
 import re
+import sys
 from pathlib import Path
 from typing import Any
 
@@ -537,7 +538,7 @@ class PyMind:
                 ### Execute the process
                 process = subprocess.run(
                     [
-                        "python",
+                        sys.executable,
                         file,
                         "-i",
                         self.work_d,
