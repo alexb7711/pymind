@@ -72,17 +72,17 @@ def __search_for_sub_wiki(input: Path, output: Path) -> bool:
     # cache directory
     sub_wikis = [
         x.with_suffix("")
-        for x in input.iterdir()
+        for x in input.rglob("*")
         if x.is_file() and x.with_suffix("").is_dir()
     ]
 
     # For each sub wiki found
     for sw in sub_wikis:
         ## Create a list of files for each match
-        sw_files = [x for x in sw.rglob("*") if x.is_file()]
+        sw_files = [x for x in sw.glob("*") if x.is_file()]
 
         ## Populate the top level file with the wiki information
-        success = __populate_file(sw, sw_files, input, output)
+        success = __populate_file(sw, sorted(sw_files), input, output)
 
     return success
 
@@ -107,7 +107,7 @@ def __populate_file(sw: Path, sw_files: list, input: Path, output: Path) -> str:
     # Variables
     success = True
     out_files = [
-        output / Path(x.stem).with_suffix(".html")
+        Path(x.stem).with_suffix(".html")
         for x in sorted(sw_files, key=lambda x: x.stat().st_ctime)
     ]
 
@@ -115,8 +115,9 @@ def __populate_file(sw: Path, sw_files: list, input: Path, output: Path) -> str:
     context = []
     for sf in sw_files:
         with open(sf) as f:
-            context.append(list(islice(f, 20)))
+            context.append(list(islice(f, 5)))
 
+    context = [[s.replace("[TOC]", "") for s in sublist] for sublist in context]
     context = [[">  " + s for s in sublist] for sublist in context]
 
     # Append the content to the file
